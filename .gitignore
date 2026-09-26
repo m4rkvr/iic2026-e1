@@ -1,0 +1,12 @@
+# CSV crudos de IBTrACS: pesan entre 10 MB y 332 MB y se regeneran con
+# scripts/preprocess.py. Nunca entran al repositorio.
+scripts/cache/
+
+# Sistema
+.DS_Store
+Thumbs.db
+*.swp
+__pycache__/
+
+# Configuracion local de herramientas
+.claude/
