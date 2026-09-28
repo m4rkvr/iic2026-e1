@@ -18,7 +18,7 @@ fuertes", sino el contraste entre ambos: el número por temporada es estable y l
 proporción que llega a categoría 4–5 no lo es.
 
 **Por qué.** Es lo que los datos sostienen. El conteo por temporada oscila entre
-83 y 118 sin tendencia; la proporción de cat. 4–5 pasa de 10,1 % en los 80 a
+87 y 118 sin tendencia; la proporción de cat. 4–5 pasa de 10,1 % en los 80 a
 17,2 % en los 90 y 19,7 % en los 2010. Un titular más fuerte ("los ciclones se
 están volviendo más fuertes") no aguanta el dato: la serie se estanca después de
 los 90 y la mediana del viento apenas se mueve.
@@ -51,10 +51,12 @@ mejora el gráfico mintiendo.
 cuartiles detrás.
 
 **Por qué.** El mensaje vive en la cola derecha. Un promedio en barras la borra:
-la mediana del viento máximo pasa de 60 kt en los 80 a 55 kt en los 2020, es
-decir, en la dirección contraria al mensaje. Lo que crece es el extremo, y solo
-se ve mostrando la distribución completa. La pauta además penaliza apoyarse en
-barras sin justificación.
+la mediana del viento máximo no se mueve —oscila entre 55 y 60 kt década a
+década, sin tendencia— mientras el percentil 90 sube de 114 kt en los 80 a
+130 kt en los 2010. Una barra por década mostraría «no pasa nada» justo donde
+está el cambio. Lo que crece es el extremo, y solo se ve mostrando la
+distribución completa. La pauta además penaliza apoyarse en barras sin
+justificación.
 
 **Descartado.** Un violín: suaviza la densidad y con vientos cuantizados en
 escalones de 5 kt inventa una continuidad que el dato no tiene.
@@ -136,6 +138,33 @@ lleva asterisco en la etiqueta y queda fuera del cálculo de la pendiente.
 **Por qué.** La década en curso siempre cae por falta de datos, no por el
 fenómeno. Incluida en el ajuste, arrastra la recta hacia abajo y convierte un
 artefacto de cobertura en una "tendencia".
+
+---
+
+## 2026-09-28 — corrección previa a R1
+
+### La cifra que sostenía «el promedio borra la cola» estaba mal
+
+**Decisión.** Se corrige el número que justificaba no usar barras. La bitácora
+decía que la mediana del viento máximo caía de 60 kt (80s) a 55 kt (2020s), «en
+dirección contraria al mensaje». Recalculado sobre `data/storms.json`, eso no es
+lo que ocurre.
+
+**Por qué.** Las medianas reales por década son 55 · 60 · 55 · 60 · 55 kt: la
+mediana **no tiene tendencia**, no va en contra. El argumento sigue en pie, pero
+se sostiene en otro dato: el percentil 90 sube de 114 kt (80s) a 125 · 125 ·
+130 kt, y entre los ciclones que alcanzan fuerza de huracán (≥ 64 kt) la mediana
+pasa de 90 a 100 kt. Es decir: el centro de la distribución está quieto y la
+cola derecha se corre. Una barra con el promedio o la mediana por década
+mostraría una serie plana justo donde está el cambio.
+
+También se corrige el rango del conteo por temporada: **87–118** en las
+temporadas completas (1980–2024). El 83 que figuraba era la temporada 2026, que
+está en curso y no es comparable.
+
+**Descartado.** Dejar la cifra anterior y explicarla en la revisión. Un número
+que no resiste que alguien lo recalcule desde el repositorio no puede ser la
+justificación de una decisión de diseño.
 
 ---
 
