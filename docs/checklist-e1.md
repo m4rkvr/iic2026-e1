@@ -1,7 +1,7 @@
 # Checklist E1 — estado y lo que falta
 
 **Entrega: jueves 22 de octubre de 2026, 23:59.**
-Última actualización: 2026-09-26 · quedan **25 días**.
+Última actualización: 2026-09-28 · quedan **24 días**.
 
 ---
 
@@ -32,7 +32,7 @@
 | Interacción más allá del Plotly por defecto | ✅ cross-filtering, teclado, estado compartido |
 | Sin ejes truncados / dobles ejes / 3D | ✅ |
 | No se apoya solo en barras | ✅ y está justificado |
-| Bitácora de decisiones iniciada | ✅ `docs/decisiones.md`, 9 entradas |
+| Bitácora de decisiones iniciada | ✅ `docs/decisiones.md`, 13 entradas |
 | Plantilla del documento | ✅ `docs/entrega-e1.md` |
 | Protocolo de thinking aloud | ✅ `docs/hoja-observador.md` |
 
@@ -134,18 +134,30 @@ es lo que se evalúa. Cada integrante debería poder explicar:
 4. **¿Qué codifica el sonido, exactamente?** — Tendencia: tono ← % cat. 4–5,
    ritmo ← nº de ciclones, timbre ← cuenca. Trayectoria: tono ← viento, densidad
    rítmica ← intensificación, filtro ← distancia a tierra.
-5. **¿Por qué la escala pentatónica?** — Un mapeo continuo de frecuencia produce
-   microtonos y el oído pierde el contorno, que es la información a transmitir.
+5. **¿Por qué la escala pentatónica y no frecuencia continua?** — Un mapeo
+   continuo de frecuencia produce microtonos y el oído pierde el contorno, que
+   es la información a transmitir.
 6. **¿Por qué los puntos de la década en curso están vacíos?** — Tiene 7 de 10
    temporadas: cae por falta de datos, no por el fenómeno. Por eso también queda
    fuera del cálculo de la pendiente.
-7. **¿Qué filtraste de los datos y por qué?** — Ramas `spur`, horas sinópticas
+7. **¿Por qué el mapa agrupa por tramos en vez de colorear punto a punto?** —
+   Colorear punto a punto exigía 87.295 marcadores SVG y cuelga el navegador; y
+   los tramos de Saffir-Simpson son categorías *ordenadas*, así que una rampa
+   ordinal de un solo tono las codifica mejor que un gradiente continuo.
+8. **¿Qué filtraron de los datos y por qué?** — Ramas `spur`, horas sinópticas
    (desde ~2010 se interpola a 3 h y sesgaría hacia el presente), viento
    `USA_WIND` con respaldo `WMO_WIND`.
-8. **Los dos errores que encontramos procesando** — `pandas` lee la cuenca `"NA"`
+9. **¿Qué errores encontraron procesando los datos?** — `pandas` lee la cuenca `"NA"`
    (Atlántico Norte) como valor ausente; y filtrar por `TRACK_TYPE == "main"`
    borraba 2025–2026 completas porque llegan marcadas `PROVISIONAL`.
-9. **¿Qué descartaron y por qué?** — Ver `docs/decisiones.md` § descartes.
+10. **¿Qué descartaron y por qué?** — Ver `docs/decisiones.md` § descartes.
+11. **¿Qué suena exactamente al reproducir la tendencia?** — C3 – C5 – C5 – A5 –
+    A4, una nota cada 800 ms. La última baja porque la década está incompleta:
+    el sonido no tiene el equivalente del marcador vacío. Es una limitación
+    conocida, registrada en la bitácora, y una de las preguntas que llevamos a R1.
+
+> Cada una de estas preguntas tiene su entrada en `docs/decisiones.md`; la tabla
+> del inicio de esa bitácora lleva de la pregunta a la entrada de un clic.
 
 ---
 
