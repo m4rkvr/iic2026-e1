@@ -9,6 +9,26 @@
 
 ---
 
+## Qué pregunta responde cada entrada
+
+Las revisiones preguntan por decisiones; esta tabla es el atajo entre una y otra.
+Las preguntas son las de `docs/checklist-e1.md`.
+
+| Pregunta | Entrada de esta bitácora |
+|---|---|
+| ¿Cuál es el mensaje y por qué ese y no otro? | [Mensaje: el total plano frente al extremo que crece](#mensaje-el-total-plano-frente-al-extremo-que-crece) · [Las dos reservas van en la bajada](#las-dos-reservas-van-en-la-bajada-no-en-una-nota-al-pie) |
+| ¿Por qué la distribución no es un gráfico de barras? | [La distribución no es un gráfico de barras](#la-distribución-no-es-un-gráfico-de-barras) · [La cifra que sostenía «el promedio borra la cola» estaba mal](#la-cifra-que-sostenía-el-promedio-borra-la-cola-estaba-mal) |
+| ¿Por qué el eje Y parte en 0? | [Eje Y desde 0 y un solo eje por gráfico](#eje-y-desde-0-y-un-solo-eje-por-gráfico) |
+| ¿Qué codifica el sonido, exactamente? | [Tres parámetros sonoros, no volumen](#tres-parámetros-sonoros-no-volumen) · [La sonificación no distingue la década incompleta](#la-sonificación-no-distingue-la-década-incompleta-limitación-abierta) |
+| ¿Por qué la escala pentatónica? | [Sonificación cuantizada a escala pentatónica](#sonificación-cuantizada-a-escala-pentatónica) |
+| ¿Por qué los puntos de la década en curso están vacíos? | [Los grupos incompletos se marcan y se excluyen del ajuste](#los-grupos-incompletos-se-marcan-y-se-excluyen-del-ajuste) |
+| ¿Por qué el mapa agrupa por tramos? | [El mapa agrupa por tramos, no colorea punto a punto](#el-mapa-agrupa-por-tramos-no-colorea-punto-a-punto) |
+| ¿Qué filtraste de los datos y por qué? | [Los tres filtros del dataset, y qué sesgo evita cada uno](#los-tres-filtros-del-dataset-y-qué-sesgo-evita-cada-uno) |
+| ¿Qué errores encontraron procesando? | [Dos errores que borraban datos en silencio](#dos-errores-que-borraban-datos-en-silencio) |
+| ¿Qué descartaron y por qué? | [Descartes generales](#descartes-generales) y el campo **Descartado** de cada entrada |
+
+---
+
 ## 2026-09-26 — V1
 
 ### Mensaje: el total plano frente al extremo que crece
@@ -141,7 +161,7 @@ artefacto de cobertura en una "tendencia".
 
 ---
 
-## 2026-09-28 — corrección previa a R1
+## 2026-09-28 — preparación de R1
 
 ### La cifra que sostenía «el promedio borra la cola» estaba mal
 
@@ -165,6 +185,96 @@ está en curso y no es comparable.
 **Descartado.** Dejar la cifra anterior y explicarla en la revisión. Un número
 que no resiste que alguien lo recalcule desde el repositorio no puede ser la
 justificación de una decisión de diseño.
+
+---
+
+### Los tres filtros del dataset, y qué sesgo evita cada uno
+
+**Decisión.** Del CSV de IBTrACS se descartan las ramas secundarias
+(`TRACK_TYPE` que contiene `spur`), se conservan solo las horas sinópticas
+00/06/12/18 UTC, y el viento es `USA_WIND` con respaldo `WMO_WIND`.
+
+**Por qué.** Cada filtro corrige un sesgo distinto, y el segundo es el que más
+importa para este mensaje:
+
+- Las ramas `spur` son trayectorias alternativas de la **misma** tormenta. Sin
+  descartarlas, un ciclón se contaría más de una vez.
+- Desde ~2010 varias agencias reportan cada 3 h en vez de cada 6. Sin el filtro
+  de horas sinópticas, las temporadas recientes aportan el doble de puntos y
+  **todo conteo queda sesgado hacia el presente** — es decir, justo en la
+  dirección del mensaje. Un sesgo que empuja hacia la conclusión que uno quiere
+  sacar es el más peligroso de todos.
+- `USA_WIND` cubre mucho más que `WMO_WIND`; se usa como fuente principal y el
+  segundo solo como respaldo, asumiendo y documentando la mezcla de agencias.
+
+De 309.724 registros quedan 141.945, que se agregan a 4.827 ciclones.
+Implementado en `scripts/preprocess.py:107`, `:118` y `:125`.
+
+**Descartado.** Conservar todos los registros y corregir el sesgo después: la
+sobrerrepresentación no es uniforme entre cuencas ni entre décadas, así que no
+hay un factor único que la deshaga. Y usar solo `WMO_WIND`, que deja fuera
+demasiados ciclones.
+
+**Responde a.** «¿Qué filtraste de los datos y por qué?»
+
+---
+
+### Dos errores que borraban datos en silencio
+
+**Decisión.** El CSV se lee con `keep_default_na=False`, y las ramas se excluyen
+en negativo (descartar lo que contiene `spur`) en vez de exigir
+`TRACK_TYPE == "main"`.
+
+**Por qué.** Los dos errores que motivaron estos cambios no fallaban: borraban.
+
+- `pandas` interpreta el código de cuenca `"NA"` —Atlántico Norte— como valor
+  ausente. Sin `keep_default_na=False` desaparece una cuenca entera sin
+  excepción, sin advertencia y sin filas vacías que lo delaten.
+- Filtrar por `TRACK_TYPE == "main"` borraba **2025 y 2026 completas**. Esas
+  temporadas llegan marcadas `PROVISIONAL` / `US-PROVISIONAL` porque todavía no
+  tienen reanálisis: son trayectorias primarias, no ramas secundarias. Por eso
+  el filtro se escribe en negativo.
+
+Lo que los hace comparables es que los dos **recortan el dato sin avisar**, y el
+segundo recortaba justamente el extremo reciente de la serie, que es donde se
+lee la tendencia. De ahí la regla que queda para el resto del proyecto: después
+de cada filtro se comprueba cuántas filas quedaron y qué categorías
+sobrevivieron, no solo que el script no se caiga.
+
+**Descartado.** Confiar en el comportamiento por defecto de `pandas` para un
+dataset con códigos de dos letras. `"NA"`, `"NaN"` y `"None"` son valores
+legítimos en datos geográficos.
+
+**Responde a.** «¿Qué errores encontraron procesando?»
+
+---
+
+### La sonificación no distingue la década incompleta (limitación abierta)
+
+**Decisión.** Se deja registrada la limitación y se lleva a R1 como pregunta
+abierta. No se corrige antes de la revisión.
+
+**Por qué.** Con los datos actuales, «Escuchar la tendencia» toca
+**C3 – C5 – C5 – A5 – A4**, una nota cada 800 ms. La última nota **baja**, y baja
+porque la década en curso tiene 7 de 10 temporadas.
+
+El gráfico trata ese grupo de forma distinta en tres lugares: marcador vacío,
+asterisco en la etiqueta y exclusión del ajuste. El audio no hace nada de eso:
+lo toca como una década cualquiera. Es decir, el canal sonoro está comunicando
+un **artefacto de cobertura como si fuera el fenómeno**, y además en la
+dirección contraria al mensaje — quien solo escuche se lleva «subió y después
+bajó».
+
+No se corrige ahora a propósito. Las tres salidas posibles —excluir la década
+del audio, marcarla con otro timbre, o anunciarla— tienen costos distintos, y la
+decisión se quiere tomar con la discusión de la revisión y no antes de ella.
+
+**Descartado.** Silenciar la última nota: haría desaparecer una década que sí
+existe. Y normalizar el tono contra el rango de las décadas completas: movería
+todas las notas para arreglar solo la última.
+
+**Responde a.** «¿Qué codifica el sonido?» y «¿Por qué los puntos de la década
+en curso están vacíos?» — es el punto donde las dos preguntas se cruzan.
 
 ---
 
