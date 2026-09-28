@@ -10,3 +10,7 @@ __pycache__/
 
 # Configuracion local de herramientas
 .claude/
+
+# Notas privadas: no se publican. Todo lo que este en privado/ queda fuera
+# del repositorio, incluido este directorio completo.
+privado/
