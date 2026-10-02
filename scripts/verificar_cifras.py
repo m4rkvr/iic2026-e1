@@ -24,12 +24,31 @@ def decada(anio):
     return (anio // 10) * 10
 
 
+def ols(xs, ys):
+    """Pendiente de una recta por minimos cuadrados y su error estandar.
+
+    A mano y sin numpy: el repositorio solo depende de pandas, y eso es para el
+    pipeline. Quien verifique las cifras no deberia tener que instalar nada.
+    """
+    n = len(xs)
+    mx, my = sum(xs) / n, sum(ys) / n
+    sxx = sum((x - mx) ** 2 for x in xs)
+    b = sum((x - mx) * (y - my) for x, y in zip(xs, ys)) / sxx
+    a = my - b * mx
+    res = [y - (a + b * x) for x, y in zip(xs, ys)]
+    s2 = sum(r * r for r in res) / (n - 2)
+    return b, (s2 / sxx) ** 0.5
+
+
 def main():
     seasons = json.loads((DATA / "seasons.json").read_text())
     storms = json.loads((DATA / "storms.json").read_text())
     meta = json.loads((DATA / "meta.json").read_text())
 
-    completas = set(range(1980, 2025))  # 2025-2026 siguen en curso / provisionales
+    # La ventana viene de meta.json, no hardcodeada: el script tiene que seguir
+    # diciendo la verdad si cambia --desde. 2025-2026 siguen provisionales.
+    primera, ultima = meta["seasons"]
+    completas = set(range(primera, 2025))
 
     por_temporada = defaultdict(int)
     for fila in seasons:
@@ -40,11 +59,11 @@ def main():
           f"temporadas {meta['seasons'][0]}-{meta['seasons'][1]}")
     print()
     print("1) El total NO tiene tendencia")
-    print(f"   ciclones por temporada completa (1980-2024): "
+    print(f"   ciclones por temporada completa ({primera}-2024): "
           f"min {min(conteos)} · mediana {st.median(conteos):.0f} · max {max(conteos)}")
     print()
 
-    print("2) La composicion SI cambia — proporcion que llega a cat. 4-5")
+    print("2) Proporcion que llega a cat. 4-5, por decada")
     agrupado = defaultdict(lambda: [0, 0])
     for fila in seasons:
         d = agrupado[decada(fila["season"])]
@@ -58,7 +77,8 @@ def main():
     print()
 
     print("3) Por que la distribucion no es un grafico de barras")
-    print("   la mediana esta quieta; lo que se corre es la cola derecha")
+    print("   la mediana y el p90 estan quietos: lo que hay es dispersion,")
+    print("   y una barra con el promedio la borra")
     vientos = defaultdict(list)
     for s in storms:
         vientos[decada(s["season"])].append(s["max_wind"])
@@ -69,7 +89,28 @@ def main():
               f"{pct(v, 0.90):>8.0f}{pct(v, 0.95):>8.0f}")
     print()
 
-    print("4) Lo mismo, solo entre los que alcanzan fuerza de huracan (>= 64 kt)")
+    print("4) Hay tendencia? Ajuste lineal por temporada, solo completas")
+    print(f"   ({primera}-2024, {len(conteos)} temporadas)")
+    cat45 = defaultdict(int)
+    for fila in seasons:
+        cat45[fila["season"]] += fila["n_cat45"]
+    xs = sorted(a for a in por_temporada if a in completas)
+    series = {
+        "ciclones por temporada": [float(por_temporada[a]) for a in xs],
+        "proporcion cat. 4-5   ": [cat45[a] / por_temporada[a] for a in xs],
+    }
+    for nombre, ys in series.items():
+        b, se = ols(xs, ys)
+        # t de Student al 95 % con n-2 grados de libertad, ~2.07 para n=25.
+        t = b / se if se else float("inf")
+        veredicto = "SI" if abs(t) > 2.07 else "NO distinguible de cero"
+        esc = 100 if "proporcion" in nombre else 1
+        unidad = "puntos" if "proporcion" in nombre else "ciclones"
+        print(f"   {nombre}  {b*10*esc:+7.2f} {unidad}/decada  "
+              f"(EE {se*10*esc:.2f}, t={t:+.2f})  -> {veredicto}")
+    print()
+
+    print("5) Lo mismo, solo entre los que alcanzan fuerza de huracan (>= 64 kt)")
     fuertes = defaultdict(list)
     for s in storms:
         if s["max_wind"] >= 64:

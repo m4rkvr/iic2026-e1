@@ -27,6 +27,11 @@
 
 ### Mensaje principal _(máx. 10 líneas)_
 
+> **Borrador de la V1, pendiente de redefinir en grupo.** La página se rehace
+> sobre la base de datos y el mensaje vuelve a estar abierto; esto queda como
+> hipótesis de partida, no como texto final. Ver
+> [decisiones](decisiones.md#la-página-se-rehace-en-grupo-y-la-raíz-queda-en-construcción).
+
 Desde 1980 el mundo registra alrededor de 100 ciclones tropicales por temporada
 y esa cifra casi no se mueve. Lo que cambió es la composición: en los años 80
 uno de cada diez alcanzaba categoría 4 o 5; desde los 90 son cerca de uno de
@@ -40,12 +45,15 @@ más fuertes, y la década en curso aparece más baja porque está incompleta.
 
 IBTrACS v04r01 (NOAA NCEI, DOI 10.25921/82ty-9e16), archivo
 `ibtracs.since1980.list.v04r01.csv` (144 MB), procesado por
-`scripts/preprocess.py`. Se descartan las ramas secundarias (`TRACK_TYPE` con
-`spur`) y se conservan solo las horas sinópticas 00/06/12/18 UTC, porque desde
-~2010 algunas agencias interpolan a 3 h y sin ese filtro las temporadas
-recientes aportarían el doble de puntos. El viento es `USA_WIND` con respaldo
-`WMO_WIND`. De 309.724 registros quedan 141.945, agregados a 4.827 ciclones
-(774 en categoría 4–5) y 2.208 trayectorias de ≥ 64 kt, en 4 JSON de ~3,3 MB.
+`scripts/preprocess.py`. Se conservan las temporadas **2000 en adelante**: desde
+ahí la cobertura satelital es homogénea en las siete cuencas y las temporadas se
+comparan sin corregir nada. Se descartan las ramas `spur`, y solo se conservan
+las horas sinópticas 00/06/12/18 UTC porque las de las 03/09/15/21 h son
+interpolación de IBTrACS y no reportes de agencia (verificable con
+`scripts/verificar_interpolacion.py`). El viento es `USA_WIND` con respaldo
+`WMO_WIND`. De 309.724 registros quedan 78.786, agregados a 2.741 ciclones (489
+en categoría 4–5) y 1.230 trayectorias de ≥ 64 kt. Se publican como 4 JSON y
+3 CSV (~8,4 MB), documentados columna por columna en `data/README.md`.
 
 > **Nota de implementación que vale la pena registrar:** `pandas` interpreta el
 > código de cuenca `"NA"` (Atlántico Norte) como valor ausente. Sin

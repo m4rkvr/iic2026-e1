@@ -16,16 +16,16 @@ Las preguntas son las de `docs/checklist-e1.md`.
 
 | Pregunta | Entrada de esta bitácora |
 |---|---|
-| ¿Cuál es el mensaje y por qué ese y no otro? | [Mensaje: el total plano frente al extremo que crece](#mensaje-el-total-plano-frente-al-extremo-que-crece) · [Las dos reservas van en la bajada](#las-dos-reservas-van-en-la-bajada-no-en-una-nota-al-pie) |
+| ¿Cuál es el mensaje y por qué ese y no otro? | [La ventana parte en 2000](#la-ventana-parte-en-2000-y-eso-le-quita-el-piso-al-mensaje-de-la-v1) ⚠️ · [Mensaje: el total plano frente al extremo que crece](#mensaje-el-total-plano-frente-al-extremo-que-crece) · [Las dos reservas van en la bajada](#las-dos-reservas-van-en-la-bajada-no-en-una-nota-al-pie) |
 | ¿Por qué la distribución no es un gráfico de barras? | [La distribución no es un gráfico de barras](#la-distribución-no-es-un-gráfico-de-barras) · [La cifra que sostenía «el promedio borra la cola» estaba mal](#la-cifra-que-sostenía-el-promedio-borra-la-cola-estaba-mal) |
 | ¿Por qué el eje Y parte en 0? | [Eje Y desde 0 y un solo eje por gráfico](#eje-y-desde-0-y-un-solo-eje-por-gráfico) |
 | ¿Qué codifica el sonido, exactamente? | [Tres parámetros sonoros, no volumen](#tres-parámetros-sonoros-no-volumen) · [La sonificación no distingue la década incompleta](#la-sonificación-no-distingue-la-década-incompleta-limitación-abierta) |
 | ¿Por qué la escala pentatónica? | [Sonificación cuantizada a escala pentatónica](#sonificación-cuantizada-a-escala-pentatónica) |
 | ¿Por qué los puntos de la década en curso están vacíos? | [Los grupos incompletos se marcan y se excluyen del ajuste](#los-grupos-incompletos-se-marcan-y-se-excluyen-del-ajuste) |
 | ¿Por qué el mapa agrupa por tramos? | [El mapa agrupa por tramos, no colorea punto a punto](#el-mapa-agrupa-por-tramos-no-colorea-punto-a-punto) |
-| ¿Qué filtraste de los datos y por qué? | [Los tres filtros del dataset, y qué sesgo evita cada uno](#los-tres-filtros-del-dataset-y-qué-sesgo-evita-cada-uno) |
-| ¿Qué errores encontraron procesando? | [Dos errores que borraban datos en silencio](#dos-errores-que-borraban-datos-en-silencio) |
-| ¿Qué descartaron y por qué? | [Descartes generales](#descartes-generales) y el campo **Descartado** de cada entrada |
+| ¿Qué filtraste de los datos y por qué? | [Los tres filtros del dataset, y qué sesgo evita cada uno](#los-tres-filtros-del-dataset-y-qué-sesgo-evita-cada-uno) · [La base de datos se publica como dataset](#la-base-de-datos-se-publica-como-dataset-no-como-insumo-de-esta-página) · [La ventana parte en 2000](#la-ventana-parte-en-2000-y-eso-le-quita-el-piso-al-mensaje-de-la-v1) |
+| ¿Qué errores encontraron procesando? | [Dos errores que borraban datos en silencio](#dos-errores-que-borraban-datos-en-silencio) · [El filtro de horas estaba bien, su justificación estaba mal](#el-filtro-de-horas-estaba-bien-su-justificación-estaba-mal) |
+| ¿Qué descartaron y por qué? | [Descartes generales](#descartes-generales) y el campo **Descartado** de cada entrada · [La página se rehace en grupo](#la-página-se-rehace-en-grupo-y-la-raíz-queda-en-construcción) |
 | ¿Qué suena exactamente al reproducir la tendencia? | [La sonificación no distingue la década incompleta](#la-sonificación-no-distingue-la-década-incompleta-limitación-abierta) |
 
 ---
@@ -195,26 +195,27 @@ justificación de una decisión de diseño.
 (`TRACK_TYPE` que contiene `spur`), se conservan solo las horas sinópticas
 00/06/12/18 UTC, y el viento es `USA_WIND` con respaldo `WMO_WIND`.
 
-**Por qué.** Cada filtro corrige un sesgo distinto, y el segundo es el que más
-importa para este mensaje:
+**Por qué.** Cada filtro quita un tipo distinto de registro:
 
 - Las ramas `spur` son trayectorias alternativas de la **misma** tormenta. Sin
   descartarlas, un ciclón se contaría más de una vez.
-- Desde ~2010 varias agencias reportan cada 3 h en vez de cada 6. Sin el filtro
-  de horas sinópticas, las temporadas recientes aportan el doble de puntos y
-  **todo conteo queda sesgado hacia el presente** — es decir, justo en la
-  dirección del mensaje. Un sesgo que empuja hacia la conclusión que uno quiere
-  sacar es el más peligroso de todos.
+- Las filas de las 03/09/15/21 h son **interpolación de IBTrACS, no reportes de
+  agencia**: conservarlas duplicaría cada reporte con un valor derivado de él.
+  _(La primera versión de esta entrada justificaba el filtro con un sesgo hacia
+  el presente que no existe; ver [El filtro de horas estaba bien, su
+  justificación estaba mal](#el-filtro-de-horas-estaba-bien-su-justificación-estaba-mal).)_
 - `USA_WIND` cubre mucho más que `WMO_WIND`; se usa como fuente principal y el
   segundo solo como respaldo, asumiendo y documentando la mezcla de agencias.
 
-De 309.724 registros quedan 141.945, que se agregan a 4.827 ciclones.
-Implementado en `scripts/preprocess.py:107`, `:118` y `:125`.
+De 309.724 registros quedan 78.786, que se agregan a 2.741 ciclones. (Con la
+ventana original 1980–2026 eran 141.945 y 4.827; ver [La ventana parte en
+2000](#la-ventana-parte-en-2000-y-eso-le-quita-el-piso-al-mensaje-de-la-v1).)
+Implementado en `scripts/load()` de `scripts/preprocess.py`.
 
-**Descartado.** Conservar todos los registros y corregir el sesgo después: la
-sobrerrepresentación no es uniforme entre cuencas ni entre décadas, así que no
-hay un factor único que la deshaga. Y usar solo `WMO_WIND`, que deja fuera
-demasiados ciclones.
+**Descartado.** Conservar las filas interpoladas y ponderarlas a la mitad: no son
+media observación, son cero observaciones; ponderarlas sería inventar una
+precisión que el dato no tiene. Y usar solo `WMO_WIND`, que deja fuera demasiados
+ciclones.
 
 **Responde a.** «¿Qué filtraste de los datos y por qué?»
 
@@ -276,6 +277,227 @@ todas las notas para arreglar solo la última.
 
 **Responde a.** «¿Qué codifica el sonido?» y «¿Por qué los puntos de la década
 en curso están vacíos?» — es el punto donde las dos preguntas se cruzan.
+
+---
+
+## 2026-10-02 — el repositorio pasa a ser la base de datos, y una corrección
+
+### La base de datos se publica como dataset, no como insumo de esta página
+
+**Decisión.** `data/` deja de ser «los archivos que la página lee» y pasa a ser
+una distribución para terceros: las mismas tablas también en CSV
+(`data/csv/`), un manual con el diccionario de columnas (`data/README.md`), un
+inventario con `sha256` dentro de `meta.json`, y una GitHub Action que verifica
+la copia en cada push y la regenera a pedido. Los JSON no cambiaron ni un byte.
+
+**Por qué.** Los JSON estaban optimizados para esta visualización, no para
+leerse: `tracks.json` es columnar (`{sid: {lat: [...], lon: [...]}}`) porque
+pesa la mitad que un array de objetos, y `h` guarda horas desde el inicio en vez
+de una marca de tiempo. Eso es correcto para la página y hostil para cualquiera
+que llegue de afuera: ninguna herramienta —pandas, d3.csv, RAWGraphs, Sheets—
+consume esa forma sin código intermedio. La tabla punto a punto completa
+(141.945 observaciones) ni existía como archivo: estaba implícita dentro del
+pipeline.
+
+Publicar el CSV cuesta 11,6 MB en el repositorio —2,0 MB en tránsito, porque
+Pages comprime— y elimina ese paso intermedio.
+
+Lo más caro de reproducir no son los datos, son **las cinco trampas**: la cuenca
+`NA` que `pandas` borra en silencio, las longitudes que pasan de 180 en los
+ciclones que cruzan la antimeridiana, `sshs = -1` que es depresión tropical y no
+un nulo, las temporadas provisionales que simulan una caída al final de la
+serie, y `n_landfall_pts` que cuenta puntos cerca de la costa y no recaladas.
+Dos de ellas ya nos habían costado datos borrados sin aviso (ver «Dos errores
+que borraban datos en silencio»). Van documentadas con el número exacto de filas
+que afecta cada una.
+
+**Descartado.** Un CSV único y plano con todo junto: obliga a quien solo quiera
+la tendencia por temporada a bajar 11,6 MB. Normalizar las longitudes a
+−180…180 en el origen: arreglaría los histogramas pero rompería las líneas de
+trayectoria, que es el uso principal; se documenta la conversión en una línea y
+la decisión queda del lado de quien consume. Y la regeneración mensual
+automática, que está escrita en el workflow pero comentada: un commit de bot al
+mes ensucia el historial de una entrega evaluada por su proceso.
+
+**Responde a.** «¿Qué filtraste de los datos y por qué?» — la misma pregunta de
+antes, ahora con la lista completa en un archivo que cualquiera puede auditar.
+
+---
+
+### La página se rehace en grupo, y la raíz queda en construcción
+
+**Decisión.** La raíz del sitio pasa a ser una página en blanco que dice
+«página en construcción», sin CSS ni JS propios. La V1 completa —los tres
+gráficos, el cross-filtering, la sonificación— queda congelada en
+`versions/v1/` y en el tag `v1`. Lo único que el repositorio ofrece terminado es
+la base de datos.
+
+**Por qué.** Lo que cambia no es el dataset: es **de qué se discute primero**.
+
+Con una página terminada en la raíz, el grupo hereda un mensaje ya elegido —«el
+total es plano, el extremo crece»— y nueve decisiones de diseño ya tomadas
+(pentatónica, jitter determinista, tramos en el mapa, eje desde 0). Cualquier
+conversación arranca desde «¿cambiamos esto que ya está?», que es la peor
+posición para decidir: discutir una implementación existente no es lo mismo que
+discutir qué cuentan los datos. Dejar la página en blanco devuelve esa pregunta
+al principio, donde corresponde, y con todo el grupo presente.
+
+Hay una razón de pauta además de una de método. La entrega evalúa el **proceso
+iterativo documentado** y pide que todos commiteen: un repositorio donde la
+visualización ya está lista el primer día deja al resto del grupo sin un lugar
+donde entrar que no sea retocar lo ajeno. La base de datos sí es un lugar donde
+entrar —hay once columnas, 141.945 observaciones y cinco trampas documentadas, y
+de ahí salen muchas visualizaciones distintas.
+
+Y el reparto de esfuerzo es honesto: lo difícil de reproducir de la V1 no son
+los tres gráficos, es el pipeline y las trampas que nos costaron datos borrados
+en silencio. Eso se conserva entero y es lo que se comparte.
+
+**Lo que no cambia.** Los filtros, el dataset y las decisiones ya tomadas siguen
+registradas y verificables (`scripts/verificar_cifras.py`,
+`scripts/verificar_dataset.py`). La V1 no se borra: la pauta acepta versiones
+congeladas navegables, y sigue viva en `versions/v1/` como evidencia fechada.
+Nada de lo discutido en R1 se pierde por rehacer la página.
+
+**El riesgo que asumimos.** Que la próxima versión salga **peor** que la V1.
+Rehacer no es iterar: si la V2 pierde la sonificación multidimensional o el
+cross-filtering, es una regresión, y la bitácora va a tener que explicar por qué
+se rehízo en vez de corregir. La V1 queda en `versions/v1/` justamente para que
+la comparación sea posible y la respuesta no pueda ser evasiva.
+
+**Descartado.** Borrar la V1 del repositorio: perdería la única evidencia fechada
+del proceso, que es un 25 % de la nota. Trabajar la página nueva en una rama y
+dejar la V1 en la raíz: Pages publica desde `main`, y sobre todo mantendría el
+anclaje —el grupo seguiría viendo la página vieja como el punto de partida.
+Construir la V2 encima del código de la V1: arrastra sus decisiones sin
+discutirlas, que es exactamente lo que se quiere evitar.
+
+**Responde a.** «¿Qué descartaron y por qué?» — y es el punto de partida del
+rationale de la evolución V1 → V2.
+
+---
+
+### El filtro de horas estaba bien, su justificación estaba mal
+
+**Decisión.** El filtro no se toca —se siguen conservando solo las horas
+sinópticas— pero su justificación se reescribe en los cinco lugares donde
+estaba: `README.md`, `data/README.md`, `docs/entrega-e1.md`, el comentario de
+`scripts/preprocess.py` y la entrada de arriba. Y se agrega
+`scripts/verificar_interpolacion.py`, que imprime la prueba.
+
+**Por qué.** Lo que decía la bitácora: «desde ~2010 varias agencias reportan
+cada 3 h en vez de cada 6; sin el filtro, las temporadas recientes aportan el
+doble de puntos y todo conteo queda sesgado hacia el presente». Suena razonable
+y es falso. Las filas de las 03/09/15/21 h están repartidas casi exactamente
+igual en todas las décadas:
+
+| década | filas | sinópticas | intermedias | % intermedias |
+|---|---|---|---|---|
+| 1980s | 66.479 | 33.508 | 32.971 | 49,6 % |
+| 1990s | 74.847 | 37.195 | 37.652 | 50,3 % |
+| 2000s | 62.593 | 31.378 | 31.215 | 49,9 % |
+| 2010s | 62.521 | 31.601 | 30.920 | 49,5 % |
+| 2020s | 42.140 | 21.300 | 20.840 | 49,5 % |
+
+No hay nada reciente en ellas, así que no podían sesgar hacia el presente. El
+error vino de leer el patrón de 3 h como un cambio en las prácticas de las
+agencias, cuando es algo que hace IBTrACS con todo el registro.
+
+La razón de verdad es mejor que la inventada: **esas filas no son
+observaciones**. Dos pruebas, las dos sobre el CSV crudo:
+
+- Las agencias reportan el viento en pasos de 5 kt. En hora sinóptica, el 98,8 %
+  de los valores es múltiplo de 5; en las intermedias, solo el 58,8 %. Caen
+  fuera de la rejilla en que se reporta.
+- Comparando el viento de las 03 h con el promedio de las 00 y las 06 del mismo
+  ciclón —124.408 comparaciones—, el 60,1 % coincide exactamente y el 99,9 % cae
+  a ≤ 2,5 kt, con mediana de diferencia 0. Son el punto medio de sus vecinos.
+
+Es decir: conservarlas no habría sesgado la serie hacia el presente, habría
+duplicado cada reporte con un valor calculado a partir de él. Mismo filtro, otro
+argumento — y un argumento que ahora se puede ejecutar en vez de creer.
+
+**Lo que esto enseña del método.** El error sobrevivió a dos escrituras del
+`README` y a una de la bitácora porque **era plausible y favorecía la
+conclusión**: un sesgo hacia el presente, corregido por nosotros, hacía ver el
+trabajo más cuidadoso. Las justificaciones que halagan a quien las escribe son
+las que hay que verificar primero. La regla que queda: toda afirmación numérica
+de la bitácora tiene que venir con el comando que la reproduce, como ya pasó con
+la cifra del p90 en «[La cifra que sostenía «el promedio borra la cola» estaba
+mal](#la-cifra-que-sostenía-el-promedio-borra-la-cola-estaba-mal)». Van dos.
+
+**Descartado.** Corregir la frase en silencio: el error estaba commiteado y
+fechado, y la pauta evalúa el proceso, no la apariencia de no haberse
+equivocado. Y aprovechar el hallazgo para **quitar** el filtro y quedarse con
+las 272.715 filas: duplicaría el peso de los CSV con valores interpolados y
+haría que cualquier conteo por observación contara dos veces cada reporte.
+
+**Responde a.** «¿Qué errores encontraron procesando?» — es el tercero, y el
+único que no borraba datos sino que justificaba mal una decisión correcta.
+
+---
+
+### La ventana parte en 2000, y eso le quita el piso al mensaje de la V1
+
+**Decisión.** El dataset publicado cubre **2000–2026** y no 1980–2026: 2.741
+ciclones y 78.786 observaciones en vez de 4.827 y 141.945. `--desde` es un
+parámetro, así que la ventana anterior se reproduce con una bandera, pero lo que
+el grupo va a usar como punto de partida es la ventana corta.
+
+**Por qué.** Comparabilidad. Desde ~2000 la cobertura satelital y los métodos de
+estimación de intensidad son homogéneos en las siete cuencas, así que dos
+temporadas cualesquiera se comparan sin corregir nada. La ventana 1980–2026
+obligaba a arrastrar una reserva en cada afirmación —«parte del salto puede ser
+mejor observación y no más viento»— y esa reserva estaba escrita en la bajada de
+la página precisamente porque no se podía resolver con el dato.
+
+Un efecto secundario que vale el recorte: la presión deja de ser un problema.
+`pres_mb` faltaba en el 14,5 % de las observaciones en 1980–2026; en 2000–2026
+falta en el **0,9 %**, y los ciclones sin ninguna medición de presión bajan de
+553 a 15.
+
+**Lo que esto cuesta, y es caro: el mensaje de la V1 no se sostiene con esta
+ventana.** No es una opinión, son los números —`scripts/verificar_cifras.py`:
+
+| década | ciclones | cat. 4–5 | proporción |
+|---|---|---|---|
+| 1980s | 1.033 | 104 | **10,1 %** |
+| 1990s | 1.053 | 181 | 17,2 % |
+| 2000s | 1.013 | 174 | 17,2 % |
+| 2010s | 1.006 | 198 | 19,7 % |
+| 2020s (incompleta) | 722 | 117 | 16,2 % |
+
+_(Las dos primeras filas salen de `versions/v1/data/seasons.json`, que conserva
+la ventana 1980–2026; las otras tres, de los datos publicados.)_
+
+Todo el contraste de la V1 —«en los 80 uno de cada diez, desde los 90 uno de
+cada cinco»— vive en el salto de los 80 a los 90. Dentro de 2000–2024 no hay
+tendencia detectable: ajustando la proporción por temporada, la pendiente es
++0,6 puntos por década con error estándar 1,5 (t = 0,39). La variación de una
+temporada a otra —σ = 5,2 puntos, de 10,1 % en 2022 a 29,4 % en 2015— es **nueve
+veces** la pendiente por década. Con 25 temporadas, este dato no resuelve la
+pregunta.
+
+Y el salto de los 80 a los 90 cae exactamente donde cambió la observación
+satelital. Es decir: **el contraste más vistoso era también el menos limpio.**
+Recortar en 2000 es elegir un dato que sostiene menos y lo sostiene mejor.
+
+**Lo que esta ventana sí sostiene.** El total por temporada es estable (min 87,
+mediana 100, max 118 en las 25 temporadas completas; pendiente +2,3 por década
+con error estándar 2,4). Las comparaciones entre cuencas son limpias, que es
+donde la homogeneidad paga. La variabilidad interanual es grande y real. Y las
+trayectorias permiten mirar tasa de intensificación y cercanía a tierra, que no
+dependen de comparar décadas.
+
+**Descartado.** Mantener 1980–2026 y seguir advirtiendo la reserva en la bajada:
+funciona para un mensaje ya escrito, no para un grupo que va a explorar el dato
+desde cero —la reserva habría que repetirla en cada gráfico nuevo que alguien
+haga. Y partir en 1990, que es donde la cobertura ya mejora: gana tres
+temporadas y mantiene el borde discutible adentro, que es lo que se quería
+sacar.
+
+**Responde a.** «¿Qué filtraste de los datos y por qué?» · «¿Cuál es el mensaje
+y por qué ese y no otro?» — y obliga a volver sobre la segunda.
 
 ---
 

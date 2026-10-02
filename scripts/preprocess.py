@@ -6,11 +6,18 @@ Uso:
     python3 scripts/preprocess.py --source since1980     # 144 MB, serie completa
     python3 scripts/preprocess.py --source ALL           # 332 MB, 1842-presente
 
+Escribe dos representaciones de los mismos datos: JSON compacto en data/
+(lo que consume la pagina) y CSV en data/csv/ (lo que consume cualquier
+otra herramienta: pandas, d3.csv, Observable, RAWGraphs, Tableau).
+Los nombres de columna son identicos en ambas, para que no haya traduccion.
+
 El CSV crudo se guarda en scripts/cache/ (ignorado por git) y se reutiliza.
 Fuente: NOAA NCEI, IBTrACS v04r01, DOI 10.25921/82ty-9e16
 """
 
 import argparse
+import csv
+import hashlib
 import json
 import sys
 import urllib.request
@@ -30,7 +37,7 @@ USECOLS = [
     "SID", "SEASON", "BASIN", "NAME", "ISO_TIME", "NATURE",
     "LAT", "LON", "WMO_WIND", "WMO_PRES",
     "USA_WIND", "USA_PRES", "USA_SSHS",
-    "DIST2LAND", "LANDFALL", "TRACK_TYPE",
+    "DIST2LAND", "TRACK_TYPE",
 ]
 
 BASIN_NAMES = {
@@ -49,6 +56,11 @@ CAT45_WIND_KT = 113
 DEFAULT_MIN_WIND = 64
 # Un ciclon se considera "en tierra o al borde" bajo este umbral.
 LANDFALL_DIST_KM = 50
+# Primera temporada que entra al dataset. 2000 y no 1980: desde ~2000 la
+# cobertura satelital y los metodos de estimacion son homogeneos en las siete
+# cuencas, asi que las temporadas son comparables entre si sin corregir nada.
+# Con --desde 1980 se reproduce la ventana anterior.
+DEFAULT_SINCE = 2000
 
 
 def download(source: str, cache_dir: Path) -> Path:
@@ -84,8 +96,8 @@ def download(source: str, cache_dir: Path) -> Path:
     return dest
 
 
-def load(csv_path: Path) -> pd.DataFrame:
-    """Lee el CSV y aplica los filtros de calidad."""
+def load(csv_path: Path, desde: int) -> pd.DataFrame:
+    """Lee el CSV, recorta a las temporadas >= desde y aplica los filtros."""
     # La fila 1 (indice 0 tras el header) son las unidades, no datos.
     # keep_default_na=False es obligatorio: la cuenca del Atlantico Norte se
     # codifica "NA" y pandas la leeria como valor ausente, borrando ~15% de los
@@ -112,14 +124,22 @@ def load(csv_path: Path) -> pd.DataFrame:
         df[col] = pd.to_numeric(df[col], errors="coerce")
     df = df.dropna(subset=["ISO_TIME", "LAT", "LON", "BASIN", "SEASON"])
 
-    # Horas sinopticas. IBTrACS interpola a 3 h desde ~2010 en algunas agencias;
-    # sin este filtro las temporadas recientes aportan el doble de puntos y
-    # cualquier conteo por punto queda sesgado hacia el presente.
+    # Ventana temporal. Va antes de los demas filtros para que los conteos que
+    # se reportan describan la ventana publicada y no el archivo completo.
+    df = df[df["SEASON"] >= desde]
+
+    # Solo horas sinopticas. IBTrACS publica ademas filas a las 03/09/15/21 h que
+    # son interpolacion suya, no reportes de agencia: estan en todo el registro
+    # (~50 % de las filas en cada decada, no solo en las recientes), el 98,8 % de
+    # los vientos sinopticos son multiplos de 5 kt contra el 58,8 % de los
+    # intermedios, y el 99,9 % de los valores intermedios cae a <= 2,5 kt del
+    # promedio de sus vecinos. Conservarlas duplicaria cada reporte con un valor
+    # derivado de el. La prueba: scripts/verificar_interpolacion.py
     df = df[df["ISO_TIME"].dt.hour.isin([0, 6, 12, 18])]
 
     # USA_WIND cubre mucho mas que WMO_WIND; se documenta la mezcla de agencias.
     for col in ("USA_WIND", "WMO_WIND", "USA_PRES", "WMO_PRES",
-                "USA_SSHS", "DIST2LAND", "LANDFALL"):
+                "USA_SSHS", "DIST2LAND"):
         df[col] = pd.to_numeric(df[col], errors="coerce")
 
     df["wind"] = df["USA_WIND"].fillna(df["WMO_WIND"])
@@ -157,7 +177,7 @@ def build_storms(df: pd.DataFrame) -> pd.DataFrame:
     storms["peak_lon"] = peak["LON"]
     storms["peak_time"] = peak["ISO_TIME"]
 
-    # LANDFALL es la distancia al proximo cruce de costa: 0 significa en tierra.
+    # DIST2LAND es la distancia a la costa mas cercana: 0 significa en tierra.
     landfalls = df.assign(onland=df["DIST2LAND"] <= LANDFALL_DIST_KM)
     storms["n_landfall_pts"] = landfalls.groupby("SID")["onland"].sum()
 
@@ -224,6 +244,81 @@ def write_json(path: Path, obj) -> float:
     return path.stat().st_size / 1024
 
 
+def build_observations(df: pd.DataFrame) -> pd.DataFrame:
+    """Tabla punto a punto: una fila por observacion 6-horaria.
+
+    Es la tabla mas cruda que publicamos, y la unica que permite reconstruir
+    cualquiera de las otras dos. Repite season/basin/name en cada fila a
+    proposito: se puede graficar sin hacer ningun join.
+    """
+    out = pd.DataFrame({
+        "sid": df["SID"],
+        "iso_time": df["ISO_TIME"].dt.strftime("%Y-%m-%dT%H:%M:%SZ"),
+        "season": df["SEASON"].astype(int),
+        "basin": df["BASIN"],
+        "name": df["NAME"].replace({"NOT_NAMED": "SIN NOMBRE",
+                                    "UNNAMED": "SIN NOMBRE"}),
+        "nature": df["NATURE"],
+        "lat": df["LAT"].round(2),
+        "lon": df["LON"].round(2),
+        "wind_kt": df["wind"].astype(int),
+        # Int64 (no int) porque pres_mb tiene huecos: con float se escribiria
+        # "1000.0" y cualquier lector lo tomaria por una medida con decimales.
+        "pres_mb": df["pres"].astype("Int64"),
+        "sshs": df["USA_SSHS"].astype("Int64"),
+        "dist2land_km": df["DIST2LAND"].astype("Int64"),
+        # true/false en minuscula, igual que en los otros dos CSV y que en JSON.
+        "provisional": df["provisional"].map({True: "true", False: "false"}),
+    })
+    return out.sort_values(["sid", "iso_time"])
+
+
+def write_csv(path: Path, rows: list) -> float:
+    """Escribe una lista de dicts como CSV y devuelve el tamano en KB.
+
+    Los booleanos van como true/false (no True/False): es lo que esperan
+    d3.autoType y cualquier parser de JS, y pandas los lee igual de bien.
+    """
+    path.parent.mkdir(parents=True, exist_ok=True)
+    with open(path, "w", encoding="utf-8", newline="") as fh:
+        w = csv.DictWriter(fh, fieldnames=list(rows[0].keys()),
+                           lineterminator="\n")
+        w.writeheader()
+        for r in rows:
+            w.writerow({k: ("true" if v is True else
+                            "false" if v is False else
+                            "" if v is None else v)
+                        for k, v in r.items()})
+    return path.stat().st_size / 1024
+
+
+def sha256(path: Path) -> str:
+    """Huella del archivo, para que un consumidor detecte si cambio."""
+    h = hashlib.sha256()
+    with open(path, "rb") as fh:
+        while chunk := fh.read(1 << 20):
+            h.update(chunk)
+    return h.hexdigest()
+
+
+def inventory(data_dir: Path, names: list, rows: dict) -> list:
+    """Inventario de la distribucion: que archivos hay, cuantas filas y su hash.
+
+    Va dentro de meta.json para que otro grupo pueda versionar su copia y
+    saber, sin descargar de nuevo, si los datos cambiaron.
+    """
+    out = []
+    for name in names:
+        path = data_dir / name
+        out.append({
+            "file": name,
+            "bytes": path.stat().st_size,
+            "rows": rows.get(name),
+            "sha256": sha256(path),
+        })
+    return out
+
+
 def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__,
                                  formatter_class=argparse.RawDescriptionHelpFormatter)
@@ -231,6 +326,9 @@ def main() -> int:
                     choices=["last3years", "since1980", "ALL",
                              "NA", "EP", "WP", "NI", "SI", "SP", "SA"],
                     help="archivo IBTrACS a usar (default: last3years)")
+    ap.add_argument("--desde", type=int, default=DEFAULT_SINCE, metavar="TEMPORADA",
+                    help=f"primera temporada que se incluye "
+                         f"(default: {DEFAULT_SINCE})")
     ap.add_argument("--min-wind", type=int, default=DEFAULT_MIN_WIND,
                     help=f"viento min. en kt para incluir trayectoria "
                          f"(default: {DEFAULT_MIN_WIND})")
@@ -240,11 +338,11 @@ def main() -> int:
     data_dir = root / "data"
     data_dir.mkdir(exist_ok=True)
 
-    print(f"IBTrACS v04r01 — fuente: {args.source}")
+    print(f"IBTrACS v04r01 — fuente: {args.source} · temporadas >= {args.desde}")
     csv_path = download(args.source, root / "scripts" / "cache")
 
     print("  leyendo y filtrando…")
-    df, rows_read = load(csv_path)
+    df, rows_read = load(csv_path, args.desde)
     print(f"  {rows_read:,} filas leidas -> {len(df):,} tras filtros")
 
     storms = build_storms(df)
@@ -290,9 +388,11 @@ def main() -> int:
             int(x) for x in storms.loc[storms["provisional"], "season"].unique()
         ),
         "seasons": [int(storms["season"].min()), int(storms["season"].max())],
+        "season_min": int(args.desde),
         "filters": [
+            f"solo temporadas >= {args.desde} (cobertura satelital homogenea)",
             "se descartan ramas secundarias (TRACK_TYPE con 'spur')",
-            "hora sinoptica 00/06/12/18 UTC (se descarta interpolacion a 3 h)",
+            "hora sinoptica 00/06/12/18 UTC (las filas intermedias son interpolacion de IBTrACS, no reportes de agencia)",
             "viento = USA_WIND con respaldo WMO_WIND",
             f"tracks.json solo ciclones con viento max >= {args.min_wind} kt",
         ],
@@ -305,17 +405,42 @@ def main() -> int:
         "seasons.json": write_json(data_dir / "seasons.json", seasons),
         "storms.json": write_json(data_dir / "storms.json", storms_out),
         "tracks.json": write_json(data_dir / "tracks.json", tracks),
-        "meta.json": write_json(data_dir / "meta.json", meta),
     }
+
+    # Las mismas tablas en CSV, para quien no quiera parsear JSON anidado.
+    # observations.csv es la unica salida que no tiene equivalente JSON: es la
+    # tabla punto a punto completa, de la que se derivan las otras dos.
+    obs = build_observations(df)
+    obs_path = data_dir / "csv" / "observations.csv"
+    obs_path.parent.mkdir(parents=True, exist_ok=True)
+    obs.to_csv(obs_path, index=False, lineterminator="\n")
+    sizes["csv/observations.csv"] = obs_path.stat().st_size / 1024
+    sizes["csv/storms.csv"] = write_csv(data_dir / "csv" / "storms.csv",
+                                        storms_out)
+    sizes["csv/seasons.csv"] = write_csv(data_dir / "csv" / "seasons.csv",
+                                         seasons)
+
+    # El inventario va al final: necesita los archivos ya escritos para hashearlos.
+    # meta.json queda fuera del inventario — no puede contener su propio hash.
+    meta["files"] = inventory(
+        data_dir,
+        ["seasons.json", "storms.json", "tracks.json",
+         "csv/seasons.csv", "csv/storms.csv", "csv/observations.csv"],
+        {"seasons.json": len(seasons), "csv/seasons.csv": len(seasons),
+         "storms.json": len(storms_out), "csv/storms.csv": len(storms_out),
+         "tracks.json": len(tracks), "csv/observations.csv": len(obs)},
+    )
+    sizes["meta.json"] = write_json(data_dir / "meta.json", meta)
 
     print("Resumen (pegar en docs/entrega-e1.md):")
     print(f"  temporadas       {meta['seasons'][0]}–{meta['seasons'][1]}")
     print(f"  ciclones         {len(storms_out):,}")
     print(f"  cat. 4-5         {sum(s['cat45'] for s in storms_out):,}")
     print(f"  trayectorias     {len(tracks):,} (>= {args.min_wind} kt)")
+    print(f"  observaciones    {len(obs):,}")
     print(f"  cuencas          {', '.join(sorted(storms['basin'].unique()))}")
     for name, kb in sizes.items():
-        print(f"  data/{name:<14} {kb:8.1f} KB")
+        print(f"  data/{name:<22} {kb:9.1f} KB")
     return 0
 
 

@@ -7,8 +7,8 @@
 # El tag es la prueba verificable del historial; la carpeta deja que cualquiera
 # abra la version antigua en GitHub Pages sin clonar el repositorio.
 #
-# Se copia tambien data/: unos pocos MB por version, a cambio de que cada una
-# siga funcionando aunque el esquema de los JSON cambie despues.
+# Se copian tambien los JSON de data/: unos pocos MB por version, a cambio de
+# que cada una siga funcionando aunque el esquema cambie despues.
 set -euo pipefail
 
 if [ $# -ne 1 ]; then
@@ -26,9 +26,17 @@ if [ -d "$DEST" ]; then
   rm -rf "$DEST"
 fi
 
-mkdir -p "$DEST"
+mkdir -p "$DEST/data"
 cp "$ROOT/index.html" "$DEST/"
-cp -r "$ROOT/css" "$ROOT/js" "$ROOT/data" "$DEST/"
+# css/ y js/ se copian si existen: mientras la pagina esta en construccion la
+# raiz no los tiene, y el script no tiene por que caerse por eso.
+for dir in css js; do
+  [ -d "$ROOT/$dir" ] && cp -r "$ROOT/$dir" "$DEST/" || echo "  (sin $dir/)"
+done
+# Solo los JSON: son los que la pagina lee. data/csv/ se queda fuera a
+# proposito — es la distribucion para terceros, no la necesita la copia
+# congelada, y son 12 MB por version.
+cp "$ROOT"/data/*.json "$DEST/data/"
 
 # La etiqueta de version que la pagina muestra en el encabezado.
 sed -i "s|id=\"version-tag\">[^<]*<|id=\"version-tag\">${VER^^}<|" "$DEST/index.html"

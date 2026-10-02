@@ -3,182 +3,26 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Los ciclones no son más; los fuertes son más frecuentes · InfoVis IIC2026</title>
-<meta name="description" content="El número de ciclones tropicales por temporada es estable desde 1980; la proporción que alcanza categoría 4-5 no lo es. Visualización interactiva y sonificada sobre IBTrACS v04r01 (NOAA NCEI).">
-<link rel="stylesheet" href="css/style.css">
-<!-- Librerias recomendadas por el curso, con version fija: una actualizacion
-     silenciosa del CDN no puede romper una version ya entregada. -->
-<script defer src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>
-<script defer src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.js"></script>
+<title>Página en construcción · InfoVis IIC2026</title>
+<meta name="description" content="Visualización en construcción. Los datos (IBTrACS v04r01, 2000-2026) están en data/, documentados en data/README.md.">
+<!-- Sin dependencias y sin CSS aparte: la pagina tiene que seguir funcionando
+     aunque el resto del repositorio este a medio reescribir.
+     Los datos estan en data/ y la V1 sigue navegable en versions/v1/, pero no
+     se enlazan: la pantalla queda en blanco a proposito. -->
+<style>
+  html { color-scheme: light; }
+  body {
+    margin: 0; min-height: 100vh;
+    display: flex; align-items: center; justify-content: center;
+    padding: 2rem;
+    background: #fff; color: #111;
+    font: 400 clamp(1.25rem, 4vw, 1.75rem)/1.4 system-ui, -apple-system, "Segoe UI", sans-serif;
+    text-align: center;
+  }
+  h1 { margin: 0; font-size: inherit; font-weight: 400; }
+</style>
 </head>
 <body>
-<div class="wrap">
-
-  <header class="site">
-    <div class="header-top">
-      <div>
-        <p class="eyebrow">InfoVis IIC2026 · Entrega 1 · versión <strong id="version-tag">V1</strong></p>
-        <h1>Los ciclones no son más;<br>los fuertes son más frecuentes</h1>
-        <p class="lede" id="lede">
-          Desde 1980 el mundo registra alrededor de <strong>100 ciclones
-          tropicales por temporada</strong>, y esa cifra casi no se mueve. Lo que
-          cambió es la composición: en los años 80 uno de cada diez alcanzaba
-          <strong>categoría 4 o 5</strong>; desde los 90 son cerca de uno de cada
-          cinco. El total es plano, el extremo no.
-        </p>
-        <p class="lede small">
-          Dos reservas que el gráfico deja ver y conviene tener presentes: parte
-          del salto de los años 80 a los 90 refleja mejores satélites y no solo
-          ciclones más fuertes, y la década en curso aparece más baja porque está
-          incompleta, no porque la tendencia se haya revertido.
-        </p>
-      </div>
-      <button id="theme-toggle" type="button" aria-label="Cambiar entre tema claro y oscuro">◐ Tema</button>
-    </div>
-  </header>
-
-  <!-- Aviso de datos provisionales: IBTrACS marca las temporadas recientes como
-       PROVISIONAL hasta el reanalisis. Decirlo es parte de la honestidad de los
-       datos, no una nota al pie. -->
-  <div class="notice" id="provisional-notice" hidden></div>
-
-  <dl class="stats" id="stats" aria-label="Cifras generales de la selección actual"></dl>
-
-  <div class="controls" role="group" aria-label="Filtros y controles">
-    <div class="control">
-      <label for="basin">Cuenca</label>
-      <select id="basin">
-        <option value="ALL">Todas las cuencas</option>
-      </select>
-    </div>
-
-    <div class="control">
-      <label id="gran-label">Agrupar por</label>
-      <div class="segmented" role="group" aria-labelledby="gran-label">
-        <button type="button" id="gran-season" aria-pressed="false">Temporada</button>
-        <button type="button" id="gran-decade" aria-pressed="true">Década</button>
-      </div>
-    </div>
-
-    <div class="spacer"></div>
-
-    <div class="control">
-      <button type="button" id="sound-toggle" aria-pressed="false"
-              aria-label="Activar o desactivar el sonido">🔇 Sonido</button>
-      <button type="button" class="primary" id="play-trend" disabled>
-        ▶ Escuchar la tendencia
-      </button>
-      <button type="button" id="clear" disabled>Limpiar selección</button>
-    </div>
-  </div>
-
-  <!-- 1. VISTA GENERAL — el mensaje se lee sin interactuar -------------- -->
-  <section class="card" aria-labelledby="h-trend">
-    <div class="card-head">
-      <h2 id="h-trend">¿Qué proporción de ciclones llega a categoría 4–5?</h2>
-      <span class="small muted" id="trend-scope"></span>
-    </div>
-    <p class="card-note">
-      Cada punto claro es una temporada; la línea une los promedios del grupo.
-      El eje vertical parte en 0 % — sin truncar — para que la pendiente sea la
-      pendiente real y no una amplificada por el recorte. Los grupos con
-      marcador vacío no están completos y no son comparables con el resto.
-    </p>
-    <div id="plot-trend" class="plot"></div>
-    <div class="legend" id="trend-legend"></div>
-    <details class="table-view">
-      <summary>Ver los datos como tabla</summary>
-      <div class="table-scroll" id="table-trend"></div>
-    </details>
-  </section>
-
-  <div class="grid two" style="margin-top:var(--gap)">
-
-    <!-- 2. DISTRIBUCION — por que el promedio no basta ----------------- -->
-    <section class="card" aria-labelledby="h-dist">
-      <div class="card-head">
-        <h2 id="h-dist">La cola derecha se corre</h2>
-      </div>
-      <p class="card-note">
-        Un ciclón por marca: su viento máximo sostenido. Se muestra la
-        distribución completa y no un promedio en barras, porque el mensaje vive
-        justamente en el extremo derecho, que un promedio esconde. La caja marca
-        los cuartiles y la mediana. El best-track reporta el viento en escalones
-        de 5 kt: los puntos se reparten dentro de su propio escalón para que se
-        lea la densidad, y el valor exacto aparece al pasar el cursor.
-      </p>
-      <div id="plot-dist" class="plot"></div>
-      <div class="legend" id="dist-legend"></div>
-    </section>
-
-    <!-- 4. DETALLE — details on demand -------------------------------- -->
-    <section class="card" aria-labelledby="h-detail" id="detail">
-      <div class="card-head">
-        <h2 id="h-detail">Un ciclón</h2>
-        <span class="small muted" id="detail-nav"></span>
-      </div>
-      <div id="detail-body">
-        <p class="empty">
-          Elige una trayectoria en el mapa, o una marca en la distribución,
-          para escucharla y ver sus cifras.
-        </p>
-      </div>
-    </section>
-  </div>
-
-  <!-- 3. MAPA — donde ocurre ------------------------------------------ -->
-  <section class="card" aria-labelledby="h-map" style="margin-top:var(--gap)">
-    <div class="card-head">
-      <h2 id="h-map">Dónde ocurren</h2>
-      <span class="small muted" id="map-scope"></span>
-    </div>
-    <p class="card-note">
-      Trayectorias de los ciclones que alcanzaron al menos fuerza de huracán
-      (64 kt). El color agrupa cada ciclón por la categoría que llegó a tocar,
-      con una rampa de un solo tono: más contraste es más intenso. Al elegir uno
-      se dibujan sus puntos cada 6 horas.
-    </p>
-    <div id="plot-map" class="plot"></div>
-    <div class="legend" id="map-legend"></div>
-  </section>
-
-  <p class="small muted" style="margin-top:0.9rem">
-    Teclado: <span class="kbd">←</span> <span class="kbd">→</span> recorren los
-    ciclones de la selección · <span class="kbd">espacio</span> reproduce la
-    trayectoria · <span class="kbd">Esc</span> limpia la selección.
-  </p>
-
-  <footer class="site">
-    <div class="foot-grid">
-      <div>
-        <h3>Origen de los datos</h3>
-        <p id="meta-source">Cargando…</p>
-      </div>
-      <div>
-        <h3>Procesamiento aplicado</h3>
-        <ul id="meta-filters"></ul>
-      </div>
-      <div>
-        <h3>Sobre esta página</h3>
-        <p>
-          Entrega E1 del curso
-          <a href="https://infovis.alessiobellino.com/" target="_blank" rel="noopener">InfoVis IIC2026</a>.
-          Gráficos con Plotly.js, sonificación con Tone.js.
-        </p>
-        <p>
-          Producida con asistencia de IA (Claude) para el andamiaje de código,
-          declarada según la política del curso. Las decisiones de diseño y su
-          justificación están en <code>docs/decisiones.md</code>.
-        </p>
-      </div>
-    </div>
-  </footer>
-</div>
-
-<script src="js/data.js"></script>
-<script src="js/state.js"></script>
-<script src="js/sonify.js"></script>
-<script src="js/charts.js"></script>
-<script src="js/main.js"></script>
+  <h1>Página en construcción</h1>
 </body>
 </html>

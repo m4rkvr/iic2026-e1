@@ -1,0 +1,78 @@
+# Dos cosas, con el mismo script que se corre en local:
+#
+#   verificar  — en cada push: los archivos de data/ cuadran con los sha256 de
+#                meta.json, y las cifras que cita la pagina se recalculan desde
+#                los datos. No descarga nada, tarda ~20 s.
+#   regenerar  — a mano (Actions -> datos -> Run workflow): baja IBTrACS de NOAA,
+#                reconstruye todo y commitea si cambio algo.
+#
+# Para otro grupo que forkee el repo: ambos jobs funcionan sin configurar nada.
+name: datos
+
+on:
+  push:
+    paths: ["data/**", "scripts/**", ".github/workflows/datos.yml"]
+  pull_request:
+    paths: ["data/**", "scripts/**"]
+  workflow_dispatch:
+    inputs:
+      source:
+        description: "Archivo IBTrACS a reconstruir"
+        type: choice
+        default: since1980
+        options: [since1980, last3years, ALL]
+  # Regeneracion mensual, desactivada a proposito: este repo es una entrega
+  # evaluada y un commit de bot al mes ensucia el historial que se revisa.
+  # Para activarla, descomentar las dos lineas (dia 1, 07:00 UTC).
+  # schedule:
+  #   - cron: "0 7 1 * *"
+
+jobs:
+  verificar:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: python -m pip install --quiet pandas
+      - name: Los datos cuadran con meta.json
+        run: python3 scripts/verificar_dataset.py
+      - name: Las cifras de la pagina se recalculan
+        run: python3 scripts/verificar_cifras.py
+
+  regenerar:
+    if: github.event_name == 'workflow_dispatch' || github.event_name == 'schedule'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: python -m pip install --quiet pandas
+
+      # inputs.source esta vacio cuando dispara el cron; since1980 es lo publicado.
+      - name: Reconstruir desde NOAA
+        run: python3 scripts/preprocess.py --source "${{ inputs.source || 'since1980' }}"
+
+      - name: Verificar antes de commitear
+        run: |
+          python3 scripts/verificar_dataset.py
+          python3 scripts/verificar_cifras.py
+
+      - name: Commitear si cambio algo
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          # meta.json cambia siempre (trae downloaded_utc), asi que no sirve para
+          # decidir: se mira si cambio algun dato de verdad.
+          if git diff --quiet -- data/seasons.json data/storms.json data/tracks.json data/csv; then
+            echo "Los datos no cambiaron. No se commitea (meta.json vuelve atras)."
+            git checkout -- data/meta.json
+            exit 0
+          fi
+          git add data
+          git commit -m "Regenera el dataset desde IBTrACS (${{ inputs.source || 'since1980' }})"
+          git push

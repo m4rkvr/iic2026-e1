@@ -1,7 +1,7 @@
 # Checklist E1 — estado y lo que falta
 
 **Entrega: jueves 22 de octubre de 2026, 23:59.**
-Última actualización: 2026-09-28 · quedan **24 días**.
+Última actualización: 2026-10-02 · quedan **20 días**.
 
 ---
 
@@ -20,32 +20,43 @@
 
 ## ✅ Lo que ya está
 
+La raíz del sitio quedó **en construcción** el 02-10: la página se rehace en
+grupo a partir de la base de datos (ver
+[decisiones](decisiones.md#la-página-se-rehace-en-grupo-y-la-raíz-queda-en-construcción)).
+Por eso esta tabla separa lo que es de la **V1 congelada** de lo que es de la
+**base de datos**, que son dos entregables distintos.
+
 | Ítem | Estado |
 |---|---|
-| V1 funcionando, publicada en GitHub Pages | ✅ https://m4rkvr.github.io/iic2026-e1/ |
 | Repositorio público con historial | ✅ https://github.com/m4rkvr/iic2026-e1 |
+| Base de datos publicada y documentada | ✅ IBTrACS v04r01, ventana **2000–2026**: 2.741 ciclones, 78.786 observaciones · `data/README.md` + `data/PROMPT.md` |
+| Datos en CSV y JSON, cargables por URL | ✅ `data/csv/` · `Access-Control-Allow-Origin: *` |
+| Datos verificables sin confiar en nadie | ✅ `verificar_dataset.py` (sha256) · `verificar_cifras.py` |
+| CI que verifica y regenera los datos | ✅ `.github/workflows/datos.yml` |
 | Tag `v1` verificable | ✅ |
-| Versión navegable congelada | ✅ `/versions/v1/` |
-| Dataset procesado y documentado | ✅ IBTrACS v04r01, 4.827 ciclones 1980–2026 |
-| Mensaje principal definido | ✅ el total plano frente al extremo que crece |
-| Sonificación multidimensional | ✅ tono + ritmo + timbre (no solo volumen) |
-| Interacción más allá del Plotly por defecto | ✅ cross-filtering, teclado, estado compartido |
-| Sin ejes truncados / dobles ejes / 3D | ✅ |
-| No se apoya solo en barras | ✅ y está justificado |
-| Bitácora de decisiones iniciada | ✅ `docs/decisiones.md`, 13 entradas |
+| V1 navegable congelada | ✅ `/versions/v1/` ([en vivo](https://m4rkvr.github.io/iic2026-e1/versions/v1/)) |
+| Sonificación multidimensional | ✅ **en la V1** · tono + ritmo + timbre. Por rehacer |
+| Interacción más allá del Plotly por defecto | ✅ **en la V1** · cross-filtering, teclado, estado compartido. Por rehacer |
+| Sin ejes truncados / dobles ejes / 3D | ✅ **en la V1** |
+| No se apoya solo en barras | ✅ **en la V1**, y está justificado |
+| Mensaje principal | 🔴 **el de la V1 ya no se sostiene**: con la ventana 2000–2026 no hay tendencia detectable en la proporción de cat. 4–5 (+0,6 pp/década, EE 1,5). Hay que redefinirlo en grupo sobre el dato nuevo |
+| Bitácora de decisiones | ✅ `docs/decisiones.md`, 16 entradas (3 son errores propios documentados) |
 | Plantilla del documento | ✅ `docs/entrega-e1.md` |
 | Protocolo de thinking aloud | ✅ `docs/hoja-observador.md` |
 
-**Esto cubre bien el 15 % de "implementación final" y el punto de partida del
-25 % de proceso iterativo. El resto — el 85 % — es trabajo de las próximas
-semanas, y casi nada de él es código.**
+**Ojo con lo que esto implica para la nota.** El 25 % de proceso iterativo tiene
+su punto de partida cubierto y fechado, y la base de datos está terminada. Pero
+el 15 % de "implementación final" **ya no está cubierto por la raíz del sitio**:
+depende de la página que el grupo construya en los próximos 20 días. La V1 es la
+red de seguridad —existe, funciona y está fechada—, no el entregable final.
 
 ---
 
 ## ❌ Lo que falta, por peso en la nota
 
 ### Proceso iterativo documentado — 25 %
-- ☐ **V2** (tras R1) — commit + tag `v2` + `bash scripts/freeze.sh v2`
+- ☐ **V2** (tras R1) — commit + tag `v2` + `bash scripts/freeze.sh v2`.
+  Es la página nueva construida en grupo sobre `data/`, no un retoque de la V1
 - ☐ **V3** (tras R2 + usuarios) — commit + tag `v3` + freeze
 - ☐ **V4** (tras R3) — commit + tag `v4` + freeze
 - ☐ Capturas de pantalla de cada versión
@@ -63,7 +74,10 @@ semanas, y casi nada de él es código.**
 > "Porque se veía mejor" no es un rationale válido.
 
 ### Revisiones R1, R2, R3 — 15 %
-- ☐ **R1** (docente) — llegar con la V1 corriendo + 2–3 preguntas de diseño concretas
+- ☐ **R1** (docente) — llegar con la V1 corriendo + 2–3 preguntas de diseño concretas.
+  **Ojo:** la V1 ya no está en la raíz. Abre
+  `https://m4rkvr.github.io/iic2026-e1/versions/v1/` antes de entrar — la raíz
+  dice «página en construcción»
 - ☐ **R2** (entre pares, presencial y supervisada)
 - ☐ **R3** (docente) — última antes de la V4
 - ☐ Registrar en el documento: qué dijeron, qué adoptamos, **qué descartamos y por qué**
@@ -72,9 +86,14 @@ semanas, y casi nada de él es código.**
 > aceptarlas todas sin criterio, no.
 
 ### Implementación final — 15 %
-- ✅ Funciona en GitHub Pages
-- ✅ Coherencia entre mensaje y forma
+- ☐ **Construir la página nueva** sobre `data/` — la raíz está en construcción
+  desde el 02-10 y esta parte de la nota depende de ella
+- ☐ Que funcione en GitHub Pages (la V1 ya lo hace, desde `/versions/v1/`)
+- ☐ Coherencia entre mensaje y forma — con el mensaje que el grupo redefina
 - ☐ Que siga siendo cierto en la V4 (revisar al final, no asumir)
+- ☐ No perder lo que la V1 ya tenía: sonificación multidimensional, interacción
+  más allá del Plotly por defecto, nada de ejes truncados ni 3D. Si la V2 pierde
+  algo de eso, es una **regresión** y hay que justificarla en la bitácora
 
 ### Feedback al otro grupo — 10 %
 - ☐ El proyecto evaluado (≤5 líneas)
@@ -120,15 +139,21 @@ Este proyecto se construyó con asistencia de IA, y la pauta dice explícitament
 que "la parte difícil ya no es mérito". Justamente por eso el dominio individual
 es lo que se evalúa. Cada integrante debería poder explicar:
 
-1. **¿Cuál es el mensaje y por qué ese y no otro?** — El conteo por temporada
-   oscila entre 87 y 118 sin tendencia; la proporción de cat. 4–5 pasa de 10,1 %
-   en los 80 a 19,7 % en los 2010. El titular original decía "los ciclones más
-   fuertes se están volviendo más fuertes" y se cambió porque la serie se
-   estanca después de los 90.
+1. **¿Cuál es el mensaje y por qué ese y no otro?** — **Pregunta abierta: hay
+   que llegar a R1 con una respuesta del grupo.** Lo que se puede decir hoy: el
+   conteo por temporada oscila entre 87 y 118 sin tendencia (pendiente +2,3 por
+   década, EE 2,4). La proporción de cat. 4–5 **no** tiene tendencia detectable
+   en la ventana publicada (2000–2024: +0,6 pp/década, EE 1,5, t = 0,39), y la
+   variación interanual —10,1 % en 2022 contra 29,4 % en 2015— es nueve veces la
+   pendiente por década. La V1 afirmaba un aumento apoyándose en el salto de los
+   80 (10,1 %) a los 90 (17,2 %), que es justo donde cambió la observación
+   satelital: por eso la ventana se recortó a 2000 y el mensaje volvió a estar
+   abierto.
 2. **¿Por qué la distribución no es un gráfico de barras?** — Porque la mediana
-   del viento **no se mueve** (55 · 60 · 55 · 60 · 55 kt por década) mientras el
-   percentil 90 sube de 114 a 130 kt. Lo que crece es la cola derecha, y una
-   barra con el promedio la borra.
+   del viento **no se mueve** (55 · 60 · 55 kt en 2000s · 2010s · 2020s) y el
+   p90 tampoco mucho (125 · 130 · 125 kt): lo que hay es dispersión, no un
+   promedio que se corra. Una barra con el promedio borra justamente eso. _(En
+   la ventana 1980–2026 de la V1 el p90 iba de 114 a 130 kt.)_
 3. **¿Por qué el eje Y parte en 0?** — La serie se mueve entre 10 % y 20 %:
    truncada se vería mucho más dramática. Es el error que la pauta nombra.
 4. **¿Qué codifica el sonido, exactamente?** — Tendencia: tono ← % cat. 4–5,
@@ -144,12 +169,19 @@ es lo que se evalúa. Cada integrante debería poder explicar:
    Colorear punto a punto exigía 87.295 marcadores SVG y cuelga el navegador; y
    los tramos de Saffir-Simpson son categorías *ordenadas*, así que una rampa
    ordinal de un solo tono las codifica mejor que un gradiente continuo.
-8. **¿Qué filtraron de los datos y por qué?** — Ramas `spur`, horas sinópticas
-   (desde ~2010 se interpola a 3 h y sesgaría hacia el presente), viento
-   `USA_WIND` con respaldo `WMO_WIND`.
-9. **¿Qué errores encontraron procesando los datos?** — `pandas` lee la cuenca `"NA"`
-   (Atlántico Norte) como valor ausente; y filtrar por `TRACK_TYPE == "main"`
-   borraba 2025–2026 completas porque llegan marcadas `PROVISIONAL`.
+8. **¿Qué filtraron de los datos y por qué?** — Ramas `spur` (duplican el mismo
+   evento), solo horas sinópticas (las filas de las 03/09/15/21 h son
+   interpolación de IBTrACS, no reportes: el 99,9 % cae a ≤ 2,5 kt del promedio
+   de sus vecinos), **temporadas 2000+** (desde ahí la cobertura satelital es
+   homogénea en las siete cuencas) y viento `USA_WIND` con respaldo `WMO_WIND`.
+   De 309.724 registros quedan 78.786, en 2.741 ciclones.
+9. **¿Qué errores encontraron procesando los datos?** — Tres. `pandas` lee la
+   cuenca `"NA"` (Atlántico Norte) como valor ausente; filtrar por
+   `TRACK_TYPE == "main"` borraba 2025–2026 completas porque llegan marcadas
+   `PROVISIONAL`; y el filtro de horas estaba **bien justificado al revés** —
+   decíamos que evitaba un sesgo hacia el presente, y las filas interpoladas son
+   ~50 % en todas las décadas. Los tres están en la bitácora, con el comando que
+   los reproduce.
 10. **¿Qué descartaron y por qué?** — Ver `docs/decisiones.md` § descartes.
 11. **¿Qué suena exactamente al reproducir la tendencia?** — C3 – C5 – C5 – A5 –
     A4, una nota cada 800 ms. La última baja porque la década está incompleta:
@@ -192,9 +224,13 @@ es lo que se evalúa. Cada integrante debería poder explicar:
 
 Son las dudas reales que quedaron abiertas en la V1:
 
-1. En el mapa, 2.208 trayectorias superpuestas hacen ilegible la rampa de
+1. **La ventana.** Partir en 2000 da temporadas comparables pero deja el dato
+   sin tendencia que mostrar; partir en 1980 recupera el contraste 10 % → 17 %
+   pero el salto cae donde cambió la observación satelital. ¿Cuál de los dos
+   problemas es el aceptable en una visualización de divulgación?
+2. En el mapa, 1.230 trayectorias superpuestas hacen ilegible la rampa de
    intensidad. ¿Conviene facetar por cuenca, o filtrar por defecto a una década?
-2. La sonificación de la tendencia recorre 5 décadas en ~4 segundos. ¿Alcanza
+3. La sonificación de la tendencia recorre las décadas en ~4 segundos. ¿Alcanza
    para que alguien reconozca el contorno ascendente, o hay que repetirlo?
-3. El marcador vacío para la década incompleta, ¿comunica lo que queremos, o
+4. El marcador vacío para la década incompleta, ¿comunica lo que queremos, o
    hace falta algo más explícito?
