@@ -199,7 +199,7 @@ const bin=atob(SND.split(',')[1]),u=new Uint8Array(bin.length);for(let i=0;i<bin
 AC.decodeAudioData(u.buffer,buf=>{SRC=AC.createBufferSource();SRC.buffer=buf;SRC.loop=true;SRC.connect(FL);SRC.start()},()=>{})}
 function pin(el){if(el.dataset.x==null)return;el.setAttribute('transform',`translate(${el.dataset.x} ${el.dataset.y}) scale(${1/Z.k})`)}
 function applyZ(){const g=$('vp');if(!g)return;g.setAttribute('transform',`translate(${Z.x.toFixed(2)} ${Z.y.toFixed(2)}) scale(${Z.k})`);
-g.querySelectorAll('.dot').forEach(c=>c.setAttribute('r',c.dataset.r/Z.k));g.querySelectorAll('.pin').forEach(pin);
+g.querySelectorAll('.dot').forEach(c=>c.setAttribute('r',c.dataset.r*Math.pow(Z.k,.3)/Z.k));g.querySelectorAll('.pin').forEach(pin);
 $('map').classList.toggle('z1',Z.k>=2);g.querySelectorAll('.cl').forEach(l=>l.style.display=(+l.dataset.w*Z.k>=+l.dataset.n*4.2)?'':'none')}
 function clampZ(){const v=G[view];Z.x=Math.min(0,Math.max(v.W*(1-Z.k),Z.x));Z.y=Math.min(0,Math.max(v.H*(1-Z.k),Z.y))}
 function zoomAt(f,cx,cy){const s=$('map').querySelector('svg');if(!s)return;const v=G[view];let px=v.W/2,py=v.H/2;
