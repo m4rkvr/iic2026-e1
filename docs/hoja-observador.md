@@ -86,10 +86,19 @@ Para hacer **al final**, nunca antes: preguntarlas al principio le entrega la
 respuesta y arruina la observación.
 
 1. Sin volver a mirar: ¿cuál dirías que es el mensaje principal de la página?
-2. ¿Qué crees que codificaba el sonido de "Escuchar la tendencia"?
-3. ¿Y el de "Reproducir trayectoria"? ¿Notaste que cambiaba al acercarse a tierra?
-4. Los puntos de la década en curso están vacíos por dentro. ¿Qué entendiste de eso?
-5. ¿Qué significaba la línea vertical de los 113 kt?
+2. Cuando sonaba el viento, ¿qué crees que te estaba diciendo? Solo después de
+   la respuesta: ¿notaste que las ráfagas se aceleraban? ¿Y que el sonido se
+   volvía más áspero? ¿Con qué los relacionaste?
+3. La línea «Cómo suena» bajo el botón, ¿la leíste antes o después de escuchar?
+   ¿Cambió lo que oías?
+4. Al abrir la página, ¿en qué lugar del mundo estabas? ¿Qué te lo dijo: el
+   rótulo junto al pin, el minimapa o los nombres del mapa?
+5. ¿Qué significaban los números del 1 al 5 en los pines?
+6. ¿Qué significan las líneas punteadas de la curva del viento?
+
+_(Las de la V1 eran: qué codificaba «Escuchar la tendencia»; si se notaba que
+«Reproducir trayectoria» cambiaba al acercarse a tierra; qué se entendía de los
+puntos vacíos de la década en curso; y qué significaba la línea de los 113 kt.)_
 
 ---
 

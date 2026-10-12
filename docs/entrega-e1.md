@@ -95,22 +95,77 @@ _(Ver `docs/decisiones.md` § descartes.)_
 
 ## 4. R1 — revisión con el equipo docente
 
-- **Fecha:** _(…)_
-- **Estado presentado:** _(qué versión se mostró funcionando)_
+- **Fecha:** _(completar)_ — los ajustes posteriores se commitearon el 06-10
+  (`fc193c8`, «feedback_profe»).
+- **Estado presentado:** _(completar: ¿la página nueva del 05-10, `99e7ecf`?)_
 - **Preguntas de diseño que llevamos** _(2–3 concretas)_:
   1. _(…)_
   2. _(…)_
-- **Qué dijo el equipo docente:** _(…)_
-- **Qué adoptamos y por qué:** _(…)_
-- **Qué descartamos y por qué:** _(iterar no es obedecer — cada sugerencia se
-  adopta o se descarta con argumentos)_
+- **Qué dijo el equipo docente:**
+  - El profesor: _(completar)_
+  - Un ayudante, consultado por otras recomendaciones: (1) dejar de sonificar
+    con el volumen —lo peor evaluado del curso— y usar timbre o tono; (2) que el
+    mapa diga dónde está uno: al entrar, acercado, no se sabe qué lugar es.
+- **Qué adoptamos y por qué:**
+  - Sonido: el ritmo de las ráfagas codifica el viento y la aspereza, la
+    categoría; el volumen queda fijo (varía 0,2 dB, `scripts/verificar_sonido.html`).
+    No se confunden: bajo ~20 Hz una modulación se oye como pulso, y sobre eso,
+    como aspereza.
+  - Mapa: un rótulo con el país y la cuenca junto al punto de llegada a tierra,
+    un minimapa con la zona visible, y el mapa a tarjeta completa (antes se
+    recortaba en una franja, y en celular solo se veía mar).
+- **Qué descartamos y por qué:**
+  - Tono ← viento: la grabación es ruido, sin una altura que mover; habría que
+    cambiarla por un silbido sintético, y dejaría de sonar a viento.
+  - Abrir en el mundo entero: deshace abrir en el ciclón más fuerte. El
+    minimapa da el contexto sin perder el detalle.
 
 ---
 
 ## 5. V2 — primera iteración
 
-_(Mismos campos que la V1: versión · fecha · commit/tag · evidencia ·
-qué cambió ≤8 · por qué ≤12 · qué se descartó ≤5)_
+> **Borrador del 2026-10-12.** Antes de cerrarlo, el grupo tiene que decidir si
+> la V2 es solo lo que cambió después de R1 o también incluye la página nueva
+> (03-10 a 05-10). El detalle está en `docs/decisiones.md`, entradas del 03-10
+> al 12-10.
+
+| Campo | Contenido |
+|---|---|
+| **Versión** | V2 |
+| **Fecha** | _(al congelarla)_ |
+| **Commit / tag** | _(pendiente: `bash scripts/freeze.sh v2` + tag `v2`)_ |
+
+**Evidencia visual y sonora:** `docs/capturas/2026-10-12-*.png` (antes y después
+de las recomendaciones del ayudante) · _(video pendiente)_
+
+### Qué cambió _(máx. 8 líneas)_
+
+Un mapa de los 1.010 ciclones que tocaron tierra, en el punto de llegada y por
+categoría, con un panel de viento, impacto (EM-DAT) y curva del viento. Después
+de R1: abre en el ciclón más fuerte, muestra una categoría a la vez con sus
+cinco más fuertes numerados, y tiene un solo mapa con zoom libre. Sonido: el
+ritmo de las ráfagas sigue al viento y la aspereza a la categoría; el volumen ya
+no cambia. Orientación: un rótulo de país y cuenca, el lugar en el panel y un
+minimapa.
+
+### Por qué _(máx. 12 líneas)_
+
+_(Completar lo de R1.)_ Sonido: el ayudante señaló que sonificar con el volumen
+es lo peor evaluado, y la pauta pide que «el tipo de sonido cambie con el dato,
+no solo su intensidad». Ritmo y aspereza ocupan bandas de modulación que el oído
+separa (pulso bajo ~20 Hz, aspereza sobre eso), y repiten lo que hace la curva:
+el viento continuo, la categoría en escalones. Mapa: el ayudante no sabía dónde
+estaba al entrar, y las capturas lo muestran: en escritorio el único nombre a la
+vista era «Belice», y en celular se veía solo mar. El minimapa recupera la
+vista general (*overview first*) sin deshacer el abrir en el detalle.
+
+### Qué se descartó _(máx. 5 líneas)_
+
+Tono ← viento: la grabación de viento es ruido y no tiene altura que mover.
+Dejar el volumen como refuerzo: el oído lo seguiría escuchando primero.
+Abrir en el mundo entero, o con una animación del mundo al ciclón: deshace el
+abrir en el ciclón más fuerte, o es movimiento no solicitado que compite con el
+sonido.
 
 ---
 

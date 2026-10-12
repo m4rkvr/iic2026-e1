@@ -4,13 +4,51 @@ Entrega **E1** del curso
 [InfoVis IIC2026](https://infovis.alessiobellino.com/) · Pontificia Universidad
 Católica de Chile.
 
-> **La página está en construcción.** La raíz del sitio es una página en blanco
-> a propósito: la visualización se va a rehacer, en grupo, a partir de los datos
-> de este repositorio. Lo que hay terminado y usable es **la base de datos**.
+> **[La página](https://m4rkvr.github.io/iic2026-e1/)** muestra los 1.010
+> ciclones que tocaron tierra entre 2000 y 2026, cada uno en el punto donde
+> llegó a tierra y coloreado por su categoría. Al elegir uno se ven su
+> trayectoria, su viento y su impacto en las personas, y se puede escuchar cómo
+> cambió su viento.
 >
 > La primera versión sigue navegable y sin tocar en
 > [`versions/v1/`](versions/v1/) ([en vivo](https://m4rkvr.github.io/iic2026-e1/versions/v1/))
 > y en el tag `v1`.
+
+---
+
+## La página
+
+- **Filtros**, abajo a la izquierda: una categoría a la vez —con sus cinco
+  ciclones más fuertes numerados— o todas, y la temporada.
+- **Clic en un punto**: un panel con el viento máximo, muertes y afectados
+  (EM-DAT), duración, horas sobre tierra y la curva del viento con los umbrales
+  de cada categoría.
+- **Dónde estás**: junto al punto de llegada, un rótulo dice en qué país tocó
+  tierra y desde qué cuenca venía. Al acercarse aparece un minimapa arriba a la
+  derecha con la zona visible; un clic en él lleva la vista ahí.
+- **Moverse**: rueda o `+` / `−` para acercarse, arrastrar para desplazarse,
+  «Restablecer» para volver al mundo. `Esc` cierra el panel.
+
+### Cómo suena
+
+| Lo que se oye | Lo que codifica |
+|---|---|
+| El ritmo de las ráfagas | El viento: de 0,75 ráfagas por segundo a 30 kt hasta 6 por segundo a 185 kt |
+| La aspereza del sonido | La categoría: liso en tormenta tropical, más áspero en cada categoría |
+| El volumen | Nada: es fijo |
+
+Al elegir un ciclón suenan 3,5 s de su viento máximo; «Reproducir audio» recorre
+toda su vida en 7 a 20 s. [`scripts/verificar_sonido.html`](scripts/verificar_sonido.html)
+lo mide sobre el código de la página. El porqué está en
+[`docs/decisiones.md`](docs/decisiones.md#el-sonido-deja-de-codificar-con-el-volumen).
+
+### Sus datos
+
+La página no lee `data/`: trae sus datos dentro de `index.html`
+(`window.__APP__`, 5,4 MB): los ciclones con su trayectoria, las fronteras de
+geoBoundaries (`data/geo/`) y las cifras de EM-DAT (`data/emdat_by_sid.json`).
+**El script que arma ese bloque no está en el repositorio**: hasta que esté, no
+se puede regenerar ni verificar desde `data/`.
 
 ---
 
@@ -138,30 +176,37 @@ pierde nada al rehacer la página.
 
 ```bash
 python3 -m http.server 8000
-# http://localhost:8000              -> la página en construcción
-# http://localhost:8000/versions/v1/ -> la V1
+# http://localhost:8000                               -> la página
+# http://localhost:8000/versions/v1/                  -> la V1
+# http://localhost:8000/scripts/verificar_sonido.html -> mide el sonido de la página
 ```
 
-Hace falta un servidor: la V1 carga sus datos con `fetch()` y abrirla con doble
-clic (`file://`) falla por CORS.
+La página trae sus datos adentro y abre también con doble clic. La V1 y la
+verificación del sonido necesitan el servidor: la V1 carga sus datos con
+`fetch()` y la verificación abre la página en un iframe, y las dos cosas fallan
+con `file://`.
 
 ## Estructura
 
 ```
-index.html              página en construcción (sin dependencias)
+index.html              la página: mapa, panel y sonido, con sus datos adentro
 data/                   la base de datos
 data/README.md          su manual: diccionario, códigos, trampas
 data/PROMPT.md          el manual comprimido, para pegarle a una IA
-data/csv/               las tablas en CSV
+data/csv/               las tablas en CSV (y paises_continente.csv: país → continente)
+data/geo/               fronteras de países y regiones (geoBoundaries), para la página
+data/emdat_by_sid.json  muertes y afectados por ciclón (EM-DAT), para la página
 scripts/preprocess.py   IBTrACS → JSON + CSV
 scripts/verificar_cifras.py    recalcula las cifras que se citan
 scripts/verificar_dataset.py   compara data/ con los sha256 de meta.json
 scripts/verificar_interpolacion.py  prueba que las filas a 3 h son interpoladas
+scripts/verificar_sonido.html  mide el sonido de la página: volumen, ráfagas, aspereza
 scripts/freeze.sh       congela la versión actual en versions/vN/
 docs/entrega-e1.md      plantilla del documento de entrega
 docs/checklist-e1.md    estado de la entrega y lo que falta
 docs/hoja-observador.md protocolo de thinking aloud
 docs/decisiones.md      bitácora de diseño (alimenta el rationale)
+docs/capturas/          capturas de antes y después de cada cambio (evidencia por versión)
 versions/v1/            la V1 completa y navegable
 ```
 
@@ -184,3 +229,10 @@ Knapp, K. R., H. J. Diamond, J. P. Kossin, M. C. Kruk, C. J. Schreck (2018):
 *International Best Track Archive for Climate Stewardship (IBTrACS) Project,
 Version 4r01*. NOAA National Centers for Environmental Information.
 DOI [10.25921/82ty-9e16](https://doi.org/10.25921/82ty-9e16).
+
+Muertes y afectados: EM-DAT, CRED / UCLouvain, Bruselas, Bélgica —
+[www.emdat.be](https://www.emdat.be/). Solo registra los desastres que superan
+sus umbrales, así que «sin registros» no significa cero víctimas.
+
+Fronteras de países y regiones: [geoBoundaries](https://www.geoboundaries.org/)
+(William & Mary geoLab), licencia CC BY 4.0.

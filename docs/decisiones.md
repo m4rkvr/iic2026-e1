@@ -19,14 +19,15 @@ Las preguntas son las de `docs/checklist-e1.md`.
 | ¿Cuál es el mensaje y por qué ese y no otro? | [La ventana parte en 2000](#la-ventana-parte-en-2000-y-eso-le-quita-el-piso-al-mensaje-de-la-v1) ⚠️ · [Mensaje: el total plano frente al extremo que crece](#mensaje-el-total-plano-frente-al-extremo-que-crece) · [Las dos reservas van en la bajada](#las-dos-reservas-van-en-la-bajada-no-en-una-nota-al-pie) |
 | ¿Por qué la distribución no es un gráfico de barras? | [La distribución no es un gráfico de barras](#la-distribución-no-es-un-gráfico-de-barras) · [La cifra que sostenía «el promedio borra la cola» estaba mal](#la-cifra-que-sostenía-el-promedio-borra-la-cola-estaba-mal) |
 | ¿Por qué el eje Y parte en 0? | [Eje Y desde 0 y un solo eje por gráfico](#eje-y-desde-0-y-un-solo-eje-por-gráfico) |
-| ¿Qué codifica el sonido, exactamente? | [Tres parámetros sonoros, no volumen](#tres-parámetros-sonoros-no-volumen) · [La sonificación no distingue la década incompleta](#la-sonificación-no-distingue-la-década-incompleta-limitación-abierta) |
+| ¿Qué codifica el sonido, exactamente? | **Hoy:** [El sonido deja de codificar con el volumen](#el-sonido-deja-de-codificar-con-el-volumen) · En la V1: [Tres parámetros sonoros, no volumen](#tres-parámetros-sonoros-no-volumen) · [La sonificación no distingue la década incompleta](#la-sonificación-no-distingue-la-década-incompleta-limitación-abierta) |
 | ¿Por qué la escala pentatónica? | [Sonificación cuantizada a escala pentatónica](#sonificación-cuantizada-a-escala-pentatónica) |
 | ¿Por qué los puntos de la década en curso están vacíos? | [Los grupos incompletos se marcan y se excluyen del ajuste](#los-grupos-incompletos-se-marcan-y-se-excluyen-del-ajuste) |
 | ¿Por qué el mapa agrupa por tramos? | [El mapa agrupa por tramos, no colorea punto a punto](#el-mapa-agrupa-por-tramos-no-colorea-punto-a-punto) |
 | ¿Qué filtraste de los datos y por qué? | [Los tres filtros del dataset, y qué sesgo evita cada uno](#los-tres-filtros-del-dataset-y-qué-sesgo-evita-cada-uno) · [La base de datos se publica como dataset](#la-base-de-datos-se-publica-como-dataset-no-como-insumo-de-esta-página) · [La ventana parte en 2000](#la-ventana-parte-en-2000-y-eso-le-quita-el-piso-al-mensaje-de-la-v1) |
 | ¿Qué errores encontraron procesando? | [Dos errores que borraban datos en silencio](#dos-errores-que-borraban-datos-en-silencio) · [El filtro de horas estaba bien, su justificación estaba mal](#el-filtro-de-horas-estaba-bien-su-justificación-estaba-mal) |
 | ¿Qué descartaron y por qué? | [Descartes generales](#descartes-generales) y el campo **Descartado** de cada entrada · [La página se rehace en grupo](#la-página-se-rehace-en-grupo-y-la-raíz-queda-en-construcción) |
-| ¿Qué suena exactamente al reproducir la tendencia? | [La sonificación no distingue la década incompleta](#la-sonificación-no-distingue-la-década-incompleta-limitación-abierta) |
+| ¿Qué suena exactamente al reproducir la tendencia? | [La sonificación no distingue la década incompleta](#la-sonificación-no-distingue-la-década-incompleta-limitación-abierta) (V1) |
+| ¿Cómo sabe el lector qué lugar está mirando? | [El mapa dice dónde estás](#el-mapa-dice-dónde-estás) · [Después de R1: abrir en el ciclón más fuerte](#después-de-r1-abrir-en-el-ciclón-más-fuerte) |
 
 ---
 
@@ -501,6 +502,215 @@ y por qué ese y no otro?» — y obliga a volver sobre la segunda.
 
 ---
 
+## 2026-10-03 a 2026-10-06 — la página nueva (reconstruido desde git)
+
+> Estas dos entradas se escribieron el 2026-10-12 a partir de los commits
+> `9742136` a `fc193c8`. Registran **qué** cambió y cuándo. El **porqué** —y lo
+> que dijo el profesor en R1— tienen que completarlo quienes tomaron esas
+> decisiones: la pauta pide anclar cada cambio en una fuente, y el historial no
+> la guarda.
+
+### Del dataset a un mapa de los ciclones que tocaron tierra
+
+**Qué cambió** (03-10 a 05-10, commits `9742136` a `99e7ecf`).
+
+- La raíz deja de estar en construcción: un mapa mundial con un punto por
+  ciclón en su primera observación sobre tierra —1.010 ciclones entre 2000 y
+  2026—, coloreado por categoría Saffir-Simpson, con filtros por categoría y
+  por temporada, y una vista por continente (clic en un continente para
+  acercarse, «← Mundo» para volver).
+- Clic en un ciclón: su trayectoria, el punto de máximo viento y un panel con
+  el viento máximo en km/h, muertes y afectados (EM-DAT), duración, horas sobre
+  tierra y la curva del viento con los umbrales de cada categoría.
+- Sonido: ruido sintético primero (`9742136`) y una grabación de viento
+  después (`1b25338`). En los dos, el volumen y el brillo subían con el viento.
+- Datos nuevos: `data/geo/` (fronteras de geoBoundaries CGAZ: 218 países y
+  3.224 regiones), `data/emdat_by_sid.json` (muertes y afectados de 644
+  ciclones según EM-DAT) y `data/csv/paises_continente.csv` (236 países con su
+  continente). La página no lee `data/`: trae sus datos dentro de `index.html`
+  (`window.__APP__`, 5,4 MB).
+- La bajada pasó por tres versiones hasta «Explora los ciclones tropicales que
+  tocaron tierra entre 2000 y 2026: la intensidad de sus vientos y su impacto
+  en las personas» (`1887849`).
+
+```bash
+python3 - <<'EOF'
+import json
+for f, o in [("countries", "ADM0"), ("regions", "ADM1")]:
+    t = json.load(open(f"data/geo/{f}.topojson"))
+    print(f, len(t["objects"][f"geoBoundariesCGAZ_{o}"]["geometries"]))  # 218 · 3224
+print("emdat", len(json.load(open("data/emdat_by_sid.json"))))            # 644
+EOF
+```
+
+**Por qué.** _Pendiente: lo escribe el grupo._ Lo que ya estaba registrado: la
+entrada del 02-10 concluyó que la ventana 2000–2026 no sostiene una tendencia
+por décadas, y que sí sostiene mirar trayectorias y cercanía a tierra. La
+página nueva coincide con eso: no compara décadas, muestra ciclones uno por uno.
+
+**Pendiente que deja.** Ningún script del repositorio genera `window.__APP__`.
+Hasta que esté, los datos de la página no se pueden reconstruir ni verificar
+desde `data/`, al revés de lo que hace el resto del repositorio.
+
+---
+
+### Después de R1: abrir en el ciclón más fuerte
+
+**Qué cambió** (06-10, commit `fc193c8` «feedback_profe»).
+
+- Título: «Huracanes» → «Los huracanes más fuertes por categoría entre
+  2000-2026». Se quitó la bajada.
+- Un solo mapa mundial con zoom y arrastre libres: se quitó la vista por
+  continente.
+- Se quitaron la franja de instrucciones y el botón «Sonido: activado /
+  desactivado».
+- Al abrir: solo la categoría 5, con su ciclón más fuerte (Patricia, 2015)
+  seleccionado y el mapa acercado a su trayectoria.
+- Elegir una categoría la deja sola (otro clic vuelve a mostrar todas),
+  selecciona su ciclón más fuerte y numera del 1 al 5 los cinco más fuertes con
+  pines; el resto de los puntos se aclara según su viento.
+- Al seleccionar un ciclón suenan 3,5 s de su viento máximo.
+
+**Qué dijo el profesor y por qué se cambió.** _Pendiente: lo completan quienes
+estuvieron en R1._
+
+---
+
+## 2026-10-12 — dos recomendaciones de un ayudante
+
+Consultado por otras recomendaciones, un ayudante propuso dos cambios: que el
+sonido deje de depender del volumen, y que el mapa diga dónde está uno al
+entrar. Se adoptan los dos; abajo, cómo y por qué. Capturas de antes y después
+en `docs/capturas/2026-10-12-*.png`.
+
+### El sonido deja de codificar con el volumen
+
+**Decisión.** El volumen queda fijo. El viento se oye en el **ritmo**: ráfagas
+que se aceleran con él, de 0,75 por segundo a 30 kt hasta 6 por segundo a
+185 kt (el doble cada ~52 kt). La categoría se oye en el **timbre**: el viento
+se vuelve más áspero en cada categoría, con una modulación a 55 Hz cuya
+profundidad sube de 0 en tormenta tropical a 100 % en categoría 5. Bajo el
+botón de reproducir, una línea dice qué suena. La grabación de viento se
+conserva.
+
+**Por qué.**
+
+- El ayudante: sonificar con el volumen es lo peor evaluado del curso; propuso
+  timbre o tono. La pauta lo dice con otras palabras: «el tipo de sonido debe
+  cambiar con el dato, no solo su intensidad».
+- Lo que había era, en la práctica, volumen: la ganancia crecía con el viento
+  elevado a 1,6, es decir 28 dB entre 25 y 185 kt (20·log₁₀((185/25)^1,6) =
+  27,8). Y el volumen es lo único que el oyente regula con la perilla de su
+  equipo: la misma ráfaga suena fuerte en un parlante y débil en otro, así que
+  no puede cargar un dato.
+- Ritmo y aspereza no se confunden aunque los dos modulan la amplitud, porque
+  ocupan bandas que el oído separa. Bajo ~20 Hz una modulación se oye como
+  pulso (la fluctuación se percibe más fuerte cerca de 4 Hz); sobre ~20 Hz deja
+  de oírse como pulso y se oye como aspereza, que es máxima cerca de 70 Hz
+  (Zwicker y Fastl, *Psychoacoustics: Facts and Models*). Las ráfagas van de
+  0,75 a 6 Hz; la aspereza está en 55 Hz.
+- Por qué el ritmo para el viento y el timbre para la categoría: repiten lo que
+  ya hace la curva del panel. Ahí el viento es la altura de la línea —continua—
+  y la categoría son las líneas punteadas —escalones—. En el sonido, el ritmo
+  cambia de a poco, como la línea, y la aspereza salta justo cuando la curva
+  cruza una línea punteada. El oído distingue cambios chicos de tempo, pero
+  pocos grados de aspereza: cada parámetro lleva la variable cuya resolución
+  puede cargar.
+- Medido sobre el código de la página, no sobre una copia
+  (`scripts/verificar_sonido.html`): el volumen varía 0,2 dB entre 25 y
+  185 kt; las ráfagas medidas coinciden con las esperadas en los ocho vientos
+  probados; la aspereza es 0 en tormenta tropical, sube de 0,27 a 0,95 entre
+  las categorías 1 y 5, y no cambia dentro de una misma categoría (150 y
+  185 kt dan 0,95).
+
+```bash
+python3 -m http.server 8000
+# http://localhost:8000/scripts/verificar_sonido.html
+```
+
+**Descartado.**
+
+- **Tono ← viento**, la otra propuesta del ayudante. La grabación es ruido: no
+  tiene una altura que mover. Para tener tono habría que cambiarla por un
+  silbido sintético, y se pierde lo que hace legible el sonido: que suena a
+  viento.
+- **Dejar el volumen como refuerzo** de los otros dos: el oído lo seguiría
+  escuchando primero, y es justo lo que la pauta dice que no basta.
+- **El orden inverso** (ritmo ← categoría, aspereza ← viento): seis tempos fijos
+  suenan a saltos de metrónomo, y la aspereza no tiene resolución para seguir
+  un viento que cambia de a 5 kt.
+
+**Limitación abierta.** Seis grados de aspereza no se reconocen de memoria: se
+oye «más áspero que recién», no «esto es categoría 4». Y el sonido codifica una
+sola variable —el viento— con dos parámetros, mientras la V1 codificaba tres
+(viento, intensificación y distancia a tierra). Es una regresión respecto de la
+V1. La candidata para recuperarla es tierra/mar, que el panel ya muestra
+(«≈ 18 h sobre tierra»). Las dos cosas van a la evaluación con usuarios, donde
+la pauta pide preguntar qué cree la persona que codifica el sonido.
+
+**Responde a.** «¿Qué codifica el sonido, exactamente?» — reemplaza la respuesta
+de la V1.
+
+---
+
+### El mapa dice dónde estás
+
+**Decisión.** Cuatro cambios para que al entrar se sepa qué lugar se está
+mirando:
+
+1. Junto al punto donde el ciclón tocó tierra, un rótulo: «Toca tierra en
+   México / desde el Pacífico Nororiental». El panel repite el lugar con la
+   región: «Pacífico Nororiental · tocó tierra en México (Jalisco)».
+2. Un minimapa arriba a la derecha: el mundo entero, con un recuadro en la zona
+   visible. Aparece al acercarse; un clic en él lleva la vista a ese punto.
+3. El mapa llena su tarjeta. Antes el dibujo era una franja con la proporción
+   del mundo (1000 × 353), y al acercarse se recortaba arriba y abajo.
+4. Marcadores y textos mantienen un tamaño legible en pantallas angostas.
+
+**Por qué.**
+
+- El ayudante: la página abre acercada en Patricia y no dice dónde es; uno
+  queda perdido hasta que empieza a mover el mapa.
+- Las capturas lo confirman (`docs/capturas/2026-10-12-antes-*.png`). En
+  escritorio, el único nombre visible al abrir era «Belice», y la trayectoria
+  salía cortada por los bordes de la franja. En celular, la franja quedaba
+  detrás del panel: se veía solo mar.
+- Shneiderman: *overview first*. Desde R1 la página abre en el detalle, y el
+  minimapa devuelve la vista general sin deshacer esa decisión: es el patrón
+  vista general + detalle, con las dos a la vista a la vez.
+- El rótulo va junto al punto de llegada a tierra porque ese punto siempre
+  queda a la vista: al abrir, el mapa se encuadra en la trayectoria. Probamos
+  ponerlo donde nace el ciclón, y en Patricia quedaba debajo del panel.
+- El país no viene en los datos: `ci` es la lista de países afectados según
+  EM-DAT y solo existe para 525 de los 1.010 ciclones. Se busca en las
+  fronteras que la página ya trae, recorriendo el tramo entre el último punto
+  sobre el mar y el primero sobre tierra, porque en 6 h un ciclón puede cruzar
+  un país angosto entero. Encuentra lugar para 1.008 de los 1.010, y en 18 el
+  tramo corrige el país del primer punto sobre tierra: Iris (2001) toca tierra
+  en Belice, no en Guatemala; Bijli (2009), en Bangladesh, no en India.
+
+```js
+// En la consola del navegador, con la página abierta:
+D.filter(d => d.ci).length   // 525: ciclones con países según EM-DAT
+D.filter(lugar).length       // 1008: ciclones con lugar encontrado
+D.filter(d => { const a = enTierra(d.k, d.la[d.lp], d.lo[d.lp]), b = lugar(d); return a && b && a.c != b.c }).length  // 18
+```
+
+**Descartado.**
+
+- **Abrir en el mundo entero**: resuelve la orientación, pero deshace la
+  decisión del 06-10 de abrir en el ciclón más fuerte.
+- **Una animación que viaje del mundo al ciclón al cargar**: es el «movimiento
+  no solicitado» que ya descartamos para la V1, y ahora competiría además con
+  el sonido del máximo, que suena al seleccionar.
+- **Rotular todos los océanos y mares**: más texto en un mapa que ya rotula
+  países. El rótulo de llegada y el minimapa responden la pregunta a la escala
+  en que está el lector.
+
+**Responde a.** «¿Cómo sabe el lector qué lugar está mirando?»
+
+---
+
 ## Descartes generales
 
 | Alternativa | Por qué se descartó |
@@ -510,6 +720,7 @@ y por qué ese y no otro?» — y obliga a volver sobre la segunda.
 | Animación automática al cargar | Movimiento no solicitado; además compite con la sonificación por la atención |
 | Color por cuenca en los tres gráficos | 6-7 hues categóricos simultáneos; la cuenca funciona mejor como filtro que como color |
 | Cargar el CSV de NOAA en vivo | 144 MB en el navegador, dependiente de CORS y de que NOAA no cambie la URL |
+| Sonificar con el volumen | Lo peor evaluado del curso según el ayudante; la pauta pide que cambie el tipo de sonido, no su intensidad; y el volumen lo regula el oyente con su equipo (ver 2026-10-12) |
 
 ---
 

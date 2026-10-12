@@ -5,10 +5,9 @@ Ciclones tropicales, **2000–2026**: **2.741 ciclones**, **78.786 observaciones
 [IBTrACS v04r01](https://www.ncei.noaa.gov/products/international-best-track-archive)
 (NOAA NCEI) con `scripts/preprocess.py`.
 
-La página de la raíz está en construcción: **esta base de datos es el punto de
-partida para la visualización que se va a construir**. La primera versión, que
-usaba la ventana 1980–2026, quedó congelada en
-[`../versions/v1/`](../versions/v1/).
+La página de la raíz —el mapa de los ciclones que tocaron tierra— se construyó a
+partir de esta base de datos. La primera versión, que usaba la ventana
+1980–2026, quedó congelada en [`../versions/v1/`](../versions/v1/).
 
 **Esto no es IBTrACS crudo.** Es un subconjunto filtrado y agregado: 15 de las
 174 columnas originales, una cuarta parte de las filas, y cuatro decisiones de
@@ -407,6 +406,19 @@ topojson de Natural Earth que Plotly ya trae. Si quieres cruzar los ciclones con
 unidades administrativas (recaladas por país, por región), ahí sí necesitas una
 capa aparte — [geoBoundaries](https://www.geoboundaries.org/) o Natural Earth — y
 hacer el point-in-polygon tú.
+
+**Ojo: `data/` trae además tres insumos de la página que no son parte de esta
+base.** No salen de `preprocess.py`, no están en el inventario de `meta.json` y
+`verificar_dataset.py` no los revisa:
+
+| Archivo | Qué es | Fuente |
+|---|---|---|
+| `geo/countries.topojson` · `geo/regions.topojson` | fronteras de 218 países y 3.224 regiones | geoBoundaries CGAZ (ADM0 y ADM1), CC BY 4.0 |
+| `emdat_by_sid.json` | muertes, afectados y países de 644 ciclones, por `sid` | EM-DAT (CRED / UCLouvain) |
+| `csv/paises_continente.csv` | 236 países con su continente | sin fuente registrada |
+
+EM-DAT solo registra los desastres que superan sus umbrales: que un ciclón no
+aparezca ahí no significa que no haya dejado víctimas.
 
 ---
 
