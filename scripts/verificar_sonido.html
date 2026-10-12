@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="es"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Verificar el sonido</title>
+<!-- Mide el sonido real de la página, no una copia: carga ../index.html en un iframe, le cambia el
+     AudioContext por un OfflineAudioContext y renderiza 11 s para cada viento. Después mide tres cosas:
+
+       volumen   RMS de la señal. Tiene que ser el mismo en todas las filas: el volumen no codifica nada.
+       ráfagas   la frecuencia que más pesa en la envolvente entre 0,3 y 10 Hz. Tiene que seguir al viento.
+       aspereza  la profundidad de la modulación de 55 Hz, relativa al promedio de la envolvente. Tiene que
+                 ser ~0 en tormenta tropical, subir con cada categoría y no depender del viento dentro de
+                 una misma categoría.
+
+     Uso (hace falta servidor, igual que para la página):
+       python3 -m http.server 8000
+       http://localhost:8000/scripts/verificar_sonido.html -->
+<style>
+  body { margin: 0; padding: 16px; font: 14px/1.5 system-ui, sans-serif; background: #fff; color: #111; }
+  table { border-collapse: collapse; font-variant-numeric: tabular-nums; }
+  th, td { padding: 4px 12px; border-bottom: 1px solid #ddd; text-align: right; }
+  th:first-child, td:first-child { text-align: left; }
+  iframe { width: 1px; height: 1px; border: 0; position: absolute; left: -9999px; }
+  #veredicto { font-weight: 700; margin-top: 12px; }
+</style></head><body>
+<h1 style="font-size:18px;margin:0 0 8px">Verificar el sonido de la página</h1>
+<p id="estado">Renderizando…</p>
+<table id="tabla" hidden><thead><tr>
+  <th>Viento</th><th>Categoría</th><th>Volumen (dBFS)</th>
+  <th>Ráfagas por s, esperadas</th><th>medidas</th>
+  <th>Aspereza, esperada</th><th>medida</th>
+</tr></thead><tbody></tbody></table>
+<p id="veredicto"></p>
+<iframe id="f" src="../index.html"></iframe>
+<script>
+const SR = 48000, T = 11, VIENTOS = [25, 50, 70, 90, 105, 125, 150, 185];
+const NOMBRE = ['Tormenta tropical', 'Categoría 1', 'Categoría 2', 'Categoría 3', 'Categoría 4', 'Categoría 5'];
+const espera = ms => new Promise(r => setTimeout(r, ms));
+
+// Magnitud de la transformada de Fourier de x (muestreada a fs) en la frecuencia f.
+function dft(x, fs, f) {
+  let re = 0, im = 0;
+  for (let i = 0; i < x.length; i++) { const a = 2 * Math.PI * f * i / fs; re += x[i] * Math.cos(a); im -= x[i] * Math.sin(a); }
+  return Math.hypot(re, im) / x.length;
+}
+// Envolvente: RMS en ventanas de `ms` milisegundos, sin el primer segundo (mientras el sonido entra).
+function envolvente(y, ms) {
+  const w = Math.round(SR * ms / 1000), e = [];
+  for (let i = SR; i + w <= y.length; i += w) { let s = 0; for (let j = i; j < i + w; j++) s += y[j] * y[j]; e.push(Math.sqrt(s / w)); }
+  const media = e.reduce((a, b) => a + b, 0) / e.length;
+  return { x: e.map(v => v - media), media };
+}
+
+async function medir(w, v) {
+  // Estado limpio. PK++ invalida el temporizador del sonido de pico que la página dispara al cargar.
+  w.eval('PK++;AC=null;GN=null;SRC=null;PKON=true');
+  w.AudioContext = function () { return new w.OfflineAudioContext(2, SR * T, SR); };
+  w.initAudio();
+  while (!w.eval('!!SRC')) await espera(20);
+  w.beep(v);
+  const buf = await w.eval('AC').startRendering();
+  const a = buf.getChannelData(0), b = buf.getChannelData(1), y = new Float32Array(a.length);
+  for (let i = 0; i < y.length; i++) y[i] = (a[i] + b[i]) / 2;
+
+  let s = 0; for (let i = SR; i < y.length; i++) s += y[i] * y[i];
+  const db = 10 * Math.log10(s / (y.length - SR));
+
+  const lenta = envolvente(y, 10);          // 100 muestras por segundo
+  let pico = 0, rafagas = 0;
+  for (let f = 0.3; f <= 10; f += 0.01) { const m = dft(lenta.x, 100, f); if (m > pico) { pico = m; rafagas = f; } }
+
+  // Para g = 1 − m/2 + (m/2)·sen(2π·55·t), la componente de 55 Hz de la envolvente vale (m/2)/(1 − m/2)
+  // veces su promedio. Las ráfagas multiplican las dos cosas por igual, así que no cambian la razón.
+  const rapida = envolvente(y, 2);          // 500 muestras por segundo
+  const aspereza = 2 * dft(rapida.x, 500, 55) / rapida.media;
+  const m = w.eval(`RUG[cat(${v})]`);
+
+  return { v, cat: NOMBRE[w.eval(`cat(${v})`)], db, rEsp: w.eval(`RAF(${v})`), rafagas, aEsp: (m / 2) / (1 - m / 2), aspereza };
+}
+
+document.getElementById('f').addEventListener('load', async () => {
+  const w = document.getElementById('f').contentWindow;
+  while (!w.eval('typeof D!="undefined"&&D&&D.length')) await espera(50);
+  // Al cargar, la página prepara su propio audio (queda en pausa hasta el primer clic). Hay que dejar que
+  // termine: si su decodificación llega en medio de una medición, suma una segunda copia del viento.
+  while (!w.eval('!!SRC')) await espera(50);
+  await espera(300);
+  const filas = [];
+  for (const v of VIENTOS) {
+    document.getElementById('estado').textContent = `Renderizando ${v} kt…`;
+    filas.push(await medir(w, v));
+  }
+  const tb = document.querySelector('#tabla tbody'), f1 = n => n.toFixed(1).replace('.', ','), f2 = n => n.toFixed(2).replace('.', ',');
+  for (const r of filas) tb.insertAdjacentHTML('beforeend',
+    `<tr><td>${r.v} kt</td><td>${r.cat}</td><td>${f1(r.db)}</td><td>${f2(r.rEsp)}</td><td>${f2(r.rafagas)}</td><td>${f2(r.aEsp)}</td><td>${f2(r.aspereza)}</td></tr>`);
+  document.getElementById('tabla').hidden = false;
+  document.getElementById('estado').textContent = `${filas.length} vientos, ${T} s cada uno, renderizados con el código de ../index.html.`;
+
+  const dbs = filas.map(r => r.db), rango = Math.max(...dbs) - Math.min(...dbs);
+  const rafagasOk = filas.every(r => Math.abs(r.rafagas - r.rEsp) <= 0.05 + 0.02 * r.rEsp);
+  const asperezaOk = filas.every(r => Math.abs(r.aspereza - r.aEsp) <= 0.06);
+  const ok = rango <= 1 && rafagasOk && asperezaOk;
+  document.getElementById('veredicto').textContent =
+    `Volumen: varía ${f1(rango)} dB entre todas las filas ${rango <= 1 ? '(≤ 1 dB: no codifica nada) ✓' : '✗'} · ` +
+    `Ráfagas: ${rafagasOk ? 'siguen al viento ✓' : 'no coinciden con lo esperado ✗'} · ` +
+    `Aspereza: ${asperezaOk ? 'nula en tormenta tropical y creciente con la categoría ✓' : 'no coincide con lo esperado ✗'}`;
+  window.RESULTADO = { ok, rango, filas };
+});
+</script>
+</body></html>
