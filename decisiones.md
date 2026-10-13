@@ -19,7 +19,7 @@ Las preguntas son las de `docs/checklist-e1.md`.
 | ¿Cuál es el mensaje y por qué ese y no otro? | [La ventana parte en 2000](#la-ventana-parte-en-2000-y-eso-le-quita-el-piso-al-mensaje-de-la-v1) ⚠️ · [Mensaje: el total plano frente al extremo que crece](#mensaje-el-total-plano-frente-al-extremo-que-crece) · [Las dos reservas van en la bajada](#las-dos-reservas-van-en-la-bajada-no-en-una-nota-al-pie) |
 | ¿Por qué la distribución no es un gráfico de barras? | [La distribución no es un gráfico de barras](#la-distribución-no-es-un-gráfico-de-barras) · [La cifra que sostenía «el promedio borra la cola» estaba mal](#la-cifra-que-sostenía-el-promedio-borra-la-cola-estaba-mal) |
 | ¿Por qué el eje Y parte en 0? | [Eje Y desde 0 y un solo eje por gráfico](#eje-y-desde-0-y-un-solo-eje-por-gráfico) |
-| ¿Qué codifica el sonido, exactamente? | **Hoy:** [El ritmo pasa a la categoría](#el-ritmo-pasa-a-la-categoría-y-se-quita-la-leyenda-del-sonido) · Antes: [El sonido deja de codificar con el volumen](#el-sonido-deja-de-codificar-con-el-volumen) · En la V1: [Tres parámetros sonoros, no volumen](#tres-parámetros-sonoros-no-volumen) · [La sonificación no distingue la década incompleta](#la-sonificación-no-distingue-la-década-incompleta-limitación-abierta) |
+| ¿Qué codifica el sonido, exactamente? | **Hoy:** [Sin ritmo: el viento suena como sonaría](#sin-ritmo-el-viento-suena-como-sonaría-a-esa-velocidad) · Antes: [El ritmo pasa a la categoría](#el-ritmo-pasa-a-la-categoría-y-se-quita-la-leyenda-del-sonido) · [El sonido deja de codificar con el volumen](#el-sonido-deja-de-codificar-con-el-volumen) · En la V1: [Tres parámetros sonoros, no volumen](#tres-parámetros-sonoros-no-volumen) · [La sonificación no distingue la década incompleta](#la-sonificación-no-distingue-la-década-incompleta-limitación-abierta) |
 | ¿Por qué la escala pentatónica? | [Sonificación cuantizada a escala pentatónica](#sonificación-cuantizada-a-escala-pentatónica) |
 | ¿Por qué los puntos de la década en curso están vacíos? | [Los grupos incompletos se marcan y se excluyen del ajuste](#los-grupos-incompletos-se-marcan-y-se-excluyen-del-ajuste) |
 | ¿Por qué el mapa agrupa por tramos? | [El mapa agrupa por tramos, no colorea punto a punto](#el-mapa-agrupa-por-tramos-no-colorea-punto-a-punto) |
@@ -27,7 +27,7 @@ Las preguntas son las de `docs/checklist-e1.md`.
 | ¿Qué errores encontraron procesando? | [Dos errores que borraban datos en silencio](#dos-errores-que-borraban-datos-en-silencio) · [El filtro de horas estaba bien, su justificación estaba mal](#el-filtro-de-horas-estaba-bien-su-justificación-estaba-mal) |
 | ¿Qué descartaron y por qué? | [Descartes generales](#descartes-generales) y el campo **Descartado** de cada entrada · [La página se rehace en grupo](#la-página-se-rehace-en-grupo-y-la-raíz-queda-en-construcción) |
 | ¿Qué suena exactamente al reproducir la tendencia? | [La sonificación no distingue la década incompleta](#la-sonificación-no-distingue-la-década-incompleta-limitación-abierta) (V1) |
-| ¿Cómo sabe el lector qué lugar está mirando? | **Hoy:** [Al abrir se ve el país de quien mira; fuera el minimapa](#al-abrir-se-ve-el-país-de-quien-mira-fuera-el-minimapa) · [El mapa dice dónde estás](#el-mapa-dice-dónde-estás) · [Después de R1: abrir en el ciclón más fuerte](#después-de-r1-abrir-en-el-ciclón-más-fuerte) |
+| ¿Cómo sabe el lector qué lugar está mirando? | **Hoy:** [Vuelve el zoom al abrir; el país se escribe sobre el mapa](#vuelve-el-zoom-al-abrir-el-país-se-escribe-sobre-el-mapa) · [Al abrir se ve el país de quien mira; fuera el minimapa](#al-abrir-se-ve-el-país-de-quien-mira-fuera-el-minimapa) · [El mapa dice dónde estás](#el-mapa-dice-dónde-estás) · [Después de R1: abrir en el ciclón más fuerte](#después-de-r1-abrir-en-el-ciclón-más-fuerte) |
 
 ---
 
@@ -808,6 +808,98 @@ máximo suena 5 s (antes 3,5), para que una categoría 1 alcance a dar 4 ráfaga
 
 **Responde a.** «¿Qué codifica el sonido, exactamente?» — reemplaza la respuesta
 del 12-10.
+
+---
+
+## 2026-10-13 — segunda ronda del grupo
+
+Después de probar la ronda anterior, el grupo revierte dos de sus decisiones.
+Las entradas de arriba quedan como estaban, para que se vea el cambio.
+
+### Vuelve el zoom al abrir; el país se escribe sobre el mapa
+
+**Decisión.** Se deshace el encuadre por zona horaria: la página vuelve a abrir
+acercada en Patricia, como antes. Para que se sepa dónde es, cada país con
+tierra a la vista y sin su rótulo visible lleva su nombre escrito sobre su
+propia tierra, en mayúsculas espaciadas («MÉXICO»). El minimapa sigue fuera.
+
+**Por qué.**
+
+- El grupo prefería el zoom de antes; lo que faltaba era que el mapa dijera qué
+  país es. Al acercarse, el rótulo de cada país queda en su centro, que cae
+  fuera de la vista: abriendo en Patricia el único nombre visible era «Belice».
+- El encuadre abierto de la ronda anterior encimaba textos: «Toca tierra en
+  México» sobre el pin n.º 5 y sobre «Máx. 185 kt». Con el zoom de antes eso no
+  pasa.
+- Dónde va el nombre: se prueba una grilla de 18 × 11 puntos de la vista; de los
+  que caen sobre tierra de ese país (en las mismas fronteras que dibuja la
+  página) y fuera del panel, los filtros y los botones, se elige el más alejado
+  de lo que ya está escrito (rótulos y pines del ciclón, otros nombres). Máximo
+  4 nombres, y el que pisaría a otro se omite. Se recalcula 140 ms después de
+  cada zoom o arrastre; tarda ~5 ms.
+- Medido en Chromium sin interfaz: al abrir en escritorio aparece «MÉXICO» en el
+  centro del país, lejos del rótulo de llegada; en celular el rótulo normal de
+  México ya queda a la vista y no se agrega nada; en la categoría 3 aparece
+  «PAKISTÁN» junto a India.
+
+**Descartado.**
+
+- **Mantener el encuadre por zona horaria**: el grupo lo descartó al probarlo.
+- **Nombres de regiones** (Jalisco, Colima): el panel ya las dice, y los nombres
+  de regiones vienen con tildes mal codificadas en los datos («RegiÃ³n»).
+
+### Sin ritmo: el viento suena como sonaría a esa velocidad
+
+**Decisión.** Se quita todo pulso: ni ráfagas con tempo ni la aspereza a 55 Hz.
+El sonido imita lo que cambia en el viento real cuando sube su velocidad U
+(en m/s), con tres capas:
+
+1. **Fondo**: la grabación de viento, igual en todos los vientos.
+2. **Soplo**: ruido por un pasabanda ancho centrado en 30·U Hz — 385 Hz a 25 kt,
+   2.850 Hz a 185 kt. Una tormenta tropical suena sorda; una categoría 5, con el
+   siseo de la lluvia y la espuma arrastradas.
+3. **Silbido**: tonos eólicos. Un obstáculo de diámetro d en un viento U silba a
+   f = St·U/d, con St ≈ 0,2 (número de Strouhal). Dos bandas angostas para cables
+   de ~1 cm (20·U Hz: 260 Hz a 25 kt, 1.900 Hz a 185 kt) y ramas de ~2,5 cm (8·U Hz).
+
+Soplo y silbido pesan cero a ~19 kt y del todo desde ~117 kt. Durante
+«Reproducir audio» todo cambia de forma continua con el viento de cada día del
+trayecto. El volumen no cambia: se iguala la sonoridad.
+
+**Por qué.**
+
+- El grupo pidió dejar de jugar con el ritmo y que el sonido ejemplifique cómo
+  suena realmente un huracán de esa fuerza en esos días.
+- Las tres frecuencias son proporcionales a U, como en el viento real: doblar
+  el viento sube el sonido una octava. Así la categoría 5 no es «otro sonido»,
+  sino el mismo viento más rápido.
+- Soplo y silbido salen de ruido sintético, no de la grabación: la grabación
+  casi no tiene energía sobre 1 kHz, y filtrada, una categoría 5 no sonaba más
+  aguda que una tormenta tropical (centroide 629 a 777 Hz en la primera prueba).
+- El volumen se iguala con la sonoridad, no con la energía: un sonido más agudo
+  se oye más fuerte con la misma energía. La tabla `LN` guarda la sonoridad
+  medida (ponderación K, ITU-R BS.1770) de la propia cadena cada 5 kt entre 20 y
+  190 kt, y la ganancia la descuenta.
+- Medido con `scripts/verificar_sonido.html`, reescrito para esto: la sonoridad
+  es −17,8 LUFS en los ocho vientos (varía 0,0 dB); el centroide espectral sube
+  de 714 Hz (25 kt) a 2.381 Hz (185 kt) sin bajar nunca; el silbido sobresale
+  entre 3,3 y 12,9 dB sobre su entorno en todos los huracanes, a la frecuencia
+  esperada. La energía bruta (RMS) baja 1,8 dB de 25 a 185 kt: es justamente lo
+  que hace falta para que el sonido más agudo no se oiga más fuerte.
+
+**Descartado.**
+
+- **Ritmo por categoría** (ronda anterior): lo descartó el grupo.
+- **Seguir filtrando solo la grabación**: no tiene agudos que destapar.
+- **Ráfagas aleatorias, sin tempo**: serían cambios de volumen, que el grupo
+  pidió no tocar.
+
+**Limitación abierta.** El silbido de cables es una imagen del viento sobre una
+ciudad o un puerto, no el sonido en mar abierto; y la sonoridad igualada es una
+medida (BS.1770), no una prueba con oyentes.
+
+**Responde a.** «¿Qué codifica el sonido, exactamente?» — reemplaza la respuesta
+anterior.
 
 ---
 
