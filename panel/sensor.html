@@ -14,10 +14,12 @@
   .hole.active{transform:scale(.92);box-shadow:0 0 0 .35em #fff}
   .c0{background:#ace5ff;color:#1d2a22}.c1{background:#43c1ff;color:#1d2a22}.c2{background:#1498e4;color:#1d2a22}
   .c3{background:#026cce;color:#fff}.c4{background:#383cad;color:#fff}.c5{background:#3f003c;color:#fff}
+  #st{position:fixed;bottom:6px;left:0;right:0;text-align:center;font:13px system-ui;color:#9fb0a4}
   #fs{position:fixed;top:8px;left:50%;transform:translateX(-50%);z-index:2;font:600 16px system-ui;padding:8px 16px;border-radius:8px;border:0}
 </style></head><body>
 <script src="https://app.protobject.com/framework/p.js"></script>
 <button id="fs">Pantalla completa</button>
+<div id="st">Toca un círculo</div>
 <!-- Seis agujeros = las seis clases de la escala Saffir-Simpson, con los colores de la página. -->
 <div class="panel">
   <button class="hole c0" data-num="1">TT<small>Tormenta</small></button>
@@ -35,6 +37,8 @@
   function enviarNumero(num) {
     botones.forEach((b) => b.classList.toggle("active", b.dataset.num === String(num)));
 
+    const st = document.getElementById("st");
+    try {
     Protobject.Core.send({
       tipo: "panel",
       accion: "press",
@@ -43,6 +47,10 @@
       marcador: String(num),
       valor: Number(num)
     }).to("index.html");
+      st.textContent = "Enviado: " + num;
+    } catch (err) {
+      st.textContent = "No se pudo enviar (" + err.message + "). ¿Entraste escaneando el QR del computador?";
+    }
 
     setTimeout(() => {
       botones.forEach((b) => b.classList.remove("active"));

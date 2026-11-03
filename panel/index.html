@@ -96,7 +96,15 @@ function reproducir(d) {
   st.raf = requestAnimationFrame(paso);
 }
 document.querySelectorAll('[data-c]').forEach(b => b.onclick = () => elegir(+b.dataset.c));
-if (window.Protobject) Protobject.Core.onReceived(recibir);
 </script>
 <script src="config.js"></script>
+<script>
+// La escucha se registra DESPUÉS de config.js, cuando Protobject ya está inicializado.
+try {
+  Protobject.Core.onReceived(m => { el('tel').textContent = 'Panel: mensaje recibido'; el('tel').className = 'pill ok'; recibir(m); });
+  el('tel').textContent = 'Esperando la tablet: conéctala con el botón de Protobject y su código QR';
+} catch (e) {
+  el('tel').textContent = 'Protobject no cargó: ' + e.message; el('tel').className = 'pill';
+}
+</script>
 </body></html>
