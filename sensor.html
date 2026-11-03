@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="es"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+<title>Panel de categorías</title>
+<style>
+  html,body{margin:0;height:100%;background:#000;color:#fff;font-family:system-ui,sans-serif;overflow:hidden;touch-action:none;user-select:none;-webkit-user-select:none}
+  #p{position:fixed;inset:0;display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:repeat(2,1fr);place-items:center}
+  .hole{width:min(26vw,40vh);aspect-ratio:1;border-radius:50%;border:none;font:800 min(7vw,11vh)/1 system-ui;color:var(--t);background:var(--k);
+        display:flex;flex-direction:column;align-items:center;justify-content:center;transition:transform .1s,box-shadow .1s}
+  .hole small{font-size:.32em;font-weight:600;margin-top:.3em;opacity:.85}
+  .hole.on{transform:scale(.92);box-shadow:0 0 0 .35em #fff}
+  #fs{position:fixed;top:8px;left:50%;transform:translateX(-50%);z-index:2;font:600 16px system-ui;padding:8px 16px;border-radius:8px;border:0}
+</style></head><body>
+<script src="https://app.protobject.com/framework/p.js"></script>
+<button id="fs">Pantalla completa</button>
+<div id="p"></div>
+<script>
+// Seis agujeros = las seis clases de la escala Saffir-Simpson, con el mismo color que en la página.
+// Mismo evento semántico que el artefacto 08 del kit (numero, marcador, valor); se agrega «categoria».
+const Z = [
+  { n: 1, et: 'TT', sub: 'Tormenta', k: '#ace5ff', t: '#1d2a22' },
+  { n: 2, et: '1', sub: 'Categoría', k: '#43c1ff', t: '#1d2a22' },
+  { n: 3, et: '2', sub: 'Categoría', k: '#1498e4', t: '#1d2a22' },
+  { n: 4, et: '3', sub: 'Categoría', k: '#026cce', t: '#fff' },
+  { n: 5, et: '4', sub: 'Categoría', k: '#383cad', t: '#fff' },
+  { n: 6, et: '5', sub: 'Categoría', k: '#3f003c', t: '#fff' },
+];
+const p = document.getElementById('p');
+for (const z of Z) {
+  const b = document.createElement('button');
+  b.className = 'hole'; b.style.setProperty('--k', z.k); b.style.setProperty('--t', z.t);
+  b.innerHTML = `${z.et}<small>${z.sub}</small>`;
+  b.addEventListener('pointerdown', e => { e.preventDefault(); enviarNumero(z, b); });
+  p.appendChild(b);
+}
+function enviarNumero(z, b) {
+  document.querySelectorAll('.hole').forEach(h => h.classList.remove('on')); b.classList.add('on');
+  setTimeout(() => b.classList.remove('on'), 250);
+  Protobject.Core.send({ tipo: 'panel', accion: 'press', id: 'zona' + z.n, numero: String(z.n), marcador: String(z.n), valor: z.n, categoria: z.n - 1 }).to('index.html');
+}
+document.getElementById('fs').onclick = () => { const d = document.documentElement; (d.requestFullscreen || d.webkitRequestFullscreen || (() => {})).call(d); document.getElementById('fs').hidden = true; };
+</script>
+<script src="config.js"></script>
+</body></html>
