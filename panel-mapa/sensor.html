@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="es"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+<title>Panel mapa</title>
+<style>
+  html,body{margin:0;height:100%;background:#0f1d26;color:#fff;font-family:system-ui,sans-serif;overflow:hidden;touch-action:none;user-select:none;-webkit-user-select:none}
+  /* El mapa ocupa lo más que pueda manteniendo 16:10; los agujeros se ubican en % del mapa. */
+  .mapa{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);width:min(100vw,160vh);aspect-ratio:16/10;background:url(mapa.png) center/100% 100% no-repeat}
+  .hole{position:absolute;width:9%;aspect-ratio:1;transform:translate(-50%,-50%);border-radius:50%;border:3px solid #fff;background:rgba(255,255,255,.18);
+        color:#fff;font:800 clamp(14px,2.6vw,34px)/1 system-ui;display:flex;align-items:center;justify-content:center;padding:0}
+  .hole.active{background:rgba(255,255,255,.55)}
+  .lbl{position:absolute;transform:translate(-50%,0);font:600 clamp(9px,1.2vw,15px) system-ui;color:#dfe9e3;white-space:nowrap;pointer-events:none;text-shadow:0 1px 2px #000}
+  #st{position:fixed;bottom:6px;left:0;right:0;text-align:center;font:600 clamp(14px,2vw,22px) system-ui;color:#fff;text-shadow:0 1px 3px #000}
+  #fs{position:fixed;top:8px;left:50%;transform:translateX(-50%);z-index:2;font:600 16px system-ui;padding:8px 16px;border-radius:8px;border:0}
+</style></head><body>
+<script src="https://app.protobject.com/framework/p.js"></script>
+<button id="fs">Pantalla completa</button>
+<div class="mapa" id="mapa"></div>
+<div id="st">Toca una región 1 a 5 veces: el número de toques es la categoría</div>
+<script src="datos.js"></script>
+<script>
+// Ocho agujeros = ocho regiones donde tocan tierra los ciclones. Se cuentan los toques seguidos sobre la
+// misma región; 1 s después del último toque se envía la región y la categoría (= toques, de 1 a 5).
+(function () {
+  const mapa = document.getElementById("mapa"), st = document.getElementById("st");
+  const ESPERA = 1000;
+  let zona = null, toques = 0, timer = null;
+
+  for (const id in ZONAS) {
+    const z = ZONAS[id];
+    const b = document.createElement("button");
+    b.className = "hole"; b.dataset.num = id; b.textContent = id;
+    b.style.left = z.u * 100 + "%"; b.style.top = z.v * 100 + "%";
+    const l = document.createElement("div");
+    l.className = "lbl"; l.textContent = z.nombre; l.style.left = z.u * 100 + "%"; l.style.top = (z.v * 100 + 7.6) + "%";
+    mapa.append(b, l);
+    b.addEventListener("pointerdown", (e) => { e.preventDefault(); tocar(id, b); });
+  }
+
+  function tocar(id, b) {
+    if (zona !== id) { zona = id; toques = 0; }
+    toques = Math.min(5, toques + 1);
+    b.classList.add("active"); setTimeout(() => b.classList.remove("active"), 150);
+    st.textContent = ZONAS[id].nombre + " · " + "●".repeat(toques) + "○".repeat(5 - toques) + " · categoría " + toques;
+    clearTimeout(timer);
+    timer = setTimeout(() => enviar(id, toques), ESPERA);
+  }
+
+  function enviar(id, cat) {
+    try {
+      Protobject.Core.send({
+        tipo: "panel", accion: "press", id: "zona" + id,
+        numero: String(id), marcador: String(id), valor: Number(id),
+        region: ZONAS[id].nombre, toques: cat, categoria: cat
+      }).to("index.html");
+      st.textContent = "Enviado: " + ZONAS[id].nombre + ", categoría " + cat;
+    } catch (err) {
+      st.textContent = "No se pudo enviar (" + err.message + "). ¿Entraste escaneando el QR del computador?";
+    }
+    zona = null; toques = 0;
+  }
+
+  document.getElementById("fs").addEventListener("click", () => {
+    const d = document.documentElement, pedir = d.requestFullscreen || d.webkitRequestFullscreen;
+    if (pedir) pedir.call(d);
+    document.getElementById("fs").hidden = true;
+  });
+})();
+</script>
+<script src="config.js"></script>
+</body></html>
