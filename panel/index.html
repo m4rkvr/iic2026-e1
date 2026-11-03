@@ -40,7 +40,7 @@ h2{font-size:56px;line-height:1;margin:14px 0 6px}
 <script src="datos.js"></script>
 <script src="sonido.js"></script>
 <script>
-const $ = id => document.getElementById(id), nf = n => n.toLocaleString('es-CL');
+const el = id => document.getElementById(id), nf = n => n.toLocaleString('es-CL');
 const K = ['#ace5ff', '#43c1ff', '#1498e4', '#026cce', '#383cad', '#3f003c'], TX = ['#1d2a22', '#1d2a22', '#1d2a22', '#fff', '#fff', '#fff'];
 const CAT = c => c ? 'Categoría ' + c : 'Tormenta tropical', cat = w => w >= 137 ? 5 : w >= 113 ? 4 : w >= 96 ? 3 : w >= 83 ? 2 : w >= 64 ? 1 : 0;
 let actual = null, idx = 0;
@@ -53,13 +53,13 @@ function elegir(c) {
 }
 function recibir(m) {
   if (!m) return;
-  const n = m.categoria != null ? +m.categoria + 1 : +(m.numero || m.marcador || m.valor);
+  const n = +(m.numero || m.marcador || m.valor);
   if (!(n >= 1 && n <= 6)) return;
-  $('tel').textContent = 'Panel: conectado'; $('tel').className = 'pill ok';
+  el('tel').textContent = 'Panel: conectado'; el('tel').className = 'pill ok';
   elegir(n - 1);
 }
 function mostrar(c, d) {
-  const card = $('card'); card.style.setProperty('--k', K[c]); card.style.setProperty('--t', TX[c]);
+  const card = el('card'); card.style.setProperty('--k', K[c]); card.style.setProperty('--t', TX[c]);
   const T = d.h[d.h.length - 1], muertes = d.m && d.m[0] != null ? nf(d.m[0]) : '—';
   card.innerHTML = `<span class="cat">${CAT(c)}</span> <span class="rk">#${idx + 1} de ${TOP[c].length}</span>
     <h2>${d.n} (${d.s})</h2><p class="lu">Tocó tierra en <b>${d.p}</b>${d.r ? ' (' + d.r + ')' : ''}</p>
@@ -79,18 +79,18 @@ function curva(d, c) {
 
 // Sonido: recorre la vida del huracán como «Reproducir audio» de la página. Un toque nuevo corta el anterior.
 let PL = null, listo = false;
-$('act').onclick = async () => { try { await initAudio(); listo = true; $('act').textContent = 'Sonido activo'; $('act').disabled = true; } catch (e) {} };
+el('act').onclick = async () => { try { await initAudio(); listo = true; el('act').textContent = 'Sonido activo'; el('act').disabled = true; } catch (e) {} };
 function parar() { if (PL) { cancelAnimationFrame(PL.raf); PL = null; } beep(0); }
 function reproducir(d) {
-  parar(); if (!listo) { const r = $('ro'); if (r) r.textContent = 'Toca «Activar sonido» en este computador para escucharlo.'; return; }
+  parar(); if (!listo) { const r = el('ro'); if (r) r.textContent = 'Toca «Activar sonido» en este computador para escucharlo.'; return; }
   const H = d.h, T = H[H.length - 1], dur = Math.min(20, Math.max(7, T / 24 * .9)) * 1000, t0 = performance.now(), st = {}; PL = st;
   const paso = now => {
     if (PL !== st) return;
     const f = Math.min(1, (now - t0) / dur), h = f * T; let i = 0; while (i < H.length - 2 && H[i + 1] < h) i++;
     const a = H[i], b = H[i + 1] ?? a, u = b > a ? Math.min(1, Math.max(0, (h - a) / (b - a))) : 0, v = d.v[i] + ((d.v[i + 1] ?? d.v[i]) - d.v[i]) * u;
     beep(v);
-    const c = $('cur'); if (c) { const x = curva.X(h); c.setAttribute('x1', x); c.setAttribute('x2', x); }
-    const r = $('ro'); if (r) r.textContent = `Día ${(h / 24).toFixed(1).replace('.', ',')} · ${Math.round(v)} kt (${Math.round(v * 1.852)} km/h) · ${v >= 34 ? CAT(cat(v)).toLowerCase() : 'depresión tropical'}`;
+    const c = el('cur'); if (c) { const x = curva.X(h); c.setAttribute('x1', x); c.setAttribute('x2', x); }
+    const r = el('ro'); if (r) r.textContent = `Día ${(h / 24).toFixed(1).replace('.', ',')} · ${Math.round(v)} kt (${Math.round(v * 1.852)} km/h) · ${v >= 34 ? CAT(cat(v)).toLowerCase() : 'depresión tropical'}`;
     if (f < 1) st.raf = requestAnimationFrame(paso); else { beep(0); PL = null; }
   };
   st.raf = requestAnimationFrame(paso);
