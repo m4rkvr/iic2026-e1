@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="es"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Panel de huracanes</title>
+<style>
+:root{--bg:#f3f5f1;--card:#fff;--ink:#1d2a22;--mut:#5c6a62;--line:#d5ddd6;--acc:#2f6b45}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.45 Inter,system-ui,sans-serif}
+.wrap{max-width:1100px;margin:0 auto;padding:20px}
+h1{font-size:24px;margin:0 0 4px}.sub{margin:0 0 14px;color:var(--mut)}
+.bar{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:14px}
+button{font:inherit;padding:8px 14px;border-radius:8px;border:1px solid var(--line);background:var(--card);cursor:pointer}
+button.pri{background:var(--acc);color:#fff;border-color:var(--acc);font-weight:700}
+.pill{padding:4px 12px;border-radius:999px;background:var(--card);border:1px solid var(--line);font-size:13px;color:var(--mut)}
+.pill.ok{background:var(--acc);color:#fff;border-color:var(--acc)}
+#card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:24px;min-height:430px;border-top:10px solid var(--k,#d5ddd6)}
+#card .vacio{color:var(--mut);font-size:20px;margin:120px 0;text-align:center}
+.cat{display:inline-block;padding:4px 16px;border-radius:999px;background:var(--k);color:var(--t);font-weight:800;font-size:20px}
+h2{font-size:56px;line-height:1;margin:14px 0 6px}
+.lu{color:var(--mut);font-size:18px;margin:0}
+.row{display:flex;gap:36px;flex-wrap:wrap;margin:18px 0}
+.big{font-size:44px;font-weight:800;line-height:1}.row small{display:block;color:var(--mut);font-size:12px;text-transform:uppercase;letter-spacing:.06em}
+.rk{color:var(--mut);font-size:14px}
+#ro{color:var(--mut);font-size:15px;min-height:1.4em}
+.prueba{margin-top:12px;font-size:13px;color:var(--mut);display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.prueba button{padding:4px 10px}
+.foot{font-size:11px;color:var(--mut);margin-top:12px}
+</style></head><body>
+<script src="https://app.protobject.com/framework/p.js"></script>
+<div class="wrap">
+  <h1>¿Cómo suena un huracán de cada categoría?</h1>
+  <p class="sub">Toca un agujero del panel: aparece el huracán más fuerte de esa categoría que tocó tierra entre 2000 y 2026 y suena su viento día a día. Toca el mismo agujero otra vez para el siguiente de esa categoría.</p>
+  <div class="bar"><button class="pri" id="act">Activar sonido</button><span class="pill" id="tel">Panel: esperando un toque</span></div>
+  <div id="card"><p class="vacio">Toca un agujero del panel.</p></div>
+  <div class="prueba">Prueba sin tablet:
+    <button data-c="0">TT</button><button data-c="1">1</button><button data-c="2">2</button><button data-c="3">3</button><button data-c="4">4</button><button data-c="5">5</button></div>
+  <p class="foot">Datos: IBTrACS v04r01 (NOAA NCEI) · muertes: EM-DAT (CRED / UCLouvain). Orden dentro de cada categoría: viento máximo y, a igual viento, más muertes.
+    El viento suena más agudo y silba más cuanto más fuerte es; el volumen no cambia.</p>
+</div>
+<script src="datos.js"></script>
+<script src="sonido.js"></script>
+<script>
+const $ = id => document.getElementById(id), nf = n => n.toLocaleString('es-CL');
+const K = ['#ace5ff', '#43c1ff', '#1498e4', '#026cce', '#383cad', '#3f003c'], TX = ['#1d2a22', '#1d2a22', '#1d2a22', '#fff', '#fff', '#fff'];
+const CAT = c => c ? 'Categoría ' + c : 'Tormenta tropical', cat = w => w >= 137 ? 5 : w >= 113 ? 4 : w >= 96 ? 3 : w >= 83 ? 2 : w >= 64 ? 1 : 0;
+let actual = null, idx = 0;
+
+// Un toque: categoría nueva → su #1; misma categoría → el siguiente del top 5.
+function elegir(c) {
+  if (!(c in TOP)) return;
+  idx = (actual === c) ? (idx + 1) % TOP[c].length : 0; actual = c;
+  const d = TOP[c][idx]; mostrar(c, d); reproducir(d);
+}
+function recibir(m) {
+  if (!m) return;
+  const n = m.categoria != null ? +m.categoria + 1 : +(m.numero || m.marcador || m.valor);
+  if (!(n >= 1 && n <= 6)) return;
+  $('tel').textContent = 'Panel: conectado'; $('tel').className = 'pill ok';
+  elegir(n - 1);
+}
+function mostrar(c, d) {
+  const card = $('card'); card.style.setProperty('--k', K[c]); card.style.setProperty('--t', TX[c]);
+  const T = d.h[d.h.length - 1], muertes = d.m && d.m[0] != null ? nf(d.m[0]) : '—';
+  card.innerHTML = `<span class="cat">${CAT(c)}</span> <span class="rk">#${idx + 1} de ${TOP[c].length}</span>
+    <h2>${d.n} (${d.s})</h2><p class="lu">Tocó tierra en <b>${d.p}</b>${d.r ? ' (' + d.r + ')' : ''}</p>
+    <div class="row"><div><span class="big">${nf(Math.round(d.w * 1.852))}</span> km/h<small>viento máximo (${d.w} kt)</small></div>
+    <div><span class="big">${(T / 24).toFixed(1).replace('.', ',')}</span> días<small>duración</small></div>
+    <div><span class="big">${muertes}</span><small>muertes (EM-DAT)</small></div></div>${curva(d, c)}<div id="ro"></div>`;
+}
+function curva(d, c) {
+  const W = 900, H = 170, m = { l: 34, r: 10, t: 8, b: 20 }, T = d.h[d.h.length - 1] || 1;
+  const X = h => m.l + h / T * (W - m.l - m.r), Y = v => m.t + (1 - v / 190) * (H - m.t - m.b);
+  let s = `<svg viewBox="0 0 ${W} ${H}" style="width:100%;height:auto;display:block" role="img" aria-label="Viento de ${d.n} día a día">`;
+  [0, 50, 100, 150].forEach(t => s += `<line x1="${m.l}" x2="${W - m.r}" y1="${Y(t)}" y2="${Y(t)}" stroke="#e3e8e4"/><text x="${m.l - 5}" y="${Y(t) + 4}" font-size="11" text-anchor="end" fill="#5c6a62">${t}</text>`);
+  s += `<path d="M${d.h.map((h, i) => X(h).toFixed(1) + ' ' + Y(d.v[i]).toFixed(1)).join('L')}" fill="none" stroke="${K[c]}" stroke-width="4"/>`;
+  s += `<line id="cur" y1="${m.t}" y2="${H - m.b}" x1="${m.l}" x2="${m.l}" stroke="#1d2a22"/><text x="${W / 2}" y="${H - 4}" font-size="11" text-anchor="middle" fill="#5c6a62">días · viento (kt)</text></svg>`;
+  curva.X = X; return s;
+}
+
+// Sonido: recorre la vida del huracán como «Reproducir audio» de la página. Un toque nuevo corta el anterior.
+let PL = null, listo = false;
+$('act').onclick = async () => { try { await initAudio(); listo = true; $('act').textContent = 'Sonido activo'; $('act').disabled = true; } catch (e) {} };
+function parar() { if (PL) { cancelAnimationFrame(PL.raf); PL = null; } beep(0); }
+function reproducir(d) {
+  parar(); if (!listo) { const r = $('ro'); if (r) r.textContent = 'Toca «Activar sonido» en este computador para escucharlo.'; return; }
+  const H = d.h, T = H[H.length - 1], dur = Math.min(20, Math.max(7, T / 24 * .9)) * 1000, t0 = performance.now(), st = {}; PL = st;
+  const paso = now => {
+    if (PL !== st) return;
+    const f = Math.min(1, (now - t0) / dur), h = f * T; let i = 0; while (i < H.length - 2 && H[i + 1] < h) i++;
+    const a = H[i], b = H[i + 1] ?? a, u = b > a ? Math.min(1, Math.max(0, (h - a) / (b - a))) : 0, v = d.v[i] + ((d.v[i + 1] ?? d.v[i]) - d.v[i]) * u;
+    beep(v);
+    const c = $('cur'); if (c) { const x = curva.X(h); c.setAttribute('x1', x); c.setAttribute('x2', x); }
+    const r = $('ro'); if (r) r.textContent = `Día ${(h / 24).toFixed(1).replace('.', ',')} · ${Math.round(v)} kt (${Math.round(v * 1.852)} km/h) · ${v >= 34 ? CAT(cat(v)).toLowerCase() : 'depresión tropical'}`;
+    if (f < 1) st.raf = requestAnimationFrame(paso); else { beep(0); PL = null; }
+  };
+  st.raf = requestAnimationFrame(paso);
+}
+document.querySelectorAll('[data-c]').forEach(b => b.onclick = () => elegir(+b.dataset.c));
+if (window.Protobject) Protobject.Core.onReceived(recibir);
+</script>
+<script src="config.js"></script>
+</body></html>
