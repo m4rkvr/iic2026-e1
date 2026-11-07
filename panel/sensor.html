@@ -17,14 +17,15 @@
 <button id="fs">Pantalla completa</button>
 <div class="mapa" id="mapa"></div>
 <div id="st">Toca una región para ver su ciclón más mortal de 2025</div>
-<script src="datos.js"></script>
-<script>const ZONAS = Object.fromEntries(Object.entries(M25).map(([k, z]) => [k, { nombre: z.zona, u: z.u, v: z.v }]));</script>
+<script>
+// Las 8 regiones y la posición de su agujero (fracción del ancho y alto del mapa). Van aquí mismo para que
+// esta página no dependa de ningún otro archivo de datos.
+const ZONAS = {"1": {"nombre": "Estados Unidos y Canadá", "u": 0.1267, "v": 0.1489}, "2": {"nombre": "México y Centroamérica", "u": 0.0967, "v": 0.3723}, "3": {"nombre": "Caribe", "u": 0.2067, "v": 0.3723}, "4": {"nombre": "Índico Norte", "u": 0.7067, "v": 0.3404}, "5": {"nombre": "Asia oriental", "u": 0.85, "v": 0.1596}, "6": {"nombre": "Sudeste asiático", "u": 0.81, "v": 0.4681}, "7": {"nombre": "Oceanía", "u": 0.8933, "v": 0.8085}, "8": {"nombre": "África suroriental", "u": 0.5733, "v": 0.7553}};
+</script>
 <script>
 // Ocho agujeros = ocho regiones (las mismas de panel-mapa, misma plantilla de cartón). Un toque envía la región.
 (function () {
   const mapa = document.getElementById("mapa"), st = document.getElementById("st");
-  const ESPERA = 150;
-  let zona = null, toques = 0, timer = null;
 
   for (const id in ZONAS) {
     const z = ZONAS[id];
@@ -37,27 +38,25 @@
     b.addEventListener("pointerdown", (e) => { e.preventDefault(); tocar(id, b); });
   }
 
+  // Igual que el kit: el toque se envía de inmediato, en el mismo pointerdown.
   function tocar(id, b) {
-    if (zona !== id) { zona = id; toques = 0; }
-    toques = Math.min(5, toques + 1);
     b.classList.add("active"); setTimeout(() => b.classList.remove("active"), 150);
-    st.textContent = ZONAS[id].nombre;
-    clearTimeout(timer);
-    timer = setTimeout(() => enviar(id, toques), ESPERA);
+    enviar(id, 1);
   }
 
   function enviar(id, cat) {
+    if (!window.Protobject || !Protobject.Core) { st.textContent = "Sin conexión: abre esta página escaneando el QR del computador (no como archivo suelto)."; return; }
     try {
       Protobject.Core.send({
+        // Solo texto sin tildes y números, igual que el ejemplo del kit.
         tipo: "panel", accion: "press", id: "zona" + id,
         numero: String(id), marcador: String(id), valor: Number(id),
-        region: ZONAS[id].nombre, toques: cat, categoria: cat
+        toques: 1
       }).to("index.html");
       st.textContent = "Enviado: " + ZONAS[id].nombre;
     } catch (err) {
       st.textContent = "No se pudo enviar (" + err.message + "). ¿Entraste escaneando el QR del computador?";
     }
-    zona = null; toques = 0;
   }
 
   document.getElementById("fs").addEventListener("click", () => {
