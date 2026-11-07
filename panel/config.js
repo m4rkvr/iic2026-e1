@@ -1,4 +1,4 @@
-// Páginas Protobject del panel: la pantalla corre en el PC (main) y el sensor en la tablet.
+// Páginas Protobject del panel-mapa: la pantalla corre en el PC (main) y el mapa táctil en la tablet.
 // Debe ser el último <script> de cada HTML. Mismo esquema que los artefactos del Physical Viz Toolkit.
 
 // Modo producción: el prototipo está hospedado en HTTPS (GitHub Pages).

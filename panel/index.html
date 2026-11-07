@@ -1,110 +1,121 @@
 <!doctype html>
 <html lang="es"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Panel de huracanes</title>
+<title>Más mortales de 2025</title>
 <style>
-:root{--bg:#f3f5f1;--card:#fff;--ink:#1d2a22;--mut:#5c6a62;--line:#d5ddd6;--acc:#2f6b45}
+:root{--bg:#f3f5f1;--card:#fff;--ink:#1d2a22;--mut:#5c6a62;--line:#d5ddd6;--dm:#c62828;--acc:#2f6b45;
+--c0:#ace5ff;--c1:#43c1ff;--c2:#1498e4;--c3:#026cce;--c4:#383cad;--c5:#3f003c}
 *{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.45 Inter,system-ui,sans-serif}
-.wrap{max-width:1100px;margin:0 auto;padding:20px}
-h1{font-size:24px;margin:0 0 4px}.sub{margin:0 0 14px;color:var(--mut)}
-.bar{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:14px}
-button{font:inherit;padding:8px 14px;border-radius:8px;border:1px solid var(--line);background:var(--card);cursor:pointer}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.45 Inter,system-ui,sans-serif}
+.wrap{max-width:1180px;margin:0 auto;padding:16px}
+h1{font-size:24px;margin:0 0 4px}.sub{margin:0 0 12px;color:var(--mut);max-width:80ch}
+.bar{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:12px}
+button{font:inherit;padding:6px 12px;border-radius:8px;border:1px solid var(--line);background:var(--card);cursor:pointer}
 button.pri{background:var(--acc);color:#fff;border-color:var(--acc);font-weight:700}
 .pill{padding:4px 12px;border-radius:999px;background:var(--card);border:1px solid var(--line);font-size:13px;color:var(--mut)}
-.pill.ok{background:var(--acc);color:#fff;border-color:var(--acc)}
-#card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:24px;min-height:430px;border-top:10px solid var(--k,#d5ddd6)}
-#card .vacio{color:var(--mut);font-size:20px;margin:120px 0;text-align:center}
-.cat{display:inline-block;padding:4px 16px;border-radius:999px;background:var(--k);color:var(--t);font-weight:800;font-size:20px}
-h2{font-size:56px;line-height:1;margin:14px 0 6px}
-.lu{color:var(--mut);font-size:18px;margin:0}
-.row{display:flex;gap:36px;flex-wrap:wrap;margin:18px 0}
-.big{font-size:44px;font-weight:800;line-height:1}.row small{display:block;color:var(--mut);font-size:12px;text-transform:uppercase;letter-spacing:.06em}
-.rk{color:var(--mut);font-size:14px}
-#ro{color:var(--mut);font-size:15px;min-height:1.4em}
-.prueba{margin-top:12px;font-size:13px;color:var(--mut);display:flex;gap:6px;flex-wrap:wrap;align-items:center}
-.prueba button{padding:4px 10px}
+.grid{display:grid;grid-template-columns:1.6fr 1fr;gap:12px}@media(max-width:900px){.grid{grid-template-columns:1fr}}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px}
+.mapa{position:relative;width:100%;aspect-ratio:16/10;background:url(mapa.png) center/100% 100%;border-radius:8px;overflow:hidden}
+.mapa svg{position:absolute;inset:0;width:100%;height:100%}
+.burb{fill:rgba(198,40,40,.72);stroke:#fff;stroke-width:3;cursor:pointer}
+.burb.sr{fill:none;stroke:#fff;stroke-dasharray:8 6}
+.burb.on{stroke:#ffd54f;stroke-width:6}
+.et{font:700 30px Inter,system-ui;fill:#fff;paint-order:stroke;stroke:#0f1d26;stroke-width:7px;pointer-events:none}
+.et2{font:500 24px Inter,system-ui;fill:#dfe9e3;paint-order:stroke;stroke:#0f1d26;stroke-width:6px;pointer-events:none}
+.rk{list-style:none;margin:0;padding:0}
+.rk li{display:grid;grid-template-columns:150px 1fr 54px;gap:8px;align-items:center;padding:5px 4px;border-radius:6px;cursor:pointer}
+.rk li:hover,.rk li.on{background:#eef2ee}
+.rk .nm{font-size:13px;line-height:1.2}.rk .nm small{display:block;color:var(--mut)}
+.rk .b{height:14px;background:var(--dm);border-radius:2px}.rk .sr{font-size:12px;color:var(--mut);font-style:italic}
+.rk .n{text-align:right;font-weight:700;font-variant-numeric:tabular-nums}
+#det h2{margin:4px 0 2px;font-size:26px}
+.k{display:inline-block;padding:1px 10px;border-radius:999px;font-weight:800}
+.row{display:flex;gap:20px;flex-wrap:wrap;margin:8px 0}.big{font-size:30px;font-weight:800;line-height:1}
+.row small{display:block;color:var(--mut);font-size:11px;text-transform:uppercase;letter-spacing:.06em}
+#ro{color:var(--mut);font-size:13px;min-height:1.4em}
 .foot{font-size:11px;color:var(--mut);margin-top:12px}
 </style></head><body>
 <script src="https://app.protobject.com/framework/p.js"></script>
 <div class="wrap">
-  <h1>¿Cómo suena un huracán de cada categoría?</h1>
-  <p class="sub">Toca un agujero del panel: aparece el huracán más fuerte de esa categoría que tocó tierra entre 2000 y 2026 y suena su viento día a día. Toca el mismo agujero otra vez para el siguiente de esa categoría.</p>
-  <div class="bar"><button class="pri" id="act">Activar sonido</button><span class="pill" id="tel">Panel: esperando un toque</span></div>
-  <div id="card"><p class="vacio">Toca un agujero del panel.</p></div>
-  <div class="prueba">Prueba sin tablet:
-    <button data-c="0">TT</button><button data-c="1">1</button><button data-c="2">2</button><button data-c="3">3</button><button data-c="4">4</button><button data-c="5">5</button></div>
-  <p class="foot">Datos: IBTrACS v04r01 (NOAA NCEI) · muertes: EM-DAT (CRED / UCLouvain). Orden dentro de cada categoría: viento máximo y, a igual viento, más muertes.
-    El viento suena más agudo y silba más cuanto más fuerte es; el volumen no cambia.</p>
+  <h1>El ciclón más mortal de 2025 en cada región</h1>
+  <p class="sub">Un dato por región: el ciclón que más muertes dejó entre los que tocaron tierra ahí en la temporada 2025. El área de cada círculo es proporcional a las muertes. Toca una región (en el mapa, la lista o el panel de cartón) para ver el ciclón y escuchar su viento.</p>
+  <div class="bar"><button class="pri" id="act">Activar sonido</button><span class="pill" id="tel">Panel: sin conectar (opcional)</span></div>
+  <div class="grid">
+    <div class="card"><div class="mapa"><svg id="sv" viewBox="0 0 1600 1000" preserveAspectRatio="none"></svg></div></div>
+    <div class="card"><ul class="rk" id="rk"></ul></div>
+  </div>
+  <div class="card" id="det" style="margin-top:12px"><p style="color:var(--mut)">Toca una región.</p></div>
+  <p class="foot">Muertes: EM-DAT (CRED / UCLouvain), por evento, incluidas las de otros países por los que pasó el ciclón. Trayectorias y viento: IBTrACS v04r01 (NOAA NCEI).
+    Temporada 2025: en el hemisferio sur va de julio de 2024 a junio de 2025 (por eso Chido, de diciembre de 2024, cuenta como 2025).
+    «Sin registro»: ningún ciclón de 2025 de esa región figura en EM-DAT; se muestra el de mayor viento. Las regiones son las del panel de cartón.</p>
 </div>
 <script src="datos.js"></script>
 <script src="sonido.js"></script>
 <script>
 const el = id => document.getElementById(id), nf = n => n.toLocaleString('es-CL');
-const K = ['#ace5ff', '#43c1ff', '#1498e4', '#026cce', '#383cad', '#3f003c'], TX = ['#1d2a22', '#1d2a22', '#1d2a22', '#fff', '#fff', '#fff'];
+const K = ['#ace5ff','#43c1ff','#1498e4','#026cce','#383cad','#3f003c'], TX = ['#1d2a22','#1d2a22','#1d2a22','#fff','#fff','#fff'];
 const CAT = c => c ? 'Categoría ' + c : 'Tormenta tropical', cat = w => w >= 137 ? 5 : w >= 113 ? 4 : w >= 96 ? 3 : w >= 83 ? 2 : w >= 64 ? 1 : 0;
-let actual = null, idx = 0;
+const IDS = Object.keys(M25), MAX = Math.max(...IDS.map(z => M25[z].muertes || 0));
+let sel = null;
 
-// Un toque: categoría nueva → su #1; misma categoría → el siguiente del top 5.
-function elegir(c) {
-  if (!(c in TOP)) return;
-  idx = (actual === c) ? (idx + 1) % TOP[c].length : 0; actual = c;
-  const d = TOP[c][idx]; mostrar(c, d); reproducir(d);
+// Mapa: círculos de área proporcional a las muertes (radio ∝ √muertes). Sin registro: anillo punteado.
+function dibujarMapa() {
+  const RMAX = 120; let h = '';
+  // Los más grandes primero, para que los chicos queden encima y se puedan tocar.
+  IDS.slice().sort((a, b) => (M25[b].muertes || 0) - (M25[a].muertes || 0)).forEach(z => {
+    const d = M25[z], x = d.u * 1600, y = d.v * 1000, r = d.muertes ? Math.max(4, RMAX * Math.sqrt(d.muertes / MAX)) : 22;
+    h += `<circle class="burb${d.muertes ? '' : ' sr'}${sel === z ? ' on' : ''}" data-z="${z}" cx="${x}" cy="${y}" r="${r}"/>`;
+    // México y Caribe quedan juntos: el rótulo de México va arriba de su círculo.
+    const ty = z === '2' ? y - Math.max(r, 10) - 40 : y + Math.max(r, 10) + 34;
+    h += `<text class="et" x="${x}" y="${ty}" text-anchor="middle">${d.n} · ${d.muertes ? nf(d.muertes) : 'sin registro'}</text>`;
+    h += `<text class="et2" x="${x}" y="${ty + 28}" text-anchor="middle">${d.zona}</text>`;
+  });
+  el('sv').innerHTML = h;
+  el('sv').querySelectorAll('.burb').forEach(c => c.onclick = () => elegir(c.dataset.z));
 }
-function recibir(m) {
-  if (!m) return;
-  const n = +(m.numero || m.marcador || m.valor);
-  if (!(n >= 1 && n <= 6)) return;
-  el('tel').textContent = 'Panel: conectado'; el('tel').className = 'pill ok';
-  elegir(n - 1);
+// Lista ordenada: barras de largo proporcional a las muertes (escala lineal desde 0).
+function dibujarLista() {
+  el('rk').innerHTML = IDS.slice().sort((a, b) => (M25[b].muertes ?? -1) - (M25[a].muertes ?? -1)).map(z => {
+    const d = M25[z];
+    return `<li data-z="${z}" class="${sel === z ? 'on' : ''}"><div class="nm">${d.n}<small>${d.zona}</small></div>
+      ${d.muertes ? `<div class="b" style="width:${(d.muertes / MAX * 100).toFixed(1)}%"></div>` : '<div class="sr">sin registro en EM-DAT</div>'}
+      <div class="n">${d.muertes ? nf(d.muertes) : '—'}</div></li>`;
+  }).join('');
+  el('rk').querySelectorAll('li').forEach(li => li.onclick = () => elegir(li.dataset.z));
 }
-function mostrar(c, d) {
-  const card = el('card'); card.style.setProperty('--k', K[c]); card.style.setProperty('--t', TX[c]);
-  const T = d.h[d.h.length - 1], muertes = d.m && d.m[0] != null ? nf(d.m[0]) : '—';
-  card.innerHTML = `<span class="cat">${CAT(c)}</span> <span class="rk">#${idx + 1} de ${TOP[c].length}</span>
-    <h2>${d.n} (${d.s})</h2><p class="lu">Tocó tierra en <b>${d.p}</b>${d.r ? ' (' + d.r + ')' : ''}</p>
-    <div class="row"><div><span class="big">${nf(Math.round(d.w * 1.852))}</span> km/h<small>viento máximo (${d.w} kt)</small></div>
-    <div><span class="big">${(T / 24).toFixed(1).replace('.', ',')}</span> días<small>duración</small></div>
-    <div><span class="big">${muertes}</span><small>muertes (EM-DAT)</small></div></div>${curva(d, c)}<div id="ro"></div>`;
-}
-function curva(d, c) {
-  const W = 900, H = 170, m = { l: 34, r: 10, t: 8, b: 20 }, T = d.h[d.h.length - 1] || 1;
-  const X = h => m.l + h / T * (W - m.l - m.r), Y = v => m.t + (1 - v / 190) * (H - m.t - m.b);
-  let s = `<svg viewBox="0 0 ${W} ${H}" style="width:100%;height:auto;display:block" role="img" aria-label="Viento de ${d.n} día a día">`;
-  [0, 50, 100, 150].forEach(t => s += `<line x1="${m.l}" x2="${W - m.r}" y1="${Y(t)}" y2="${Y(t)}" stroke="#e3e8e4"/><text x="${m.l - 5}" y="${Y(t) + 4}" font-size="11" text-anchor="end" fill="#5c6a62">${t}</text>`);
-  s += `<path d="M${d.h.map((h, i) => X(h).toFixed(1) + ' ' + Y(d.v[i]).toFixed(1)).join('L')}" fill="none" stroke="${K[c]}" stroke-width="4"/>`;
-  s += `<line id="cur" y1="${m.t}" y2="${H - m.b}" x1="${m.l}" x2="${m.l}" stroke="#1d2a22"/><text x="${W / 2}" y="${H - 4}" font-size="11" text-anchor="middle" fill="#5c6a62">días · viento (kt)</text></svg>`;
-  curva.X = X; return s;
+function elegir(z) {
+  if (!M25[z]) return; sel = z; dibujarMapa(); dibujarLista();
+  const d = M25[z], T = d.h[d.h.length - 1];
+  el('det').innerHTML = `<span class="k" style="background:${K[d.c]};color:${TX[d.c]}">${CAT(d.c)}</span>
+    <h2>${d.n} (2025) · ${d.zona}</h2><p style="margin:0;color:var(--mut)">Tocó tierra en ${d.p}${d.r ? ' (' + d.r + ')' : ''}</p>
+    <div class="row"><div><span class="big" style="color:var(--dm)">${d.muertes ? nf(d.muertes) : '—'}</span><small>muertes${d.muertes ? '' : ' (sin registro)'}</small></div>
+    <div><span class="big">${d.afectados ? nf(d.afectados) : '—'}</span><small>afectados</small></div>
+    <div><span class="big">${nf(Math.round(d.w * 1.852))}</span> km/h<small>viento máximo</small></div>
+    <div><span class="big">${(T / 24).toFixed(1).replace('.', ',')}</span> días<small>duración</small></div></div><div id="ro"></div>`;
+  reproducir(d);
 }
 
-// Sonido: recorre la vida del huracán como «Reproducir audio» de la página. Un toque nuevo corta el anterior.
+// Sonido: el viento del ciclón día a día, igual que en la página.
 let PL = null, listo = false;
-el('act').onclick = async () => { try { await initAudio(); listo = true; el('act').textContent = 'Sonido activo'; el('act').disabled = true; } catch (e) {} };
-function parar() { if (PL) { cancelAnimationFrame(PL.raf); PL = null; } beep(0); }
+el('act').onclick = async () => { try { await initAudio(); listo = true; el('act').textContent = 'Sonido activo'; el('act').disabled = true; if (sel) reproducir(M25[sel]); } catch (e) {} };
 function reproducir(d) {
-  parar(); if (!listo) { const r = el('ro'); if (r) r.textContent = 'Toca «Activar sonido» en este computador para escucharlo.'; return; }
-  const H = d.h, T = H[H.length - 1], dur = Math.min(20, Math.max(7, T / 24 * .9)) * 1000, t0 = performance.now(), st = {}; PL = st;
+  if (PL) cancelAnimationFrame(PL.raf); PL = null; beep(0);
+  if (!listo) { el('ro').textContent = 'Toca «Activar sonido» para escucharlo.'; return; }
+  const H = d.h, V = d.v2, T = H[H.length - 1], dur = Math.min(20, Math.max(7, T / 24 * .9)) * 1000, t0 = performance.now(), st = {}; PL = st;
   const paso = now => {
     if (PL !== st) return;
     const f = Math.min(1, (now - t0) / dur), h = f * T; let i = 0; while (i < H.length - 2 && H[i + 1] < h) i++;
-    const a = H[i], b = H[i + 1] ?? a, u = b > a ? Math.min(1, Math.max(0, (h - a) / (b - a))) : 0, v = d.v[i] + ((d.v[i + 1] ?? d.v[i]) - d.v[i]) * u;
+    const a = H[i], b = H[i + 1] ?? a, u = b > a ? Math.min(1, Math.max(0, (h - a) / (b - a))) : 0, v = V[i] + ((V[i + 1] ?? V[i]) - V[i]) * u;
     beep(v);
-    const c = el('cur'); if (c) { const x = curva.X(h); c.setAttribute('x1', x); c.setAttribute('x2', x); }
-    const r = el('ro'); if (r) r.textContent = `Día ${(h / 24).toFixed(1).replace('.', ',')} · ${Math.round(v)} kt (${Math.round(v * 1.852)} km/h) · ${v >= 34 ? CAT(cat(v)).toLowerCase() : 'depresión tropical'}`;
+    el('ro').textContent = `Día ${(h / 24).toFixed(1).replace('.', ',')} · ${Math.round(v * 1.852)} km/h · ${v >= 34 ? CAT(cat(v)).toLowerCase() : 'depresión tropical'}`;
     if (f < 1) st.raf = requestAnimationFrame(paso); else { beep(0); PL = null; }
   };
   st.raf = requestAnimationFrame(paso);
 }
-document.querySelectorAll('[data-c]').forEach(b => b.onclick = () => elegir(+b.dataset.c));
+dibujarMapa(); dibujarLista();
 </script>
 <script src="config.js"></script>
 <script>
-// La escucha se registra DESPUÉS de config.js, cuando Protobject ya está inicializado.
-try {
-  Protobject.Core.onReceived(m => { el('tel').textContent = 'Panel: mensaje recibido'; el('tel').className = 'pill ok'; recibir(m); });
-  el('tel').textContent = 'Esperando la tablet: conéctala con el botón de Protobject y su código QR';
-} catch (e) {
-  el('tel').textContent = 'Protobject no cargó: ' + e.message; el('tel').className = 'pill';
-}
+try { Protobject.Core.onReceived(m => { const z = String(m && (m.numero || m.marcador || m.valor)); el('tel').textContent = 'Panel: conectado'; elegir(z); }); } catch (e) {}
 </script>
 </body></html>

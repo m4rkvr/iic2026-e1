@@ -1,73 +1,67 @@
 <!doctype html>
 <html lang="es"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
-<title>Panel de categorías</title>
+<title>Panel · más mortales 2025</title>
 <style>
-  html,body{margin:0;height:100%;background:#000;color:#fff;font-family:system-ui,sans-serif;overflow:hidden;touch-action:none;user-select:none;-webkit-user-select:none}
-  .panel{position:fixed;inset:0;display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:repeat(2,1fr);place-items:center}
-  /* Teléfono vertical: 2 columnas × 3 filas */
-  @media (orientation:portrait){.panel{grid-template-columns:repeat(2,1fr);grid-template-rows:repeat(3,1fr)}
-    .hole{width:min(40vw,28vh)!important;font-size:min(11vw,8vh)!important}}
-  .hole{width:min(26vw,40vh);aspect-ratio:1;border-radius:50%;border:none;font:800 min(7vw,11vh)/1 system-ui;
-        display:flex;flex-direction:column;align-items:center;justify-content:center;transition:transform .1s,box-shadow .1s}
-  .hole small{font-size:.32em;font-weight:600;margin-top:.3em;opacity:.85}
-  .hole.active{transform:scale(.92);box-shadow:0 0 0 .35em #fff}
-  .c0{background:#ace5ff;color:#1d2a22}.c1{background:#43c1ff;color:#1d2a22}.c2{background:#1498e4;color:#1d2a22}
-  .c3{background:#026cce;color:#fff}.c4{background:#383cad;color:#fff}.c5{background:#3f003c;color:#fff}
-  #st{position:fixed;bottom:6px;left:0;right:0;text-align:center;font:13px system-ui;color:#9fb0a4}
+  html,body{margin:0;height:100%;background:#0f1d26;color:#fff;font-family:system-ui,sans-serif;overflow:hidden;touch-action:none;user-select:none;-webkit-user-select:none}
+  /* El mapa ocupa lo más que pueda manteniendo 16:10; los agujeros se ubican en % del mapa. */
+  .mapa{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);width:min(100vw,160vh);aspect-ratio:16/10;background:url(mapa.png) center/100% 100% no-repeat}
+  .hole{position:absolute;width:9%;aspect-ratio:1;transform:translate(-50%,-50%);border-radius:50%;border:3px solid #fff;background:rgba(255,255,255,.18);
+        color:#fff;font:800 clamp(14px,2.6vw,34px)/1 system-ui;display:flex;align-items:center;justify-content:center;padding:0}
+  .hole.active{background:rgba(255,255,255,.55)}
+  .lbl{position:absolute;transform:translate(-50%,0);font:600 clamp(9px,1.2vw,15px) system-ui;color:#dfe9e3;white-space:nowrap;pointer-events:none;text-shadow:0 1px 2px #000}
+  #st{position:fixed;bottom:6px;left:0;right:0;text-align:center;font:600 clamp(14px,2vw,22px) system-ui;color:#fff;text-shadow:0 1px 3px #000}
   #fs{position:fixed;top:8px;left:50%;transform:translateX(-50%);z-index:2;font:600 16px system-ui;padding:8px 16px;border-radius:8px;border:0}
 </style></head><body>
 <script src="https://app.protobject.com/framework/p.js"></script>
 <button id="fs">Pantalla completa</button>
-<div id="st">Toca un círculo</div>
-<!-- Seis agujeros = las seis clases de la escala Saffir-Simpson, con los colores de la página. -->
-<div class="panel">
-  <button class="hole c0" data-num="1">TT<small>Tormenta</small></button>
-  <button class="hole c1" data-num="2">1<small>Categoría</small></button>
-  <button class="hole c2" data-num="3">2<small>Categoría</small></button>
-  <button class="hole c3" data-num="4">3<small>Categoría</small></button>
-  <button class="hole c4" data-num="5">4<small>Categoría</small></button>
-  <button class="hole c5" data-num="6">5<small>Categoría</small></button>
-</div>
+<div class="mapa" id="mapa"></div>
+<div id="st">Toca una región para ver su ciclón más mortal de 2025</div>
+<script src="datos.js"></script>
+<script>const ZONAS = Object.fromEntries(Object.entries(M25).map(([k, z]) => [k, { nombre: z.zona, u: z.u, v: z.v }]));</script>
 <script>
-// Igual que el artefacto 08 del kit: cada botón manda su número a index.html.
+// Ocho agujeros = ocho regiones (las mismas de panel-mapa, misma plantilla de cartón). Un toque envía la región.
 (function () {
-  const botones = document.querySelectorAll(".hole");
+  const mapa = document.getElementById("mapa"), st = document.getElementById("st");
+  const ESPERA = 150;
+  let zona = null, toques = 0, timer = null;
 
-  function enviarNumero(num) {
-    botones.forEach((b) => b.classList.toggle("active", b.dataset.num === String(num)));
+  for (const id in ZONAS) {
+    const z = ZONAS[id];
+    const b = document.createElement("button");
+    b.className = "hole"; b.dataset.num = id; b.textContent = id;
+    b.style.left = z.u * 100 + "%"; b.style.top = z.v * 100 + "%";
+    const l = document.createElement("div");
+    l.className = "lbl"; l.textContent = z.nombre; l.style.left = z.u * 100 + "%"; l.style.top = (z.v * 100 + 7.6) + "%";
+    mapa.append(b, l);
+    b.addEventListener("pointerdown", (e) => { e.preventDefault(); tocar(id, b); });
+  }
 
-    const st = document.getElementById("st");
+  function tocar(id, b) {
+    if (zona !== id) { zona = id; toques = 0; }
+    toques = Math.min(5, toques + 1);
+    b.classList.add("active"); setTimeout(() => b.classList.remove("active"), 150);
+    st.textContent = ZONAS[id].nombre;
+    clearTimeout(timer);
+    timer = setTimeout(() => enviar(id, toques), ESPERA);
+  }
+
+  function enviar(id, cat) {
     try {
-    Protobject.Core.send({
-      tipo: "panel",
-      accion: "press",
-      id: "zona" + num,
-      numero: String(num),
-      marcador: String(num),
-      valor: Number(num)
-    }).to("index.html");
-      st.textContent = "Enviado: " + num;
+      Protobject.Core.send({
+        tipo: "panel", accion: "press", id: "zona" + id,
+        numero: String(id), marcador: String(id), valor: Number(id),
+        region: ZONAS[id].nombre, toques: cat, categoria: cat
+      }).to("index.html");
+      st.textContent = "Enviado: " + ZONAS[id].nombre;
     } catch (err) {
       st.textContent = "No se pudo enviar (" + err.message + "). ¿Entraste escaneando el QR del computador?";
     }
-
-    setTimeout(() => {
-      botones.forEach((b) => b.classList.remove("active"));
-    }, 180);
+    zona = null; toques = 0;
   }
 
-  botones.forEach((boton) => {
-    const num = boton.dataset.num;
-    boton.addEventListener("pointerdown", (e) => {
-      e.preventDefault();
-      enviarNumero(num);
-    });
-  });
-
   document.getElementById("fs").addEventListener("click", () => {
-    const d = document.documentElement;
-    const pedir = d.requestFullscreen || d.webkitRequestFullscreen;
+    const d = document.documentElement, pedir = d.requestFullscreen || d.webkitRequestFullscreen;
     if (pedir) pedir.call(d);
     document.getElementById("fs").hidden = true;
   });
