@@ -1,131 +1,214 @@
 <!doctype html>
 <html lang="es"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Más mortales de 2025</title>
+<title>Ciclones por continente</title>
 <style>
-:root{--bg:#f3f5f1;--card:#fff;--ink:#1d2a22;--mut:#5c6a62;--line:#d5ddd6;--dm:#c62828;--acc:#2f6b45;
---c0:#ace5ff;--c1:#43c1ff;--c2:#1498e4;--c3:#026cce;--c4:#383cad;--c5:#3f003c}
+:root{--bg:#f3f5f1;--card:#fff;--ink:#1d2a22;--mut:#5c6a62;--line:#d5ddd6;--dm:#c62828;--af:#c26a00;--acc:#2f6b45}
 *{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.45 Inter,system-ui,sans-serif}
-.wrap{max-width:1180px;margin:0 auto;padding:16px}
-h1{font-size:24px;margin:0 0 4px}.sub{margin:0 0 12px;color:var(--mut);max-width:80ch}
-.bar{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:12px}
+.wrap{max-width:1200px;margin:0 auto;padding:16px}
+h1{font-size:24px;margin:0 0 4px}.sub{margin:0 0 12px;color:var(--mut);max-width:85ch}
 button{font:inherit;padding:6px 12px;border-radius:8px;border:1px solid var(--line);background:var(--card);cursor:pointer}
 button.pri{background:var(--acc);color:#fff;border-color:var(--acc);font-weight:700}
-.pill{padding:4px 12px;border-radius:999px;background:var(--card);border:1px solid var(--line);font-size:13px;color:var(--mut)}
-.grid{display:grid;grid-template-columns:1.6fr 1fr;gap:12px}@media(max-width:900px){.grid{grid-template-columns:1fr}}
+.top{display:grid;grid-template-columns:1fr auto;gap:12px;align-items:start;margin-bottom:12px}
+@media(max-width:900px){.top{grid-template-columns:1fr}}
 .card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px}
+#con{display:flex;gap:12px;align-items:center}
+#qr{width:170px;height:170px;display:flex;align-items:center;justify-content:center;background:#fff}
+#qr svg,#qr img{width:100%;height:100%}
+#con h3{margin:0 0 4px;font-size:15px}
+#sala{font:800 26px/1 ui-monospace,monospace;letter-spacing:.12em}
+#con p{margin:4px 0;font-size:13px;color:var(--mut);max-width:34ch}
+.estado{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px}
+.pill{padding:3px 10px;border-radius:999px;border:1px solid var(--line);font-size:12px;color:var(--mut);background:var(--card)}
+.pill.ok{background:var(--acc);border-color:var(--acc);color:#fff}
+.pill.no{background:#8a3a33;border-color:#8a3a33;color:#fff}
+.grid{display:grid;grid-template-columns:1.6fr 1fr;gap:12px}@media(max-width:900px){.grid{grid-template-columns:1fr}}
 .mapa{position:relative;width:100%;aspect-ratio:16/10;background:url(mapa.png) center/100% 100%;border-radius:8px;overflow:hidden}
 .mapa svg{position:absolute;inset:0;width:100%;height:100%}
-.burb{fill:rgba(198,40,40,.72);stroke:#fff;stroke-width:3;cursor:pointer}
-.burb.sr{fill:none;stroke:#fff;stroke-dasharray:8 6}
-.burb.on{stroke:#ffd54f;stroke-width:6}
+.burb{fill:rgba(198,40,40,.75);stroke:#fff;stroke-width:3;cursor:pointer}
+.burb.sr{fill:rgba(255,255,255,.08);stroke:#fff;stroke-dasharray:8 6}
+.burb.on{stroke:#ffd54f;stroke-width:7}
 .et{font:700 30px Inter,system-ui;fill:#fff;paint-order:stroke;stroke:#0f1d26;stroke-width:7px;pointer-events:none}
-.et2{font:500 24px Inter,system-ui;fill:#dfe9e3;paint-order:stroke;stroke:#0f1d26;stroke-width:6px;pointer-events:none}
+.et2{font:500 23px Inter,system-ui;fill:#dfe9e3;paint-order:stroke;stroke:#0f1d26;stroke-width:6px;pointer-events:none}
 .rk{list-style:none;margin:0;padding:0}
-.rk li{display:grid;grid-template-columns:150px 1fr 54px;gap:8px;align-items:center;padding:5px 4px;border-radius:6px;cursor:pointer}
+.rk li{display:grid;grid-template-columns:150px 1fr 60px;gap:8px;align-items:center;padding:6px 4px;border-radius:6px;cursor:pointer}
 .rk li:hover,.rk li.on{background:#eef2ee}
 .rk .nm{font-size:13px;line-height:1.2}.rk .nm small{display:block;color:var(--mut)}
-.rk .b{height:14px;background:var(--dm);border-radius:2px}.rk .sr{font-size:12px;color:var(--mut);font-style:italic}
+.rk .b{height:14px;background:var(--dm);border-radius:2px;min-width:2px}.rk .sr{font-size:12px;color:var(--mut);font-style:italic}
 .rk .n{text-align:right;font-weight:700;font-variant-numeric:tabular-nums}
-#det h2{margin:4px 0 2px;font-size:26px}
-.k{display:inline-block;padding:1px 10px;border-radius:999px;font-weight:800}
-.row{display:flex;gap:20px;flex-wrap:wrap;margin:8px 0}.big{font-size:30px;font-weight:800;line-height:1}
+.rk .af{grid-column:2/4;font-size:12px;color:var(--af);margin-top:-4px}
+#det{margin-top:12px}#det h2{margin:4px 0 2px;font-size:26px}
+.k{display:inline-block;padding:1px 10px;border-radius:999px;font-weight:800;background:#e3e8e4}
+.row{display:flex;gap:22px;flex-wrap:wrap;margin:8px 0}.big{font-size:30px;font-weight:800;line-height:1}
 .row small{display:block;color:var(--mut);font-size:11px;text-transform:uppercase;letter-spacing:.06em}
+.nota{font-size:13px;color:var(--mut);background:#f6f1e6;border-radius:8px;padding:6px 10px;margin:6px 0}
 #ro{color:var(--mut);font-size:13px;min-height:1.4em}
 .foot{font-size:11px;color:var(--mut);margin-top:12px}
 </style></head><body>
 <script>
-window.addEventListener("error", function (e) { var t = document.getElementById("tel"); if (t) t.textContent = "Error: " + e.message + " (" + (e.filename || "").split("/").pop() + ":" + e.lineno + ")"; });
+// Cualquier error de script queda escrito en pantalla.
+window.addEventListener("error", function (e) { var t = document.getElementById("errpc"); if (t) { t.hidden = false; t.className = "pill no"; t.textContent = "Error: " + e.message + " (" + String(e.filename || "").split("/").pop() + ":" + e.lineno + ")"; } });
 </script>
-<script src="https://app.protobject.com/framework/p.js"></script>
 <div class="wrap">
-  <h1>El ciclón más mortal de 2025 en cada región</h1>
-  <p class="sub">Un dato por región: el ciclón que más muertes dejó entre los que tocaron tierra ahí en la temporada 2025. El área de cada círculo es proporcional a las muertes. Toca una región (en el mapa, la lista o el panel de cartón) para ver el ciclón y escuchar su viento.</p>
-  <div class="bar"><button class="pri" id="act">Activar sonido</button><span class="pill" id="tel">Panel: sin conectar (opcional)</span></div>
+  <div class="top">
+    <div>
+      <h1 id="tit">El ciclón con más muertes de cada continente</h1>
+      <p class="sub" id="sub"></p>
+      <button class="pri" id="act">Activar sonido</button>
+    </div>
+    <div class="card" id="con">
+      <div id="qr">Cargando QR…</div>
+      <div>
+        <h3>Conecta la tablet</h3>
+        <div id="sala">····</div>
+        <p>Escanea este código con la cámara de la tablet. Se abre el panel ya conectado a esta pantalla.</p>
+        <p><a id="enl" href="#" target="_blank" rel="noopener">enlace del panel</a> · <button id="nueva" style="padding:2px 8px;font-size:12px">Nuevo código</button></p>
+        <div class="estado"><span class="pill" id="canal">Canal: conectando…</span><span class="pill" id="ult">Sin toques aún</span><span class="pill" id="errpc" hidden></span></div>
+      </div>
+    </div>
+  </div>
   <div class="grid">
-    <div class="card"><div class="mapa"><svg id="sv" viewBox="0 0 1600 1000" preserveAspectRatio="none"></svg></div></div>
+    <div class="card"><div class="mapa"><svg id="sv" viewBox="0 0 1600 1000" preserveAspectRatio="none" role="img" aria-label="Mapa: muertes por continente"></svg></div></div>
     <div class="card"><ul class="rk" id="rk"></ul></div>
   </div>
-  <div class="card" id="det" style="margin-top:12px"><p style="color:var(--mut)">Toca una región.</p></div>
-  <p class="foot">Muertes: EM-DAT (CRED / UCLouvain), por evento, incluidas las de otros países por los que pasó el ciclón. Trayectorias y viento: IBTrACS v04r01 (NOAA NCEI).
-    Temporada 2025: en el hemisferio sur va de julio de 2024 a junio de 2025 (por eso Chido, de diciembre de 2024, cuenta como 2025).
-    «Sin registro»: ningún ciclón de 2025 de esa región figura en EM-DAT; se muestra el de mayor viento. Las regiones son las del panel de cartón.</p>
+  <div class="card" id="det"><p style="color:var(--mut);margin:0">Toca un continente en el panel de cartón (o en el mapa o la lista).</p></div>
+  <p class="foot">Muertes y afectados: EM-DAT (CRED / UCLouvain), por evento: incluyen los de todos los países por los que pasó el ciclón. Trayectorias, viento y país de llegada a tierra: IBTrACS v04r01 (NOAA NCEI), igual que en la página principal.
+    Se elige el ciclón con más muertes y, a igual muertes, con más afectados. La temporada es la que tiene registro en más continentes; en el hemisferio sur va de julio del año anterior a junio.
+    El área de cada círculo es proporcional a las muertes. El sonido es el de la página: el viento suena más agudo y silba más cuanto más fuerte es; el volumen no cambia.</p>
 </div>
 <script src="datos.js"></script>
 <script src="sonido.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js"></script>
 <script>
-const el = id => document.getElementById(id), nf = n => n.toLocaleString('es-CL');
-const K = ['#ace5ff','#43c1ff','#1498e4','#026cce','#383cad','#3f003c'], TX = ['#1d2a22','#1d2a22','#1d2a22','#fff','#fff','#fff'];
-const CAT = c => c ? 'Categoría ' + c : 'Tormenta tropical', cat = w => w >= 137 ? 5 : w >= 113 ? 4 : w >= 96 ? 3 : w >= 83 ? 2 : w >= 64 ? 1 : 0;
-const IDS = Object.keys(M25), MAX = Math.max(...IDS.map(z => M25[z].muertes || 0));
-let sel = null;
+var el = function (id) { return document.getElementById(id); };
+var nf = function (n) { return n.toLocaleString('es-CL'); };
+var CATN = function (c) { return c ? 'Categoría ' + c : 'Tormenta tropical'; };
+var catDe = function (w) { return w >= 137 ? 5 : w >= 113 ? 4 : w >= 96 ? 3 : w >= 83 ? 2 : w >= 64 ? 1 : 0; };
+var COLK = ['#ace5ff', '#43c1ff', '#1498e4', '#026cce', '#383cad', '#3f003c'], COLT = ['#1d2a22', '#1d2a22', '#1d2a22', '#fff', '#fff', '#fff'];
+var IDS = Object.keys(CONTINENTES), MAXM = Math.max.apply(null, IDS.map(function (k) { return CONTINENTES[k].muertes || 0; }));
+var sel = null;
 
-// Mapa: círculos de área proporcional a las muertes (radio ∝ √muertes). Sin registro: anillo punteado.
+el('tit').textContent = 'El ciclón con más muertes de cada continente, ' + ANIO;
+el('sub').textContent = 'Un dato por continente: entre los ciclones que tocaron tierra ahí en la temporada ' + ANIO +
+  ', el que dejó más muertes (y, si empatan, más afectados). ' + ANIO + ' es la temporada con registros en más continentes. ' +
+  'Toca un continente en el panel de cartón para ver su ciclón y escuchar su viento.';
+
+// ---------- Mapa: círculos de área proporcional a las muertes ----------
 function dibujarMapa() {
-  const RMAX = 120; let h = '';
-  // Los más grandes primero, para que los chicos queden encima y se puedan tocar.
-  IDS.slice().sort((a, b) => (M25[b].muertes || 0) - (M25[a].muertes || 0)).forEach(z => {
-    const d = M25[z], x = d.u * 1600, y = d.v * 1000, r = d.muertes ? Math.max(4, RMAX * Math.sqrt(d.muertes / MAX)) : 22;
-    h += `<circle class="burb${d.muertes ? '' : ' sr'}${sel === z ? ' on' : ''}" data-z="${z}" cx="${x}" cy="${y}" r="${r}"/>`;
-    // México y Caribe quedan juntos: el rótulo de México va arriba de su círculo.
-    const ty = z === '2' ? y - Math.max(r, 10) - 40 : y + Math.max(r, 10) + 34;
-    h += `<text class="et" x="${x}" y="${ty}" text-anchor="middle">${d.n} · ${d.muertes ? nf(d.muertes) : 'sin registro'}</text>`;
-    h += `<text class="et2" x="${x}" y="${ty + 28}" text-anchor="middle">${d.zona}</text>`;
+  var RMAX = 130, h = '';
+  IDS.slice().sort(function (a, b) { return (CONTINENTES[b].muertes || 0) - (CONTINENTES[a].muertes || 0); }).forEach(function (k) {
+    var d = CONTINENTES[k], x = d.u * 1600, y = d.v * 1000;
+    var r = d.muertes ? Math.max(6, RMAX * Math.sqrt(d.muertes / MAXM)) : 24;
+    h += '<circle class="burb' + (d.muertes ? '' : ' sr') + (sel === k ? ' on' : '') + '" data-k="' + k + '" cx="' + x + '" cy="' + y + '" r="' + r + '"/>';
+    // Europa (encima de África) y Antártida (en el borde de abajo) llevan el rótulo arriba del círculo.
+    var arriba = k === '3' || k === '7';
+    var ty = arriba ? y - Math.max(r, 10) - 44 : y + Math.max(r, 10) + 34;
+    var t1 = d.estado === 'sin-ciclon' ? 'sin ciclones' : d.n + ' · ' + (d.muertes ? nf(d.muertes) : 'sin registro');
+    h += '<text class="et" x="' + x + '" y="' + ty + '" text-anchor="middle">' + t1 + '</text>';
+    h += '<text class="et2" x="' + x + '" y="' + (ty + 28) + '" text-anchor="middle">' + d.nombre + '</text>';
   });
   el('sv').innerHTML = h;
-  el('sv').querySelectorAll('.burb').forEach(c => c.onclick = () => elegir(c.dataset.z));
+  el('sv').querySelectorAll('.burb').forEach(function (c) { c.onclick = function () { elegir(c.getAttribute('data-k')); }; });
 }
-// Lista ordenada: barras de largo proporcional a las muertes (escala lineal desde 0).
+// ---------- Lista ordenada por muertes (barras desde cero), con afectados ----------
 function dibujarLista() {
-  el('rk').innerHTML = IDS.slice().sort((a, b) => (M25[b].muertes ?? -1) - (M25[a].muertes ?? -1)).map(z => {
-    const d = M25[z];
-    return `<li data-z="${z}" class="${sel === z ? 'on' : ''}"><div class="nm">${d.n}<small>${d.zona}</small></div>
-      ${d.muertes ? `<div class="b" style="width:${(d.muertes / MAX * 100).toFixed(1)}%"></div>` : '<div class="sr">sin registro en EM-DAT</div>'}
-      <div class="n">${d.muertes ? nf(d.muertes) : '—'}</div></li>`;
+  el('rk').innerHTML = IDS.slice().sort(function (a, b) {
+    var A = CONTINENTES[a], B = CONTINENTES[b];
+    return ((B.muertes || -1) - (A.muertes || -1)) || ((B.afectados || 0) - (A.afectados || 0));
+  }).map(function (k) {
+    var d = CONTINENTES[k];
+    var barra = d.muertes ? '<div class="b" style="width:' + (d.muertes / MAXM * 100).toFixed(1) + '%"></div>'
+      : '<div class="sr">' + (d.estado === 'sin-ciclon' ? 'ningún ciclón tocó tierra' : 'sin registro en EM-DAT') + '</div>';
+    return '<li data-k="' + k + '" class="' + (sel === k ? 'on' : '') + '"><div class="nm">' + (d.n || '—') + '<small>' + d.nombre + '</small></div>' + barra +
+      '<div class="n">' + (d.muertes ? nf(d.muertes) : '—') + '</div>' + (d.afectados ? '<div class="af">' + nf(d.afectados) + ' afectados</div>' : '') + '</li>';
   }).join('');
-  el('rk').querySelectorAll('li').forEach(li => li.onclick = () => elegir(li.dataset.z));
+  el('rk').querySelectorAll('li').forEach(function (li) { li.onclick = function () { elegir(li.getAttribute('data-k')); }; });
 }
-function elegir(z) {
-  if (!M25[z]) return; sel = z; dibujarMapa(); dibujarLista();
-  const d = M25[z], T = d.h[d.h.length - 1];
-  el('det').innerHTML = `<span class="k" style="background:${K[d.c]};color:${TX[d.c]}">${CAT(d.c)}</span>
-    <h2>${d.n} (2025) · ${d.zona}</h2><p style="margin:0;color:var(--mut)">Tocó tierra en ${d.p}${d.r ? ' (' + d.r + ')' : ''}</p>
-    <div class="row"><div><span class="big" style="color:var(--dm)">${d.muertes ? nf(d.muertes) : '—'}</span><small>muertes${d.muertes ? '' : ' (sin registro)'}</small></div>
-    <div><span class="big">${d.afectados ? nf(d.afectados) : '—'}</span><small>afectados</small></div>
-    <div><span class="big">${nf(Math.round(d.w * 1.852))}</span> km/h<small>viento máximo</small></div>
-    <div><span class="big">${(T / 24).toFixed(1).replace('.', ',')}</span> días<small>duración</small></div></div><div id="ro"></div>`;
+// ---------- Detalle ----------
+function elegir(k) {
+  var d = CONTINENTES[k]; if (!d) return;
+  sel = k; dibujarMapa(); dibujarLista(); parar();
+  if (d.estado === 'sin-ciclon') {
+    el('det').innerHTML = '<h2>' + d.nombre + '</h2><p style="margin:0;color:var(--mut)">' + (k === '7'
+      ? 'Ningún ciclón tropical llega a la Antártida: se forman sobre mares cálidos, entre los 5° y los 30° de latitud, y se deshacen al entrar en aguas frías.'
+      : 'En la temporada ' + ANIO + ' ningún ciclón tropical tocó tierra en ' + d.nombre + '. En este continente son muy raros.') + '</p>';
+    return;
+  }
+  var T = d.h[d.h.length - 1];
+  el('det').innerHTML = '<span class="k" style="background:' + COLK[d.c] + ';color:' + COLT[d.c] + '">' + CATN(d.c) + '</span>' +
+    '<h2>' + d.n + ' (' + ANIO + ') · ' + d.nombre + '</h2><p style="margin:0;color:var(--mut)">Tocó tierra en ' + d.p + (d.r ? ' (' + d.r + ')' : '') + '</p>' +
+    '<div class="row"><div><span class="big" style="color:var(--dm)">' + (d.muertes ? nf(d.muertes) : '—') + '</span><small>muertes' + (d.estado === 'sin-registro' ? ' (sin registro)' : '') + '</small></div>' +
+    '<div><span class="big" style="color:var(--af)">' + (d.afectados ? nf(d.afectados) : '—') + '</span><small>afectados</small></div>' +
+    '<div><span class="big">' + nf(Math.round(d.w * 1.852)) + '</span> km/h<small>viento máximo</small></div>' +
+    '<div><span class="big">' + (T / 24).toFixed(1).replace('.', ',') + '</span> días<small>duración</small></div></div>' +
+    (d.nota ? '<p class="nota">' + d.nota + '</p>' : '') + '<div id="ro"></div>';
   reproducir(d);
 }
 
-// Sonido: el viento del ciclón día a día, igual que en la página.
-let PL = null, listo = false;
-el('act').onclick = async () => { try { await initAudio(); listo = true; el('act').textContent = 'Sonido activo'; el('act').disabled = true; if (sel) reproducir(M25[sel]); } catch (e) {} };
+// ---------- Sonido: el viento del ciclón día a día ----------
+var PL = null, listo = false;
+el('act').onclick = function () {
+  Promise.resolve(initAudio()).then(function () { listo = true; el('act').textContent = 'Sonido activo'; el('act').disabled = true; if (sel) elegir(sel); });
+};
+function parar() { if (PL) cancelAnimationFrame(PL.raf); PL = null; if (typeof beep === 'function') beep(0); }
 function reproducir(d) {
-  if (PL) cancelAnimationFrame(PL.raf); PL = null; beep(0);
-  if (!listo) { el('ro').textContent = 'Toca «Activar sonido» para escucharlo.'; return; }
-  const H = d.h, V = d.v2, T = H[H.length - 1], dur = Math.min(20, Math.max(7, T / 24 * .9)) * 1000, t0 = performance.now(), st = {}; PL = st;
-  const paso = now => {
+  parar();
+  if (!listo) { el('ro').textContent = 'Toca «Activar sonido» en este computador para escucharlo.'; return; }
+  var H = d.h, V = d.viento, T = H[H.length - 1], dur = Math.min(20, Math.max(7, T / 24 * .9)) * 1000, t0 = performance.now(), st = {}; PL = st;
+  function paso(now) {
     if (PL !== st) return;
-    const f = Math.min(1, (now - t0) / dur), h = f * T; let i = 0; while (i < H.length - 2 && H[i + 1] < h) i++;
-    const a = H[i], b = H[i + 1] ?? a, u = b > a ? Math.min(1, Math.max(0, (h - a) / (b - a))) : 0, v = V[i] + ((V[i + 1] ?? V[i]) - V[i]) * u;
+    var f = Math.min(1, (now - t0) / dur), h = f * T, i = 0;
+    while (i < H.length - 2 && H[i + 1] < h) i++;
+    var a = H[i], b = H[i + 1] != null ? H[i + 1] : a, u = b > a ? Math.min(1, Math.max(0, (h - a) / (b - a))) : 0;
+    var v = V[i] + ((V[i + 1] != null ? V[i + 1] : V[i]) - V[i]) * u;
     beep(v);
-    el('ro').textContent = `Día ${(h / 24).toFixed(1).replace('.', ',')} · ${Math.round(v * 1.852)} km/h · ${v >= 34 ? CAT(cat(v)).toLowerCase() : 'depresión tropical'}`;
+    var ro = el('ro'); if (ro) ro.textContent = 'Día ' + (h / 24).toFixed(1).replace('.', ',') + ' · ' + Math.round(v * 1.852) + ' km/h · ' + (v >= 34 ? CATN(catDe(v)).toLowerCase() : 'depresión tropical');
     if (f < 1) st.raf = requestAnimationFrame(paso); else { beep(0); PL = null; }
-  };
+  }
   st.raf = requestAnimationFrame(paso);
 }
+
+// ---------- Mensajes del panel (llegan por cualquiera de los dos canales) ----------
+var vistos = {};
+function recibir(m, canal) {
+  if (typeof m === 'string') { try { m = JSON.parse(m); } catch (e) { m = { numero: m }; } }
+  if (!m) return;
+  if (m.t) { if (vistos[m.t]) return; vistos[m.t] = 1; }
+  var k = String(m.numero || m.marcador || m.valor);
+  el('ult').className = 'pill ok'; el('ult').textContent = 'Último toque: ' + k + ' (' + canal + ', ' + new Date().toLocaleTimeString('es-CL') + ')';
+  elegir(k);
+}
+
+// Canal principal: sala propia + QR. La tablet publica en ntfy.sh y esta página está suscrita al mismo tema.
+var sala = null, fuente = null;
+function nuevaSala() { var a = 'abcdefghjkmnpqrstuvwxyz23456789', s = ''; for (var i = 0; i < 5; i++) s += a[Math.floor(Math.random() * a.length)]; return s; }
+function conectar(s) {
+  sala = s; try { localStorage.setItem('panel-sala', s); } catch (e) {}
+  var url = new URL('sensor.html?sala=' + s, location.href).href;
+  el('sala').textContent = s.toUpperCase(); el('enl').href = url;
+  if (window.qrcode) { var q = qrcode(0, 'M'); q.addData(url); q.make(); el('qr').innerHTML = q.createSvgTag({ cellSize: 4, margin: 2, scalable: true }); }
+  else el('qr').innerHTML = '<small style="padding:8px;word-break:break-all">' + url + '</small>';
+  if (fuente) fuente.close();
+  el('canal').className = 'pill'; el('canal').textContent = 'Canal: conectando…';
+  fuente = new EventSource('https://ntfy.sh/iic2026-panel-' + s + '/sse');
+  fuente.onopen = function () { el('canal').className = 'pill ok'; el('canal').textContent = 'Canal: listo, esperando la tablet'; };
+  fuente.onerror = function () { el('canal').className = 'pill no'; el('canal').textContent = 'Canal: sin conexión (reintentando…)'; };
+  fuente.onmessage = function (e) {
+    var d; try { d = JSON.parse(e.data); } catch (x) { return; }
+    if (d.event === 'message') recibir(d.message, 'QR');
+  };
+}
+el('nueva').onclick = function () { conectar(nuevaSala()); };
+var guardada = null; try { guardada = localStorage.getItem('panel-sala'); } catch (e) {}
+conectar(guardada && /^[a-z0-9]{4,12}$/.test(guardada) ? guardada : nuevaSala());
+
 dibujarMapa(); dibujarLista();
 </script>
+<!-- Canal opcional: Protobject, como en el Physical Viz Toolkit. Si no carga o no conecta, el QR de arriba sigue funcionando. -->
+<script src="https://app.protobject.com/framework/p.js"></script>
 <script src="config.js"></script>
 <script>
-try {
-  Protobject.Core.onReceived(m => {
-    el('tel').textContent = 'Recibido: ' + JSON.stringify(m);
-    const z = String(m && typeof m === 'object' ? (m.numero || m.marcador || m.valor) : m);
-    elegir(z);
-  });
-  el('tel').textContent = 'Esperando la tablet: conéctala escaneando el QR de Protobject';
-} catch (e) { el('tel').textContent = 'Protobject no cargó: ' + e.message; }
+try { Protobject.Core.onReceived(function (m) { recibir(m, 'Protobject'); }); } catch (e) {}
 </script>
 </body></html>

@@ -1,66 +1,101 @@
 <!doctype html>
 <html lang="es"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
-<title>Panel mortales 2025</title>
+<title>Panel de continentes</title>
 <style>
   html,body{margin:0;height:100%;background:#0f1d26;color:#fff;font-family:system-ui,sans-serif;overflow:hidden;touch-action:none;user-select:none;-webkit-user-select:none}
+  /* El mapa ocupa todo lo que puede en proporción 16:10; los agujeros van en % del mapa (igual que la plantilla). */
   .mapa{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);width:min(100vw,160vh);height:min(62.5vw,100vh);background:url(mapa.png) center/100% 100% no-repeat}
-  .hole{position:absolute;width:9%;height:14.4%;margin-left:-4.5%;margin-top:-7.2%;border-radius:50%;border:3px solid #fff;background:rgba(255,255,255,.18);
-        color:#fff;font:800 28px/1 system-ui;padding:0}
-  .hole.active{background:rgba(255,255,255,.6)}
-  .lbl{position:absolute;width:24%;margin-left:-12%;text-align:center;font:600 13px system-ui;color:#dfe9e3;pointer-events:none;text-shadow:0 1px 2px #000}
-  #st{position:fixed;bottom:6px;left:0;right:0;text-align:center;font:600 16px system-ui;color:#fff;text-shadow:0 1px 3px #000}
-  #err{position:fixed;top:52px;left:8px;right:8px;font:13px monospace;color:#ffb4a8;background:rgba(0,0,0,.7);padding:4px 8px;border-radius:6px;display:none}
+  .hole{position:absolute;width:11%;height:17.6%;margin-left:-5.5%;margin-top:-8.8%;border-radius:50%;border:3px solid #fff;background:rgba(255,255,255,.2);
+        color:#fff;font:800 30px/1 system-ui;padding:0;-webkit-tap-highlight-color:transparent}
+  .hole.active{background:rgba(255,255,255,.65)}
+  .lbl{position:absolute;width:24%;margin-left:-12%;text-align:center;font:600 14px system-ui;color:#dfe9e3;pointer-events:none;text-shadow:0 1px 2px #000}
+  #st{position:fixed;bottom:6px;left:0;right:0;text-align:center;font:600 17px system-ui;color:#fff;text-shadow:0 1px 3px #000}
+  #err{position:fixed;top:52px;left:8px;right:8px;font:13px monospace;color:#ffb4a8;background:rgba(0,0,0,.75);padding:4px 8px;border-radius:6px;display:none;white-space:pre-wrap}
   #fs{position:fixed;top:8px;left:50%;transform:translateX(-50%);z-index:2;font:600 16px system-ui;padding:8px 16px;border-radius:8px;border:0}
 </style></head><body>
 <script>
-// Cualquier error de script queda escrito en pantalla, para poder diagnosticar en la tablet.
-window.addEventListener("error", function (e) { var d = document.getElementById("err"); if (d) { d.style.display = "block"; d.textContent += "Error: " + e.message + " (" + (e.filename || "").split("/").pop() + ":" + e.lineno + ")\n"; } });
+// Cualquier error de script queda escrito en pantalla, para diagnosticar en la tablet.
+window.addEventListener("error", function (e) { var d = document.getElementById("err"); if (d) { d.style.display = "block"; d.textContent += "Error: " + e.message + " (" + String(e.filename || "").split("/").pop() + ":" + e.lineno + ")\n"; } });
 </script>
-<script src="https://app.protobject.com/framework/p.js"></script>
 <button id="fs">Pantalla completa</button>
 <div id="err"></div>
-<!-- Ocho agujeros = las 8 regiones de la plantilla de cartón. Igual que el artefacto 08 del kit: los botones están en el HTML. -->
+<!-- Siete agujeros = siete continentes. Igual que el artefacto 08 del kit: los botones están en el HTML. -->
 <div class="mapa">
-  <button class="hole" data-num="1" style="left:12.67%;top:14.89%">1</button>
-  <div class="lbl" style="left:12.67%;top:22.49%">Estados Unidos y Canadá</div>
-  <button class="hole" data-num="2" style="left:9.67%;top:37.23%">2</button>
-  <div class="lbl" style="left:9.67%;top:44.83%">México y Centroamérica</div>
-  <button class="hole" data-num="3" style="left:20.67%;top:37.23%">3</button>
-  <div class="lbl" style="left:20.67%;top:44.83%">Caribe</div>
-  <button class="hole" data-num="4" style="left:70.67%;top:34.04%">4</button>
-  <div class="lbl" style="left:70.67%;top:41.64%">Índico Norte</div>
-  <button class="hole" data-num="5" style="left:85.00%;top:15.96%">5</button>
-  <div class="lbl" style="left:85.00%;top:23.56%">Asia oriental</div>
-  <button class="hole" data-num="6" style="left:81.00%;top:46.81%">6</button>
-  <div class="lbl" style="left:81.00%;top:54.41%">Sudeste asiático</div>
-  <button class="hole" data-num="7" style="left:89.33%;top:80.85%">7</button>
-  <div class="lbl" style="left:89.33%;top:88.45%">Oceanía</div>
-  <button class="hole" data-num="8" style="left:57.33%;top:75.53%">8</button>
-  <div class="lbl" style="left:57.33%;top:83.13%">África suroriental</div>
+  <button class="hole" data-num="1" style="left:22.22%;top:22.94%">1</button>
+  <div class="lbl" style="left:22.22%;top:32.54%">América del Norte</div>
+  <button class="hole" data-num="2" style="left:33.33%;top:57.65%">2</button>
+  <div class="lbl" style="left:33.33%;top:67.25%">América del Sur</div>
+  <button class="hole" data-num="3" style="left:53.89%;top:18.82%">3</button>
+  <div class="lbl" style="left:53.89%;top:28.42%">Europa</div>
+  <button class="hole" data-num="4" style="left:55.56%;top:47.06%">4</button>
+  <div class="lbl" style="left:55.56%;top:56.66%">África</div>
+  <button class="hole" data-num="5" style="left:76.39%;top:22.94%">5</button>
+  <div class="lbl" style="left:76.39%;top:32.54%">Asia</div>
+  <button class="hole" data-num="6" style="left:87.22%;top:64.12%">6</button>
+  <div class="lbl" style="left:87.22%;top:73.72%">Oceanía</div>
+  <button class="hole" data-num="7" style="left:50.00%;top:94.71%">7</button>
+  <div class="lbl" style="left:50.00%;top:83.21%">Antártida</div>
 </div>
-<div id="st">Toca una región</div>
+<div id="st">Conectando…</div>
 <script>
+/* Cómo llega el toque al computador.
+   1. Canal principal: el QR que muestra el computador abre esta página con ?sala=XXXX. Cada toque se publica
+      por HTTPS en el tema «iic2026-panel-XXXX» de ntfy.sh (servicio público de mensajes), y el computador está
+      suscrito a ese mismo tema. No depende de WebRTC, así que funciona en redes donde Protobject no conecta.
+   2. Canal Protobject (el del kit): si la página se abrió desde el botón «+» de Protobject (sin ?sala), se carga
+      Protobject y se envía con Protobject.Core.send(...).to("index.html"), como el artefacto 08.
+   El mensaje es el mismo del kit (tipo, accion, id, numero, marcador, valor) más «t», un identificador único para
+   que el computador no lo cuente dos veces si llega por los dos canales. */
 (function () {
   var botones = document.querySelectorAll(".hole");
   var st = document.getElementById("st");
+  var sala = new URLSearchParams(location.search).get("sala");
+  sala = sala && /^[a-z0-9]{4,12}$/.test(sala) ? sala : null;
+  var protobject = false;
+
+  if (sala) {
+    st.textContent = "Conectado a la sala " + sala.toUpperCase() + ". Toca un continente.";
+  } else {
+    // Sin sala: se intenta Protobject, como en el kit.
+    st.textContent = "Sin sala: escanea el QR grande que muestra el computador.";
+    var p = document.createElement("script");
+    p.src = "https://app.protobject.com/framework/p.js";
+    p.onload = function () {
+      var c = document.createElement("script");
+      c.src = "config.js";
+      c.onload = function () { protobject = true; st.textContent = "Protobject cargado. Toca un continente."; };
+      document.body.appendChild(c);
+    };
+    p.onerror = function () { st.textContent = "No cargó Protobject. Escanea el QR grande del computador."; };
+    document.body.appendChild(p);
+  }
 
   function enviarNumero(num) {
     botones.forEach(function (b) { b.classList.toggle("active", b.dataset.num === String(num)); });
-    try {
-      Protobject.Core.send({
-        tipo: "panel",
-        accion: "press",
-        id: "zona" + num,
-        numero: String(num),
-        marcador: String(num),
-        valor: Number(num)
-      }).to("index.html");
-      st.textContent = "Enviado: región " + num;
-    } catch (err) {
-      st.textContent = "No se pudo enviar (" + err.message + "). Entra escaneando el QR del computador.";
-    }
     setTimeout(function () { botones.forEach(function (b) { b.classList.remove("active"); }); }, 180);
+    var msg = {
+      tipo: "panel",
+      accion: "press",
+      id: "zona" + num,
+      numero: String(num),
+      marcador: String(num),
+      valor: Number(num),
+      t: Date.now().toString(36) + Math.random().toString(36).slice(2, 6)
+    };
+    var enviado = false;
+    if (sala) {
+      st.textContent = "Enviando " + num + "…";
+      fetch("https://ntfy.sh/iic2026-panel-" + sala, { method: "POST", body: JSON.stringify(msg) })
+        .then(function (r) { st.textContent = r.ok ? "Enviado: " + num + " ✓" : "No se pudo enviar (error " + r.status + ")"; })
+        .catch(function (e) { st.textContent = "Sin internet en la tablet (" + e.message + ")"; });
+      enviado = true;
+    }
+    if (protobject && window.Protobject && Protobject.Core) {
+      try { Protobject.Core.send(msg).to("index.html"); enviado = true; if (!sala) st.textContent = "Enviado por Protobject: " + num; }
+      catch (e) { if (!sala) st.textContent = "Protobject no pudo enviar: " + e.message; }
+    }
+    if (!enviado) st.textContent = "No hay conexión: escanea el QR grande que muestra el computador.";
   }
 
   botones.forEach(function (boton) {
@@ -75,5 +110,4 @@ window.addEventListener("error", function (e) { var d = document.getElementById(
   });
 })();
 </script>
-<script src="config.js"></script>
 </body></html>
