@@ -1,66 +1,75 @@
 <!doctype html>
 <html lang="es"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
-<title>Panel · más mortales 2025</title>
+<title>Panel mortales 2025</title>
 <style>
   html,body{margin:0;height:100%;background:#0f1d26;color:#fff;font-family:system-ui,sans-serif;overflow:hidden;touch-action:none;user-select:none;-webkit-user-select:none}
-  /* El mapa ocupa lo más que pueda manteniendo 16:10; los agujeros se ubican en % del mapa. */
-  .mapa{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);width:min(100vw,160vh);aspect-ratio:16/10;background:url(mapa.png) center/100% 100% no-repeat}
-  .hole{position:absolute;width:9%;aspect-ratio:1;transform:translate(-50%,-50%);border-radius:50%;border:3px solid #fff;background:rgba(255,255,255,.18);
-        color:#fff;font:800 clamp(14px,2.6vw,34px)/1 system-ui;display:flex;align-items:center;justify-content:center;padding:0}
-  .hole.active{background:rgba(255,255,255,.55)}
-  .lbl{position:absolute;transform:translate(-50%,0);font:600 clamp(9px,1.2vw,15px) system-ui;color:#dfe9e3;white-space:nowrap;pointer-events:none;text-shadow:0 1px 2px #000}
-  #st{position:fixed;bottom:6px;left:0;right:0;text-align:center;font:600 clamp(14px,2vw,22px) system-ui;color:#fff;text-shadow:0 1px 3px #000}
+  .mapa{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);width:min(100vw,160vh);height:min(62.5vw,100vh);background:url(mapa.png) center/100% 100% no-repeat}
+  .hole{position:absolute;width:9%;height:14.4%;margin-left:-4.5%;margin-top:-7.2%;border-radius:50%;border:3px solid #fff;background:rgba(255,255,255,.18);
+        color:#fff;font:800 28px/1 system-ui;padding:0}
+  .hole.active{background:rgba(255,255,255,.6)}
+  .lbl{position:absolute;width:24%;margin-left:-12%;text-align:center;font:600 13px system-ui;color:#dfe9e3;pointer-events:none;text-shadow:0 1px 2px #000}
+  #st{position:fixed;bottom:6px;left:0;right:0;text-align:center;font:600 16px system-ui;color:#fff;text-shadow:0 1px 3px #000}
+  #err{position:fixed;top:52px;left:8px;right:8px;font:13px monospace;color:#ffb4a8;background:rgba(0,0,0,.7);padding:4px 8px;border-radius:6px;display:none}
   #fs{position:fixed;top:8px;left:50%;transform:translateX(-50%);z-index:2;font:600 16px system-ui;padding:8px 16px;border-radius:8px;border:0}
 </style></head><body>
+<script>
+// Cualquier error de script queda escrito en pantalla, para poder diagnosticar en la tablet.
+window.addEventListener("error", function (e) { var d = document.getElementById("err"); if (d) { d.style.display = "block"; d.textContent += "Error: " + e.message + " (" + (e.filename || "").split("/").pop() + ":" + e.lineno + ")\n"; } });
+</script>
 <script src="https://app.protobject.com/framework/p.js"></script>
 <button id="fs">Pantalla completa</button>
-<div class="mapa" id="mapa"></div>
-<div id="st">Toca una región para ver su ciclón más mortal de 2025</div>
+<div id="err"></div>
+<!-- Ocho agujeros = las 8 regiones de la plantilla de cartón. Igual que el artefacto 08 del kit: los botones están en el HTML. -->
+<div class="mapa">
+  <button class="hole" data-num="1" style="left:12.67%;top:14.89%">1</button>
+  <div class="lbl" style="left:12.67%;top:22.49%">Estados Unidos y Canadá</div>
+  <button class="hole" data-num="2" style="left:9.67%;top:37.23%">2</button>
+  <div class="lbl" style="left:9.67%;top:44.83%">México y Centroamérica</div>
+  <button class="hole" data-num="3" style="left:20.67%;top:37.23%">3</button>
+  <div class="lbl" style="left:20.67%;top:44.83%">Caribe</div>
+  <button class="hole" data-num="4" style="left:70.67%;top:34.04%">4</button>
+  <div class="lbl" style="left:70.67%;top:41.64%">Índico Norte</div>
+  <button class="hole" data-num="5" style="left:85.00%;top:15.96%">5</button>
+  <div class="lbl" style="left:85.00%;top:23.56%">Asia oriental</div>
+  <button class="hole" data-num="6" style="left:81.00%;top:46.81%">6</button>
+  <div class="lbl" style="left:81.00%;top:54.41%">Sudeste asiático</div>
+  <button class="hole" data-num="7" style="left:89.33%;top:80.85%">7</button>
+  <div class="lbl" style="left:89.33%;top:88.45%">Oceanía</div>
+  <button class="hole" data-num="8" style="left:57.33%;top:75.53%">8</button>
+  <div class="lbl" style="left:57.33%;top:83.13%">África suroriental</div>
+</div>
+<div id="st">Toca una región</div>
 <script>
-// Las 8 regiones y la posición de su agujero (fracción del ancho y alto del mapa). Van aquí mismo para que
-// esta página no dependa de ningún otro archivo de datos.
-const ZONAS = {"1": {"nombre": "Estados Unidos y Canadá", "u": 0.1267, "v": 0.1489}, "2": {"nombre": "México y Centroamérica", "u": 0.0967, "v": 0.3723}, "3": {"nombre": "Caribe", "u": 0.2067, "v": 0.3723}, "4": {"nombre": "Índico Norte", "u": 0.7067, "v": 0.3404}, "5": {"nombre": "Asia oriental", "u": 0.85, "v": 0.1596}, "6": {"nombre": "Sudeste asiático", "u": 0.81, "v": 0.4681}, "7": {"nombre": "Oceanía", "u": 0.8933, "v": 0.8085}, "8": {"nombre": "África suroriental", "u": 0.5733, "v": 0.7553}};
-</script>
-<script>
-// Ocho agujeros = ocho regiones (las mismas de panel-mapa, misma plantilla de cartón). Un toque envía la región.
 (function () {
-  const mapa = document.getElementById("mapa"), st = document.getElementById("st");
+  var botones = document.querySelectorAll(".hole");
+  var st = document.getElementById("st");
 
-  for (const id in ZONAS) {
-    const z = ZONAS[id];
-    const b = document.createElement("button");
-    b.className = "hole"; b.dataset.num = id; b.textContent = id;
-    b.style.left = z.u * 100 + "%"; b.style.top = z.v * 100 + "%";
-    const l = document.createElement("div");
-    l.className = "lbl"; l.textContent = z.nombre; l.style.left = z.u * 100 + "%"; l.style.top = (z.v * 100 + 7.6) + "%";
-    mapa.append(b, l);
-    b.addEventListener("pointerdown", (e) => { e.preventDefault(); tocar(id, b); });
-  }
-
-  // Igual que el kit: el toque se envía de inmediato, en el mismo pointerdown.
-  function tocar(id, b) {
-    b.classList.add("active"); setTimeout(() => b.classList.remove("active"), 150);
-    enviar(id, 1);
-  }
-
-  function enviar(id, cat) {
-    if (!window.Protobject || !Protobject.Core) { st.textContent = "Sin conexión: abre esta página escaneando el QR del computador (no como archivo suelto)."; return; }
+  function enviarNumero(num) {
+    botones.forEach(function (b) { b.classList.toggle("active", b.dataset.num === String(num)); });
     try {
       Protobject.Core.send({
-        // Solo texto sin tildes y números, igual que el ejemplo del kit.
-        tipo: "panel", accion: "press", id: "zona" + id,
-        numero: String(id), marcador: String(id), valor: Number(id),
-        toques: 1
+        tipo: "panel",
+        accion: "press",
+        id: "zona" + num,
+        numero: String(num),
+        marcador: String(num),
+        valor: Number(num)
       }).to("index.html");
-      st.textContent = "Enviado: " + ZONAS[id].nombre;
+      st.textContent = "Enviado: región " + num;
     } catch (err) {
-      st.textContent = "No se pudo enviar (" + err.message + "). ¿Entraste escaneando el QR del computador?";
+      st.textContent = "No se pudo enviar (" + err.message + "). Entra escaneando el QR del computador.";
     }
+    setTimeout(function () { botones.forEach(function (b) { b.classList.remove("active"); }); }, 180);
   }
 
-  document.getElementById("fs").addEventListener("click", () => {
-    const d = document.documentElement, pedir = d.requestFullscreen || d.webkitRequestFullscreen;
+  botones.forEach(function (boton) {
+    var num = boton.dataset.num;
+    boton.addEventListener("pointerdown", function (e) { e.preventDefault(); enviarNumero(num); });
+  });
+
+  document.getElementById("fs").addEventListener("click", function () {
+    var d = document.documentElement, pedir = d.requestFullscreen || d.webkitRequestFullscreen;
     if (pedir) pedir.call(d);
     document.getElementById("fs").hidden = true;
   });

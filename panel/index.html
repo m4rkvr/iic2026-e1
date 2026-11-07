@@ -35,6 +35,9 @@ button.pri{background:var(--acc);color:#fff;border-color:var(--acc);font-weight:
 #ro{color:var(--mut);font-size:13px;min-height:1.4em}
 .foot{font-size:11px;color:var(--mut);margin-top:12px}
 </style></head><body>
+<script>
+window.addEventListener("error", function (e) { var t = document.getElementById("tel"); if (t) t.textContent = "Error: " + e.message + " (" + (e.filename || "").split("/").pop() + ":" + e.lineno + ")"; });
+</script>
 <script src="https://app.protobject.com/framework/p.js"></script>
 <div class="wrap">
   <h1>El ciclón más mortal de 2025 en cada región</h1>
@@ -116,6 +119,13 @@ dibujarMapa(); dibujarLista();
 </script>
 <script src="config.js"></script>
 <script>
-try { Protobject.Core.onReceived(m => { const z = String(m && (m.numero || m.marcador || m.valor)); el('tel').textContent = 'Panel: conectado'; elegir(z); }); } catch (e) {}
+try {
+  Protobject.Core.onReceived(m => {
+    el('tel').textContent = 'Recibido: ' + JSON.stringify(m);
+    const z = String(m && typeof m === 'object' ? (m.numero || m.marcador || m.valor) : m);
+    elegir(z);
+  });
+  el('tel').textContent = 'Esperando la tablet: conéctala escaneando el QR de Protobject';
+} catch (e) { el('tel').textContent = 'Protobject no cargó: ' + e.message; }
 </script>
 </body></html>
