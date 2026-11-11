@@ -3,92 +3,208 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Sensor táctil de ciclones</title>
 <style>
-:root{--bg:#0f1d26;--card:#17293a;--ink:#eef3ef;--mut:#9fb2a8;--line:#2b4257;--acc:#c2550a;--ok:#2f8f5b}
+:root{color-scheme:dark;--bg:#121a16;--card:#1c241f;--ink:#eef3ef;--mut:#9fb2a8;--mut2:#c9d8cf;--line:#33453a;--acc:#4fb07f;--ok:#2f8f5b;--verde:#8fb996;
+ --btn:#26362d;--sea:#0f1d26;--land:#4a6a55;--mark:#fff;--hl:#ffd54f;--mdot:#b03a37;--maptxt:#dfe9e3;
+ --c0:#055673;--c1:#0177aa;--c2:#0d96f0;--c3:#99b0ff;--c4:#d6cbff;--c5:#ffefff;
+ --o0:#fff;--o1:#fff;--o2:#1d2a22;--o3:#1d2a22;--o4:#1d2a22;--o5:#1d2a22;
+ --kmb:#a55;--kmf:#3a2626;--kmc:#ff8f8f;--kab:#a8782a;--kaf:#3a3020;--kac:#ffb347}
+:root[data-tema="claro"]{color-scheme:light;--bg:#eef3ef;--card:#fff;--ink:#1d2a22;--mut:#5a6e63;--mut2:#44574c;--line:#cbd8d0;--acc:#4fb07f;--ok:#2f8f5b;--verde:#2f6b43;
+ --btn:#e3ebe6;--sea:#d7e6f0;--land:#a8c3b0;--mark:#1d2a22;--hl:#d98a00;--mdot:#c0392b;--maptxt:#2c3d33;
+ --c0:#055673;--c1:#0177aa;--c2:#0d86d6;--c3:#4f6fe0;--c4:#8660d0;--c5:#b2358f;
+ --o0:#fff;--o1:#fff;--o2:#fff;--o3:#fff;--o4:#fff;--o5:#fff;
+ --kmb:#c46565;--kmf:#fdeaea;--kmc:#a32525;--kab:#c99a3a;--kaf:#fdf2dd;--kac:#8a5a00}
+.onda{transform-box:fill-box;transform-origin:center;animation:onda 1.5s ease-out infinite;pointer-events:none}@keyframes onda{0%{transform:scale(.93);opacity:1}100%{transform:scale(1.12);opacity:0}}@media(prefers-reduced-motion:reduce){.onda{animation:none;opacity:.7}}
+.barra{display:flex;justify-content:flex-end;margin-bottom:6px}
 *{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.45 system-ui,sans-serif}
-.wrap{max-width:1150px;margin:0 auto;padding:16px}
-h1{font-size:22px;margin:0 0 10px}h3{margin:0 0 6px;font-size:15px}
+.wrap{max-width:1400px;margin:0 auto;padding:16px}
+h1{font:700 clamp(26px,4vw,44px)/1.1 Georgia,serif;margin:0 0 4px;text-align:center;color:var(--verde)}
+h3{margin:0 0 6px;font-size:15px}
+.lead{text-align:center;color:var(--mut);margin:0 0 14px}
 .card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px;margin-bottom:12px}
 .row{display:flex;gap:12px;flex-wrap:wrap}.row>.card{flex:1 1 320px}
-button{font:inherit;padding:6px 12px;border-radius:8px;border:1px solid var(--line);background:#20384d;color:var(--ink);cursor:pointer}
+button{font:inherit;padding:6px 12px;border-radius:8px;border:1px solid var(--line);background:var(--btn);color:var(--ink);cursor:pointer}
 button.pri{background:var(--acc);border-color:var(--acc);font-weight:700}
 button:disabled{opacity:.4;cursor:default}
 .pill{display:inline-block;padding:3px 10px;border-radius:999px;border:1px solid var(--line);font-size:12px;color:var(--mut);margin:2px}
 .pill.ok{background:var(--ok);border-color:var(--ok);color:#fff}
-.qrs{display:flex;gap:16px;flex-wrap:wrap}.qrs div{text-align:center;font-size:12px;color:var(--mut)}
+.nota{font-size:12px;color:var(--mut)}
+
+/* ---------- vista principal: mapa + ficha ---------- */
+.vista{min-height:100vh;display:flex;flex-direction:column}
+.main{display:flex;gap:12px;flex:1;align-items:flex-start;flex-wrap:wrap}
+.mapaw{flex:1 1 640px;min-width:0}
+svg#mapa{width:100%;display:block;background:var(--sea);border-radius:10px}
+svg#mapa text{text-anchor:middle;pointer-events:none;paint-order:stroke;stroke:var(--sea);stroke-width:.9;stroke-linejoin:round}
+svg#mapa .t1{fill:var(--ink);font-weight:800;font-size:3.1px}
+svg#mapa .t2{fill:var(--mut2);font-size:2.3px;stroke-width:.7}
+svg#mapa g[data-id]{cursor:pointer}
+#estado{margin-top:6px;text-align:center;min-height:1.4em}
+#ficha{flex:0 0 360px;max-width:100%;position:relative;min-height:420px;text-align:center;overflow-wrap:anywhere}
+#ficha .vacio{color:var(--mut);text-align:center;padding:120px 10px}
+#ficha .cab{display:flex;flex-direction:column;align-items:center;gap:10px}
+#ficha h2{margin:0 0 6px;font-size:24px}
+#ficha .cat{display:inline-flex;align-items:center;justify-content:center;gap:8px;font-weight:700}
+#ficha .cat b{background:var(--k);color:var(--on);border-radius:999px;padding:1px 9px}
+#ficha .sub{font-size:12px;color:var(--mut);margin-top:8px}
+#ficha .kpis{display:flex;gap:10px;width:100%}#ficha .kpis .kpi{flex:1 1 0;min-width:0}
+.kpi{border-radius:10px;border:1px solid;padding:8px;text-align:center}
+.kpi b{display:block;font-size:21px}.kpi small{display:block;font-size:11px;font-weight:700;margin-top:2px}
+.kpi.m{border-color:var(--kmb);background:var(--kmf);color:var(--kmc)}.kpi.a{border-color:var(--kab);background:var(--kaf);color:var(--kac)}
+#ficha .viento{display:flex;flex-direction:column;align-items:center;margin:14px 0 4px}
+#ficha .vl{font-size:12px;font-weight:700;margin-top:6px}
+#ficha .abajo{display:flex;gap:10px;margin-top:12px}
+.mini{flex:1;border:1px solid var(--line);border-radius:10px;padding:8px;text-align:center}
+.mini b{display:block;font-size:20px}.mini small{font-size:11px;font-weight:700}
+.ring{position:relative;width:130px;height:130px;border-radius:50%;display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1;background:var(--card);box-shadow:inset 0 0 0 9px color-mix(in srgb,var(--k) 16%,transparent)}
+.ring::before{content:"";position:absolute;inset:0;border-radius:50%;background:repeating-conic-gradient(from 0deg,var(--k) 0deg,color-mix(in srgb,var(--k) 8%,transparent) 105deg,color-mix(in srgb,var(--k) 8%,transparent) 120deg);-webkit-mask:radial-gradient(farthest-side,transparent calc(100% - 9px),#000 calc(100% - 8px));mask:radial-gradient(farthest-side,transparent calc(100% - 9px),#000 calc(100% - 8px));animation:rspin var(--sp,4s) linear infinite}
+.ring b,.ring small{position:relative}.ring b{font-size:34px}.ring small{font-size:12px;color:var(--mut);margin-top:3px}
+@keyframes rspin{to{transform:rotate(360deg)}}
+@media(prefers-reduced-motion:reduce){.ring::before{animation:none}}
+.mini b{font-size:17px}
+#sinreg{margin:10px 0;color:var(--mut)}
+
+/* ---------- zona de calibración (abajo del todo) ---------- */
+.calib{--card:#1f2b24;--btn:#26362d;--line:#33453a;--sea:#12324a;--done:#0a2132;--mut:#9fb2a8;--mark:#fff;--maptxt:#dfe9e3;--ink:#eef3ef;
+ margin-top:40px;padding:16px;background:#17211b;border-radius:14px;color:var(--ink)}
+:root[data-tema="claro"] .calib{--card:#f5f9f6;--btn:#e3ebe6;--line:#bccfc3;--sea:#cfe1ee;--done:#8fb3d0;--mut:#5a6e63;--mark:#1d2a22;--maptxt:#1d2a22;--ink:#1d2a22;background:#dfeae2}
+.calib .card{background:var(--card);border-color:var(--line)}
+.calib input[type=range]{accent-color:#4fb07f}
+.sect button{border-radius:10px}.sect button.hecho{border:2px solid var(--ok)}
+.calib .pill.ok{background:var(--ok);border-color:var(--ok);color:#fff}
+.calib>h2{margin:0 0 8px;font-size:18px}
+.calib button{padding:4px 10px;font-size:13px}.calib .card{padding:10px 12px}.calib .sect{gap:5px;margin:6px 0}.calib .fila{margin-top:6px}
+button,button.pri{background:#a8c3b0;border-color:#a8c3b0;color:#fff;font-weight:600}
+button:hover:not(:disabled){background:#97b5a0}
+#tema{background:#e4e4e5;border-color:#e4e4e5;color:#111;text-shadow:none}#tema:hover:not(:disabled){background:#d6d6d8}
+.calib .sect button{background:#e4e4e5;border:2px solid #e4e4e5;color:#111;text-shadow:none}
+.calib .sect button:hover:not(:disabled){background:#d6d6d8}
+.calib .sect button.hecho{background:#bcdcf4;border:2px solid #bcdcf4;color:#14304a;text-shadow:none}
+.calib .sect button.sel{outline:2px solid #ffd23f;outline-offset:1px}
+.calgrid{display:grid;grid-template-columns:1fr 1fr 1fr;grid-template-areas:"c1 c2 c3";gap:12px;align-items:stretch;margin-bottom:12px}.calbot{display:grid;grid-template-columns:210px 1fr;gap:12px;align-items:start}.qrcol{min-width:0;text-align:center}.qrcol .qrs{align-items:center}.qrcol .nota{margin:8px 0 0;font-size:11px}.qrcol .qr{width:130px;height:130px}.calbot .mapcard{min-width:0}.calbot .mapcard h3{margin:0 0 4px}.fila1{flex-wrap:wrap;gap:6px}.fila1 .pill{font-size:11px;padding:3px 8px}.calgrid .card{margin-bottom:0}
+@media(max-width:1000px){.calgrid{grid-template-columns:1fr;grid-template-areas:"c1" "c2" "c3"}.calbot{grid-template-columns:1fr}.qrs{flex-direction:row}}
+.fila{display:flex;align-items:center;gap:8px;margin-top:8px}
+.qrs{display:flex;flex-direction:column;align-items:flex-start;gap:10px}.qrs div{text-align:center;font-size:12px;color:var(--mut)}
 .qr{width:150px;height:150px;background:#fff;color:#000;padding:4px;border-radius:6px}.qr svg{width:100%;height:100%;display:block}
 .qr svg path{fill:#000!important}.qr svg rect{fill:#fff!important}
 #sala{font:800 24px ui-monospace,monospace;letter-spacing:.1em}
 .sect{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0}
-.sect button.sel{outline:2px solid #ffd54f}.sect button.hecho{border-color:var(--ok)}
-#grande{font-size:clamp(40px,8vw,96px);font-weight:800;text-align:center;min-height:1.3em;line-height:1.1}
-#sub{text-align:center;color:var(--mut);min-height:1.4em}
-svg.mapa{width:100%;background:#12324a;border-radius:8px}
-svg.mapa text{fill:#dfe9e3;font-size:4px;text-anchor:middle;pointer-events:none}
-.nota{font-size:12px;color:var(--mut)}
-</style></head><body><div class="wrap">
-<h1>Sensor táctil: toca un sector y suena su ciclón</h1>
+.sect button.sel{outline:2px solid var(--hl)}.sect button.hecho{border-color:var(--ok)}
+svg.mapaCal{width:100%;height:calc(100vh - 440px);min-height:200px;max-height:560px;display:block;background:var(--sea);border-radius:8px}
+svg.mapaCal text{fill:var(--maptxt);font-size:4px;text-anchor:middle;pointer-events:none}
+</style>
+<script>(function(){var t=null;try{t=localStorage.getItem("tema-ciclones")}catch(e){}
+document.documentElement.setAttribute("data-tema",t==="claro"?"claro":"oscuro")})()</script>
+</head><body><div class="wrap">
 
-<div class="card">
-  <h3>1 · Conectar los teléfonos</h3>
-  <div>Sala <span id="sala"></span> <button id="nueva">Nuevo código</button>
-    <span class="pill" id="pBr">Servidor: conectando…</span>
-    <span class="pill" id="pCe">Cenital: sin datos</span>
-    <span class="pill" id="pFr">Frontal: sin datos</span></div>
-  <div class="qrs" style="margin-top:8px">
-    <div><div class="qr" id="qrCe"></div>Teléfono cenital<br>(mira hacia abajo)</div>
-    <div><div class="qr" id="qrFr"></div>Teléfono frontal<br>(mira de costado)</div>
+<!-- ===================== VISTA PRINCIPAL ===================== -->
+<div class="vista" id="vista">
+  <div class="barra"><button id="tema" type="button"></button></div>
+  <h1>Los ciclones más letales por sector, 2000-2026</h1>
+  <p class="lead">Para cada sector, el ciclón con más muertes. Toca un sector en el cartón.</p>
+  <div class="main">
+    <div class="card mapaw">
+      <svg id="mapa" viewBox="0 0 200 100"><g id="tierra"></g><g id="marc"></g></svg>
+      <div id="estado" class="nota"></div>
+    </div>
+    <div class="card" id="ficha"><div id="fBody"><div class="vacio">Toca un sector en el cartón<br>(o haz clic en un círculo del mapa)</div></div></div>
   </div>
-  <p class="nota">En cada teléfono: «Iniciar cámara». Para oír el sonido, toca «Activar sonido» en el teléfono que quieras que suene (puede ser uno o ambos).</p>
 </div>
 
-<div class="row">
-<div class="card">
-  <h3>2 · Entrenar los puntos</h3>
-  <div class="nota">Elige un sector, pon el dedo sobre su punto en el cartón y pulsa «Guardar punto».</div>
-  <div class="sect" id="lista"></div>
-  <button class="pri" id="guardar">Guardar punto</button>
-  <button id="borrar">Borrar sector elegido</button>
-  <button id="reset">Reiniciar todo</button>
-  <h3 style="margin-top:14px">3 · Calibrar alturas</h3>
-  <div class="nota">Con el dedo sobre cualquier punto:</div>
-  <button id="bUp">Dedo arriba (sin tocar)</button> <span id="vUp" class="pill">—</span><br>
-  <button id="bDown" style="margin-top:6px">Dedo en la mesa</button> <span id="vDown" class="pill">—</span>
-  <div style="margin-top:14px"><button class="pri" id="uso" disabled>Iniciar modo tocar</button>
-  <button id="entrenar" hidden>Volver a entrenar</button></div>
-</div>
-<div class="card">
-  <h3>Pantalla</h3>
-  <div id="grande">—</div><div id="sub">Entrena los puntos y calibra para empezar.</div>
-  <svg class="mapa" id="mapa" viewBox="0 0 160 100"></svg>
-  <p class="nota">Radio de detección <input id="rad" type="range" min="0.04" max="0.3" step="0.01" value="0.12"> <span id="radv">0.12</span> (súbelo si cuesta detectar; bájalo si se confunden puntos vecinos).</p>
-</div>
-</div>
+<!-- ===================== CALIBRACIÓN (abajo) ===================== -->
+<div class="calib" id="calib">
+  <h2>Calibración <button id="subir" style="margin-left:10px">↑ Volver al mapa</button></h2>
+
+  <div class="calgrid">
+    <div class="card" style="grid-area:c1">
+      <h3>1 · Conectar los teléfonos</h3>
+      <div class="fila fila1">Sala <span id="sala"></span> <button id="nueva">Nuevo código</button>
+        <span class="pill" id="pBr">Servidor: conectando…</span>
+        <span class="pill" id="pCe">Cenital: sin datos</span>
+        <span class="pill" id="pFr">Frontal: sin datos</span></div>
+      <div class="fila"><button id="snd" class="pri">Activar sonido</button> <button id="test" disabled>Probar sonido</button></div>
+    </div>
+
+    <div class="card" style="grid-area:c2">
+      <h3>2 · Entrenar los puntos</h3>
+      <div class="nota">Elige un sector, pon el dedo sobre su punto en el cartón y pulsa «Guardar punto».</div>
+      <div class="sect" id="lista"></div>
+      <button class="pri" id="guardar">Guardar punto</button>
+      <button id="borrar">Borrar sector elegido</button>
+      <button id="reset">Reiniciar todo</button>
+    </div>
+
+    <div class="card" style="grid-area:c3">
+      <h3>3 · Calibrar alturas</h3>
+      <div class="nota">Con el dedo sobre cualquier punto:</div>
+      <div class="fila"><button id="bUp">Dedo arriba (sin tocar)</button> <span id="vUp" class="pill">—</span></div>
+      <div class="fila"><button id="bDown">Dedo en la mesa</button> <span id="vDown" class="pill">—</span></div>
+      <div class="fila" style="margin-top:14px"><button class="pri" id="uso" disabled>Iniciar modo tocar</button>
+      <button id="entrenar" hidden>Volver a entrenar</button></div>
+    </div>
+  </div>
+
+  <div class="calbot">
+    <div class="qrcol">
+      <div class="qrs">
+        <div><div class="qr" id="qrCe"></div>Teléfono cenital<br>(mira hacia abajo)</div>
+        <div><div class="qr" id="qrFr"></div>Teléfono frontal<br>(mira de costado)</div>
+      </div>
+      <p class="nota">En cada teléfono: «Iniciar cámara». El sonido sale por este computador: pulsa «Activar sonido» una vez (también se activa al pulsar «Iniciar modo tocar»).</p>
+    </div>
+
+  <div class="card mapcard" style="margin-bottom:0">
+    <h3>Puntos entrenados</h3>
+    <div id="estado2" class="nota" style="text-align:center;min-height:1.4em"></div>
+    <svg class="mapaCal" id="mapaCal" viewBox="0 0 160 100"></svg>
+    <p class="nota">Radio de detección <input id="rad" type="range" min="0.04" max="0.3" step="0.01" value="0.12"> <span id="radv">0.12</span> (súbelo si cuesta detectar; bájalo si se confunden puntos vecinos).</p>
+  </div>
+  </div>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/mqtt@5.10.1/dist/mqtt.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/d3@7.9.0/dist/d3.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/topojson-client@3.1.0/dist/topojson-client.min.js"></script>
 <script>
-// w = viento (kt) del ciclón que representa a cada sector. Valores aproximados: revísalos con datos/storms.csv.
+var $=function(i){return document.getElementById(i)};
+// Un sector = un continente con su ciclón más letal 2000-2026.
+// u,v: posición del punto en el cartón (solo para el dibujo de calibración). lon,lat: dónde se dibuja el círculo en el mapa.
+// w: viento máx. (kt). y: año. reg: cuenca. m: muertes. a: afectados. d: duración (días). t: horas sobre tierra. null => «s/d».
+// Revisa/completa con datos/storms.csv. Los datos marcados (*) no salían en tu captura: verifícalos.
+// u,v: punto en el cartón. lon,lat: círculo en el mapa. w: viento máx. (kt). p: presión mín. (hPa). y: año. m: muertes. a: afectados.
+// d: duración (días). t: horas sobre tierra. ps: países. vv/hh: viento (kt) cada hh horas (para el sonido de la evolución). Fuente: index(2) (IBTrACS + EM-DAT).
 var SECT=[
- {id:1,n:"América del Norte",c:"Irma",w:160,u:.22,v:.23},
- {id:2,n:"América Central",c:"Eta",w:130,u:.27,v:.38},
- {id:3,n:"América del Sur",c:"sin registros",w:35,u:.33,v:.60},
- {id:4,n:"Europa",c:"Leslie",w:80,u:.54,v:.19},
- {id:5,n:"África",c:"Freddy",w:125,u:.555,v:.47},
- {id:6,n:"Asia",c:"Bilis",w:55,u:.76,v:.23},
- {id:7,n:"Oceanía",c:"Harold",w:135,u:.87,v:.64},
- {id:8,n:"Antártida",c:"sin registros",w:25,u:.50,v:.94}];
-var KEY="sensor-e2-v1", VENTANA=400, $=function(i){return document.getElementById(i)};
+ {id:1,n:"América del Norte",c:"Jeanne",u:0.22,v:0.23,lon:-100,lat:45,w:105,p:951,y:2004,reg:"Atlántico Norte",m:2782,a:10138842,d:15.8,t:102,ps:"Bahamas, R. Dominicana, Haití, Puerto Rico, EE. UU.",
+  vv:[25,25,30,35,50,55,55,60,60,60,60,70,65,60,55,50,30,40,45,45,40,40,40,40,45,50,55,60,75,75,75,75,75,80,85,85,85,85,85,80,75,70,75,80,85,85,90,100,105,105,95,75,55,45,40,35,30,25,20,20,25,25,35,35],hh:[0,6,12,18,24,30,36,42,48,54,60,66,72,78,84,90,96,102,108,114,120,126,132,138,144,150,156,162,168,174,180,186,192,198,204,210,216,222,228,234,240,246,252,258,264,270,276,282,288,294,300,306,312,318,324,330,336,342,348,354,360,366,372,378]},
+ {id:2,n:"América Central",c:"Stan",u:0.27,v:0.38,lon:-86,lat:14,w:70,p:977,y:2005,reg:"Atlántico Norte",m:1629,a:7152272,d:3.8,t:36,ps:"México, Guatemala, El Salvador, Honduras, Nicaragua, Costa Rica, Haití",
+  vv:[25,30,30,40,35,35,30,35,40,50,55,65,70,45,30,25],hh:[0,6,12,18,24,30,36,42,48,54,60,66,72,78,84,90]},
+ {id:3,n:"América del Sur",c:null,u:.33,v:.60,lon:-60,lat:-15,w:35,why:"Casi no se forman ciclones tropicales en el Atlántico Sur: el agua es más fría y el viento cambia mucho con la altura, lo que los deshace. Sin registros en 2000-2026."},
+ {id:4,n:"Europa",c:"Leslie",u:0.54,v:0.19,lon:15,lat:50,w:80,p:968,y:2018,reg:"Atlántico Norte",m:2,a:88,d:22.0,t:6,ps:"Portugal",
+  vv:[25,30,35,35,35,35,35,35,35,35,35,35,30,30,30,40,50,55,55,60,65,65,65,60,50,50,45,45,40,40,40,45,45,45,45,45,45,50,50,50,50,55,55,60,60,65,75,75,75,70,65,60,55,55,55,50,50,50,50,50,50,50,50,50,45,45,45,50,55,55,55,60,65,65,65,65,70,70,70,75,80,80,75,75,70,65,65,60,40],hh:[0,6,12,18,24,30,36,42,48,54,60,66,72,78,84,90,96,102,108,114,120,126,132,138,144,150,156,162,168,174,180,186,192,198,204,210,216,222,228,234,240,246,252,258,264,270,276,282,288,294,300,306,312,318,324,330,336,342,348,354,360,366,372,378,384,390,396,402,408,414,420,426,432,438,444,450,456,462,468,474,480,486,492,498,504,510,516,522,528]},
+ {id:5,n:"África",c:"Freddy",u:0.555,v:0.47,lon:20,lat:5,w:140,p:923,y:2023,reg:"Índico Sur",m:1412,a:3827533,d:38.0,t:216,ps:"Madagascar, Mozambique, Mauricio, Reunión, Malaui, Zimbabue",
+  vv:[25,25,25,25,25,30,30,40,45,50,65,75,85,90,90,90,85,70,60,55,50,65,65,65,60,70,75,90,110,120,110,100,100,100,95,90,90,85,80,90,110,115,125,130,130,130,130,125,115,120,125,120,125,120,115,115,115,120,140,130,130,140,130,120,115,110,100,95,95,75,60,40,25,30,45,45,55,55,60,65,50,45,40,30,25,25,20,20,20,15,15,15,15,15,15,15,15,15,15,15,15,20,25,25,25,25,25,25,30,25,25,35,35,40,50,45,40,45,45,50,50,45,65,75,90,95,95,80,75,70,60,55,55,65,70,75,75,65,75,100,95,95,75,60,50,40,30,25,20,15,20,15,15],hh:[0,6,12,18,24,30,36,42,48,54,60,66,72,78,84,90,96,102,108,114,120,126,132,138,144,150,156,162,168,174,180,186,192,198,204,210,216,222,228,234,240,246,252,258,264,270,276,282,288,294,300,306,312,318,324,330,336,342,348,354,360,366,372,378,384,390,396,402,408,414,420,426,432,438,444,450,456,462,468,474,480,486,492,498,504,510,516,522,528,534,540,546,552,558,564,570,576,582,588,594,600,606,612,618,624,630,636,642,648,654,660,666,672,678,684,690,696,702,708,714,720,726,732,738,744,750,756,762,768,774,780,786,792,798,804,810,816,822,828,834,840,846,852,858,864,870,876,882,888,894,900,906,912]},
+ {id:6,n:"Asia",c:"Nargis",u:0.76,v:0.23,lon:90,lat:35,w:115,p:937,y:2008,reg:"Índico Norte",m:138375,a:29675680,d:8.5,t:42,ps:"Sri Lanka, Myanmar, Tailandia",
+  vv:[20,20,20,20,20,25,25,30,35,45,55,65,70,75,75,75,70,70,70,60,65,65,65,70,100,100,110,115,115,85,70,50,40,30,25],hh:[0,6,12,18,24,30,36,42,48,54,60,66,72,78,84,90,96,102,108,114,120,126,132,138,144,150,156,162,168,174,180,186,192,198,204]},
+ {id:7,n:"Oceanía",c:"Guba",u:0.87,v:0.64,lon:135,lat:-25,w:75,p:967,y:2007,reg:"Pacífico Sur",m:172,a:162140,d:6.5,t:12,ps:"Papúa Nueva Guinea",
+  vv:[25,25,30,35,35,35,35,35,40,45,45,50,60,70,75,65,55,55,50,45,45,45,40,35,35,30,25],hh:[0,6,12,18,24,30,36,42,48,54,60,66,72,78,84,90,96,102,108,114,120,126,132,138,144,150,156]},
+ {id:8,n:"Antártida",c:null,u:.50,v:.94,lon:0,lat:-76,w:25,why:"Es demasiado frío: los ciclones tropicales necesitan mar de más de 26 °C. Sin registros."}];
+var MMAX=138375;
+function categoria(kt){return kt>=137?5:kt>=113?4:kt>=96?3:kt>=83?2:kt>=64?1:0}
+function nombreCat(kt){var c=categoria(kt);return c?{n:c,t:"Categoría "+c}:{n:"–",t:kt>=34?"Tormenta tropical":"Depresión tropical"}}
+function fmt(v){return v==null?"s/d":(typeof v==="number"?v.toLocaleString("es-CL"):v)}
+
+var KEY="sensor-e2-v1", VENTANA=400;
 var S=Object.assign({pts:{},zUp:null,zDown:null,sala:null,modo:"entrenar"},JSON.parse(localStorage.getItem(KEY)||"{}"));
 function guardarLS(){localStorage.setItem(KEY,JSON.stringify(S))}
 function nuevaSala(){var a="abcdefghjkmnpqrstuvwxyz23456789",s="";for(var i=0;i<5;i++)s+=a[Math.floor(Math.random()*a.length)];return s}
 if(!S.sala)S.sala=nuevaSala();
-var cen=null,fro=null,sel=1,cli=null,tocando=null;
+var cen=null,fro=null,sel=1,cli=null,tocando=null,mostrado=null;
 var base=function(){return "iic2026/sensor/"+S.sala};
 var fresco=function(o){return o&&Date.now()-o.t<VENTANA};
 var RADIO=function(){return parseFloat($("rad").value)};
 
+// ---------- conexión con los teléfonos ----------
 function qr(el,rol){
   if(!/^https?:$/.test(location.protocol)){
     $(el).innerHTML='<small style="color:#000;font-size:11px">Abre esta página desde su dirección https (GitHub Pages), no desde un archivo local ni una vista previa.</small>';return}
@@ -110,24 +226,102 @@ function conectar(){
 }
 $("nueva").onclick=function(){S.sala=nuevaSala();conectar()};
 
+// ---------- sonido: viento sintético (modelo de index(2): las frecuencias crecen con la velocidad U; volumen corregido por sonoridad) ----------
+var ctx=null,audioOn=false,GN,HB,HG,B1,B2,T1,T2,tsn,play=null;
+var LN=[3.36,3.36,3.37,3.4,3.42,3.47,3.54,3.64,3.75,3.88,4.08,4.24,4.5,4.78,5.06,5.35,5.66,5.99,6.37,6.77,6.94,7.05,7.15,7.24,7.37,7.46,7.62,7.74,7.87,7.96,8.05,8.15,8.26,8.35,8.42];
+function lnd(v){var x=(Math.min(Math.max(v,20),190)-20)/5,i=Math.max(0,Math.min(LN.length-2,Math.floor(x)));return LN[i]+(LN[i+1]-LN[i])*(x-i)}
+function activarAudio(){
+  if(audioOn)return;
+  ctx=ctx||new (window.AudioContext||window.webkitAudioContext)();
+  ctx.resume().then(function(){
+    if(!GN){
+      var g=function(v){var n=ctx.createGain();n.gain.value=v;return n},f=function(q,fr){var b=ctx.createBiquadFilter();b.type="bandpass";b.frequency.value=fr;b.Q.value=q;return b};
+      HB=f(.7,400);B1=f(30,300);B2=f(30,120);HG=g(0);T1=g(0);T2=g(0);GN=g(0);
+      HB.connect(HG);HG.connect(GN);B1.connect(T1);T1.connect(GN);B2.connect(T2);T2.connect(GN);GN.connect(ctx.destination);
+      var nb=ctx.createBuffer(1,ctx.sampleRate*4,ctx.sampleRate),nd=nb.getChannelData(0),sd=1;
+      for(var i=0;i<nd.length;i++){sd=(sd*16807)%2147483647;nd[i]=sd/1073741823.5-1}
+      var NZ=ctx.createBufferSource();NZ.buffer=nb;NZ.loop=true;[HB,B1,B2].forEach(function(n){NZ.connect(n)});NZ.start()}
+    audioOn=true;$("snd").disabled=true;$("snd").textContent="Sonido activo";$("test").disabled=false})}
+$("snd").onclick=activarAudio;
+document.addEventListener("click",activarAudio,{once:true});
+$("test").onclick=function(){sonar(120)};
+function beep(v){
+  if(!audioOn||!GN)return;var t=ctx.currentTime;
+  if(!v){GN.gain.setTargetAtTime(0,t,.08);return}
+  var u=Math.max(v,20)*.5144,m=Math.min(1,Math.max(0,(u-10)/50));
+  HB.frequency.setTargetAtTime(30*u,t,.12);B1.frequency.setTargetAtTime(20*u,t,.12);B2.frequency.setTargetAtTime(8*u,t,.12);
+  HG.gain.setTargetAtTime(m*.6,t,.12);T1.gain.setTargetAtTime(m*2.75,t,.12);T2.gain.setTargetAtTime(m*1.65,t,.12);
+  GN.gain.setTargetAtTime(.7*Math.pow(10,-lnd(v)/20),t,.12)}
+function sonar(w){beep(w);clearTimeout(tsn);tsn=setTimeout(function(){if(!play)beep(0)},3500)}
+function detenerAudio(){if(play){cancelAnimationFrame(play.r);play=null}clearTimeout(tsn);beep(0)}
+var CC=[0,1,2,3,4,5].map(function(i){return "var(--c"+i+")"}),ON=[0,1,2,3,4,5].map(function(i){return "var(--o"+i+")"});
+function spin(w){return (7*Math.pow(34/Math.max(w,20),1.4)).toFixed(2)}
+
+// ---------- ficha de información ----------
+function mostrarFicha(s){
+  mostrado=s.id;detenerAudio();
+  if(!s.c){$("fBody").innerHTML='<h2>'+s.n+'</h2><div id="sinreg">'+s.why+'</div>';dibujarMapa();return}
+  var kt=s.w,k=categoria(kt),c=nombreCat(kt);
+  $("fBody").innerHTML=
+  '<div class="cab"><div style="width:100%"><h2>'+s.c+' ('+s.y+')</h2>'+
+  '<div class="cat" style="--k:'+CC[k]+';--on:'+ON[k]+'"><b>'+c.n+'</b>'+c.t+'</div>'+
+  '<div class="sub">'+s.reg+' · '+s.n+'</div><div class="sub">Pasó por: '+s.ps+'</div></div>'+
+  '<div class="kpis"><div class="kpi m"><b>'+fmt(s.m)+'</b><small>MUERTES</small></div>'+
+  '<div class="kpi a"><b>'+fmt(s.a)+'</b><small>AFECTADOS</small></div></div></div>'+
+  '<div class="viento"><div class="ring" style="--k:'+CC[k]+';--sp:'+spin(kt)+'s"><b>'+Math.round(kt*1.852)+'</b><small>km/h</small></div>'+
+  '<div class="vl">VIENTO MÁX. · '+kt+' kt</div></div>'+
+  '<div class="abajo"><div class="mini"><b>'+fmt(s.d)+' días</b><small>DURACIÓN</small></div>'+
+  '<div class="mini"><b>≈ '+s.t+' h</b><small>SOBRE TIERRA</small></div></div>';
+  dibujarMapa();
+}
+function disparar(s){mostrarFicha(s);sonar(s.w)}
+
+// ---------- mapa mundial ----------
+function cargarTierra(){
+  if(!window.d3||!window.topojson)return;
+  fetch("https://cdn.jsdelivr.net/npm/world-atlas@2.0.2/land-110m.json").then(function(r){return r.json()}).then(function(t){
+    var pr=d3.geoEquirectangular().scale(200/(2*Math.PI)).translate([100,50]);
+    $("tierra").innerHTML='<path d="'+d3.geoPath(pr)(topojson.feature(t,t.objects.land))+'" style="fill:var(--land)"/>'}).catch(function(){})}
+function glow(id,cx,cy,r){var R=r+4.5,e=(r/R).toFixed(3),g="gl"+id;
+  var d='<defs><radialGradient id="'+g+'"><stop offset="0" stop-color="#ff2d2d" stop-opacity="0"/><stop offset="'+(r/R*0.96).toFixed(3)+'" stop-color="#ff2d2d" stop-opacity="0"/><stop offset="'+e+'" stop-color="#ff3b30" stop-opacity=".6"/><stop offset="'+(r/R+(1-r/R)*0.35).toFixed(3)+'" stop-color="#ff3b30" stop-opacity=".28"/><stop offset="1" stop-color="#ff3b30" stop-opacity="0"/></radialGradient></defs>';
+  var c=function(dl){return '<circle class="onda" cx="'+cx+'" cy="'+cy+'" r="'+R+'" fill="url(#'+g+')" style="animation-delay:'+dl+'s"/>'};
+  return d+c(0)+c(.75)}
+function dibujarMapa(){
+  $("marc").innerHTML=SECT.map(function(s){
+    var cx=(s.lon+180)/360*200,cy=(90-s.lat)/180*100,on=(tocando===s.id)||(mostrado===s.id&&!tocando);
+    var r=s.c?Math.max(1.6,10*Math.sqrt((s.m||0)/MMAX)):1.8;
+    var arriba=cy>85,t1=arriba?cy-r-5.4:cy+r+3.6,t2=arriba?cy-r-2.6:cy+r+6.4;
+    var circ=s.c
+      ?'<circle cx="'+cx+'" cy="'+cy+'" r="'+r+'" style="fill:var(--mdot)"/>'
+      :(on?'<circle cx="'+cx+'" cy="'+cy+'" r="'+r+'" style="fill:var(--mdot)"/>':'<circle cx="'+cx+'" cy="'+cy+'" r="'+r+'" fill="none" style="stroke:var(--mark)" stroke-width=".35" stroke-dasharray="1 .8"/>');
+    return '<g data-id="'+s.id+'">'+(on?glow(s.id,cx,cy,r):'')+circ+
+      '<text class="t1" x="'+cx+'" y="'+t1+'">'+(s.c?s.c+" · "+fmt(s.m):"sin registros")+'</text>'+
+      '<text class="t2" x="'+cx+'" y="'+t2+'">'+s.n+'</text></g>'}).join("");
+}
+$("mapa").onclick=function(e){var g=e.target.closest?e.target.closest("[data-id]"):null;if(!g)return;
+  var s=SECT.find(function(x){return x.id===+g.getAttribute("data-id")});if(s)disparar(s)};
+
+// ---------- calibración ----------
 function dibujar(){
   $("lista").innerHTML=SECT.map(function(s){return '<button data-i="'+s.id+'" class="'+(sel===s.id?"sel ":"")+(S.pts[s.id]?"hecho":"")+'">'+(S.pts[s.id]?"✓ ":"")+s.n+'</button>'}).join("");
   Array.prototype.forEach.call($("lista").children,function(b){b.onclick=function(){sel=+b.dataset.i;dibujar()}});
-  $("mapa").innerHTML=SECT.map(function(s){var on=tocando===s.id;
-    return '<circle cx="'+s.u*160+'" cy="'+s.v*100+'" r="'+(on?9:6)+'" fill="'+(on?"#ffd54f":S.pts[s.id]?"#c2550a":"none")+'" stroke="#fff" stroke-width=".6" '+(S.pts[s.id]||on?"":'stroke-dasharray="2 1.5"')+'/><text x="'+s.u*160+'" y="'+(s.v*100+(s.v>.85?-8:11))+'">'+s.n+'</text>'}).join("");
+  $("mapaCal").innerHTML=SECT.map(function(s){var on=tocando===s.id;
+    return '<circle cx="'+s.u*160+'" cy="'+s.v*100+'" r="'+(on?9:6)+'" style="fill:'+(on?"#ff3b30":S.pts[s.id]?"var(--done)":"none")+';stroke:'+(on?"none":"var(--mark)")+'" stroke-width=".6" '+(S.pts[s.id]||on?"":'stroke-dasharray="2 1.5"')+'/>'+(s.u<.6?'<text x="'+(s.u*160+9)+'" y="'+(s.v*100+1.5)+'" style="text-anchor:start">'+s.n+'</text>':'<text x="'+s.u*160+'" y="'+(s.v*100+(s.v>.85?-8:11))+'">'+s.n+'</text>')}).join("");
   $("vUp").textContent=S.zUp==null?"—":S.zUp.toFixed(2);$("vDown").textContent=S.zDown==null?"—":S.zDown.toFixed(2);
   var ok=Object.keys(S.pts).length>0&&S.zUp!=null&&S.zDown!=null&&Math.abs(S.zUp-S.zDown)>0.03;
   $("uso").disabled=!ok;$("uso").hidden=S.modo==="uso";$("entrenar").hidden=S.modo!=="uso";
+  dibujarMapa();
 }
 $("guardar").onclick=function(){
-  if(!fresco(cen)){$("sub").textContent="El cenital no ve tu mano.";return}
+  if(!fresco(cen)){$("estado").textContent="El cenital no ve tu mano.";return}
   S.pts[sel]={x:cen.x,y:cen.y};var sig=SECT.find(function(s){return !S.pts[s.id]});if(sig)sel=sig.id;guardarLS();dibujar()};
 $("borrar").onclick=function(){delete S.pts[sel];guardarLS();dibujar()};
 $("reset").onclick=function(){S.pts={};S.zUp=S.zDown=null;S.modo="entrenar";guardarLS();dibujar()};
-$("bUp").onclick=function(){if(fresco(fro)){S.zUp=fro.z;guardarLS();dibujar()}else $("sub").textContent="El frontal no ve tu mano."};
-$("bDown").onclick=function(){if(fresco(fro)){S.zDown=fro.z;guardarLS();dibujar()}else $("sub").textContent="El frontal no ve tu mano."};
-$("uso").onclick=function(){S.modo="uso";guardarLS();dibujar()};
+$("bUp").onclick=function(){if(fresco(fro)){S.zUp=fro.z;guardarLS();dibujar()}else $("estado").textContent="El frontal no ve tu mano."};
+$("bDown").onclick=function(){if(fresco(fro)){S.zDown=fro.z;guardarLS();dibujar()}else $("estado").textContent="El frontal no ve tu mano."};
+$("uso").onclick=function(){activarAudio();S.modo="uso";guardarLS();dibujar();$("vista").scrollIntoView({behavior:"smooth"})};
 $("entrenar").onclick=function(){S.modo="entrenar";tocando=null;guardarLS();dibujar()};
+$("subir").onclick=function(){$("vista").scrollIntoView({behavior:"smooth"})};
 $("rad").oninput=function(){$("radv").textContent=$("rad").value};
 
 function estaTocando(z){var mid=(S.zUp+S.zDown)/2;return S.zDown>S.zUp?z>mid:z<mid}
@@ -136,16 +330,22 @@ function detectarPunto(){var best=null,bd=1e9;
 setInterval(function(){
   $("pCe").className="pill"+(fresco(cen)?" ok":"");$("pCe").textContent="Cenital: "+(fresco(cen)?"conectado":"sin datos");
   $("pFr").className="pill"+(fresco(fro)?" ok":"");$("pFr").textContent="Frontal: "+(fresco(fro)?"conectado":"sin datos");
-  if(S.modo!=="uso")return;
-  if(!fresco(cen)||!fresco(fro)){$("grande").textContent="—";$("sub").textContent="Buscando dedo en ambas cámaras...";tocando=null;dibujar();return}
+  if(S.modo!=="uso"){$("estado").textContent="Modo calibración: baja a la zona de calibración para entrenar e iniciar el modo tocar.";return}
+  if(!fresco(cen)||!fresco(fro)){$("estado").textContent="Buscando dedo en ambas cámaras...";if(tocando!==null){tocando=null;dibujar()}return}
   var s=detectarPunto();
   if(s&&estaTocando(fro.z)){
-    if(tocando!==s.id){tocando=s.id;$("grande").textContent=s.n;$("sub").textContent=s.c+" · "+Math.round(s.w*1.852)+" km/h";
-      cli.publish(base()+"/sonar",JSON.stringify({id:s.id,n:s.n,w:s.w}));dibujar()}
+    $("estado").textContent="Tocando: "+s.n;
+    if(tocando!==s.id){tocando=s.id;disparar(s);dibujar()}
   }else{
     if(tocando!==null){tocando=null;dibujar()}
-    $("grande").textContent="—";$("sub").textContent=s?"Sobre "+s.n+" — acerca el dedo a la mesa":"Pasa el dedo por un punto entrenado";
+    $("estado").textContent=s?"Sobre "+s.n+" — acerca el dedo a la mesa":"Pasa el dedo por un punto entrenado";
   }
 },80);
-dibujar();conectar();
+function aplicarTema(t){document.documentElement.setAttribute("data-tema",t);
+  $("tema").textContent=t==="claro"?"Modo oscuro":"Modo claro";
+  try{localStorage.setItem("tema-ciclones",t)}catch(e){}}
+$("tema").onclick=function(){aplicarTema(document.documentElement.getAttribute("data-tema")==="claro"?"oscuro":"claro")};
+aplicarTema(document.documentElement.getAttribute("data-tema"));
+new MutationObserver(function(){$("estado2").textContent=$("estado").textContent}).observe($("estado"),{childList:true,characterData:true,subtree:true});
+dibujar();conectar();cargarTierra();
 </script></body></html>
