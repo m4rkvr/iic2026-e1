@@ -1,113 +1,95 @@
 <!doctype html>
 <html lang="es"><head><meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
-<title>Panel de continentes</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sensor</title>
 <style>
-  html,body{margin:0;height:100%;background:#0f1d26;color:#fff;font-family:system-ui,sans-serif;overflow:hidden;touch-action:none;user-select:none;-webkit-user-select:none}
-  /* El mapa ocupa todo lo que puede en proporción 16:10; los agujeros van en % del mapa (igual que la plantilla). */
-  .mapa{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);width:min(100vw,160vh);height:min(62.5vw,100vh);background:url(mapa.png) center/100% 100% no-repeat}
-  .hole{position:absolute;width:11%;height:17.6%;margin-left:-5.5%;margin-top:-8.8%;border-radius:50%;border:3px solid #fff;background:rgba(255,255,255,.2);
-        color:#fff;font:800 30px/1 system-ui;padding:0;-webkit-tap-highlight-color:transparent}
-  .hole.active{background:rgba(255,255,255,.65)}
-  .lbl{position:absolute;width:24%;margin-left:-12%;text-align:center;font:600 14px system-ui;color:#dfe9e3;pointer-events:none;text-shadow:0 1px 2px #000}
-  #st{position:fixed;bottom:6px;left:0;right:0;text-align:center;font:600 17px system-ui;color:#fff;text-shadow:0 1px 3px #000}
-  #err{position:fixed;top:52px;left:8px;right:8px;font:13px monospace;color:#ffb4a8;background:rgba(0,0,0,.75);padding:4px 8px;border-radius:6px;display:none;white-space:pre-wrap}
-  #fs{position:fixed;top:8px;left:50%;transform:translateX(-50%);z-index:2;font:600 16px system-ui;padding:8px 16px;border-radius:8px;border:0}
+body{margin:0;background:#0f1d26;color:#fff;font:16px system-ui,sans-serif;padding:12px}
+h1{font-size:20px;margin:0 0 8px}
+button{font:inherit;padding:10px 16px;border-radius:8px;border:0;background:#c2550a;color:#fff;font-weight:700;margin:4px 4px 4px 0}
+button:disabled{opacity:.4}
+video{width:100%;max-height:50vh;background:#000;border-radius:8px;margin-top:8px}
+#info,#est{margin:6px 0;color:#bcd}
 </style></head><body>
-<script>
-// Cualquier error de script queda escrito en pantalla, para diagnosticar en la tablet.
-window.addEventListener("error", function (e) { var d = document.getElementById("err"); if (d) { d.style.display = "block"; d.textContent += "Error: " + e.message + " (" + String(e.filename || "").split("/").pop() + ":" + e.lineno + ")\n"; } });
-</script>
-<button id="fs">Pantalla completa</button>
-<div id="err"></div>
-<!-- Siete agujeros = siete continentes. Igual que el artefacto 08 del kit: los botones están en el HTML. -->
-<div class="mapa">
-  <button class="hole" data-num="1" style="left:22.22%;top:22.94%">1</button>
-  <div class="lbl" style="left:22.22%;top:32.54%">América del Norte</div>
-  <button class="hole" data-num="2" style="left:33.33%;top:57.65%">2</button>
-  <div class="lbl" style="left:33.33%;top:67.25%">América del Sur</div>
-  <button class="hole" data-num="3" style="left:53.89%;top:18.82%">3</button>
-  <div class="lbl" style="left:53.89%;top:28.42%">Europa</div>
-  <button class="hole" data-num="4" style="left:55.56%;top:47.06%">4</button>
-  <div class="lbl" style="left:55.56%;top:56.66%">África</div>
-  <button class="hole" data-num="5" style="left:76.39%;top:22.94%">5</button>
-  <div class="lbl" style="left:76.39%;top:32.54%">Asia</div>
-  <button class="hole" data-num="6" style="left:87.22%;top:64.12%">6</button>
-  <div class="lbl" style="left:87.22%;top:73.72%">Oceanía</div>
-  <button class="hole" data-num="7" style="left:50.00%;top:94.71%">7</button>
-  <div class="lbl" style="left:50.00%;top:83.21%">Antártida</div>
-</div>
-<div id="st">Conectando…</div>
-<script>
-/* Cómo llega el toque al computador.
-   1. Canal principal: el QR que muestra el computador abre esta página con ?sala=XXXX. Cada toque se publica
-      por HTTPS en el tema «iic2026-panel-XXXX» de ntfy.sh (servicio público de mensajes), y el computador está
-      suscrito a ese mismo tema. No depende de WebRTC, así que funciona en redes donde Protobject no conecta.
-   2. Canal Protobject (el del kit): si la página se abrió desde el botón «+» de Protobject (sin ?sala), se carga
-      Protobject y se envía con Protobject.Core.send(...).to("index.html"), como el artefacto 08.
-   El mensaje es el mismo del kit (tipo, accion, id, numero, marcador, valor) más «t», un identificador único para
-   que el computador no lo cuente dos veces si llega por los dos canales. */
-(function () {
-  var botones = document.querySelectorAll(".hole");
-  var st = document.getElementById("st");
-  var sala = new URLSearchParams(location.search).get("sala");
-  sala = sala && /^[a-z0-9]{4,12}$/.test(sala) ? sala : null;
-  var protobject = false;
+<h1 id="tit">Sensor</h1>
+<div><button id="ini">Iniciar cámara</button><button id="snd">Activar sonido</button><button id="test" disabled>Probar sonido</button></div>
+<div id="est">Conectando…</div><div id="info"></div>
+<video id="v" playsinline muted></video>
 
-  if (sala) {
-    st.textContent = "Conectado a la sala " + sala.toUpperCase() + ". Toca un continente.";
-  } else {
-    // Sin sala: se intenta Protobject, como en el kit.
-    st.textContent = "Sin sala: escanea el QR grande que muestra el computador.";
-    var p = document.createElement("script");
-    p.src = "https://app.protobject.com/framework/p.js";
-    p.onload = function () {
-      var c = document.createElement("script");
-      c.src = "config.js";
-      c.onload = function () { protobject = true; st.textContent = "Protobject cargado. Toca un continente."; };
-      document.body.appendChild(c);
-    };
-    p.onerror = function () { st.textContent = "No cargó Protobject. Escanea el QR grande del computador."; };
-    document.body.appendChild(p);
+<script src="https://cdn.jsdelivr.net/npm/mqtt@5.10.1/dist/mqtt.min.js"></script>
+<script type="module">
+import { HandLandmarker, FilesetResolver } from "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.14";
+const $ = i => document.getElementById(i);
+const P = new URLSearchParams(location.search);
+const rol = P.get("rol") === "frontal" ? "frontal" : "cenital";
+const sala = P.get("sala") || "";
+const base = "iic2026/sensor/" + sala;
+$("tit").textContent = "Teléfono " + rol + " · sala " + sala.toUpperCase();
+
+// ---- conexión ----
+const url = P.get("broker") || "wss://broker.emqx.io:8084/mqtt";
+const cli = mqtt.connect(url, { reconnectPeriod: 2000, clientId: rol + "-" + Math.random().toString(16).slice(2) });
+cli.on("connect", () => { $("est").textContent = "Conectado al servidor."; cli.subscribe(base + "/sonar"); });
+cli.on("close", () => { $("est").textContent = "Sin conexión con el servidor, reintentando…"; });
+cli.on("message", (t, m) => { try { const d = JSON.parse(m.toString()); if (audioOn) sonar(d.w); } catch (e) {} });
+
+// ---- sonido: viento sintético. Las frecuencias crecen con la velocidad U (m/s); el volumen es fijo ----
+let ctx = null, audioOn = false, ruido = null;
+$("snd").onclick = async () => {
+  ctx = ctx || new (window.AudioContext || window.webkitAudioContext)();
+  await ctx.resume();
+  const b = ctx.createBuffer(1, ctx.sampleRate * 2, ctx.sampleRate), d = b.getChannelData(0);
+  for (let i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1;
+  ruido = b; audioOn = true; $("snd").disabled = true; $("snd").textContent = "Sonido activo"; $("test").disabled = false;
+};
+$("test").onclick = () => sonar(120);
+function sonar(w) {
+  if (!ctx || !ruido) return;
+  const U = w * 0.514, t0 = ctx.currentTime, dur = 4;
+  const master = ctx.createGain(); master.gain.setValueAtTime(0, t0);
+  master.gain.linearRampToValueAtTime(0.5, t0 + 0.15); master.gain.setValueAtTime(0.5, t0 + dur - 0.5);
+  master.gain.linearRampToValueAtTime(0, t0 + dur); master.connect(ctx.destination);
+  const n = ctx.createBufferSource(); n.buffer = ruido; n.loop = true;
+  const bp = ctx.createBiquadFilter(); bp.type = "bandpass"; bp.frequency.value = Math.min(30 * U, 6000); bp.Q.value = 0.7;
+  n.connect(bp); bp.connect(master); n.start(t0); n.stop(t0 + dur);
+  const k = Math.max(0, Math.min(1, (w - 20) / 80));   // silbido: cero a ~20 kt, pleno desde ~100 kt
+  if (k > 0) for (const m of [20, 8]) {
+    const o = ctx.createOscillator(); o.type = "sine"; o.frequency.value = Math.min(m * U, 5000);
+    const g = ctx.createGain(); g.gain.value = 0.12 * k * (m === 20 ? 1 : 0.6);
+    o.connect(g); g.connect(master); o.start(t0); o.stop(t0 + dur);
   }
+}
 
-  function enviarNumero(num) {
-    botones.forEach(function (b) { b.classList.toggle("active", b.dataset.num === String(num)); });
-    setTimeout(function () { botones.forEach(function (b) { b.classList.remove("active"); }); }, 180);
-    var msg = {
-      tipo: "panel",
-      accion: "press",
-      id: "zona" + num,
-      numero: String(num),
-      marcador: String(num),
-      valor: Number(num),
-      t: Date.now().toString(36) + Math.random().toString(36).slice(2, 6)
+// ---- cámara y mano ----
+$("ini").onclick = async () => {
+  $("ini").disabled = true;
+  try {
+    const v = $("v");
+    v.srcObject = await navigator.mediaDevices.getUserMedia({ video: { facingMode: { ideal: "environment" }, width: 640, height: 480 }, audio: false });
+    await v.play();
+    $("info").textContent = "Cargando modelo de manos…";
+    const fs = await FilesetResolver.forVisionTasks("https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.14/wasm");
+    const model = "https://storage.googleapis.com/mediapipe-models/hand_landmarker/hand_landmarker/float16/1/hand_landmarker.task";
+    let hl;
+    try { hl = await HandLandmarker.createFromOptions(fs, { baseOptions: { modelAssetPath: model, delegate: "GPU" }, runningMode: "VIDEO", numHands: 1 }); }
+    catch (e) { hl = await HandLandmarker.createFromOptions(fs, { baseOptions: { modelAssetPath: model, delegate: "CPU" }, runningMode: "VIDEO", numHands: 1 }); }
+    let last = -1, lastSend = 0;
+    const loop = () => {
+      if (v.currentTime !== last) {
+        last = v.currentTime;
+        const r = hl.detectForVideo(v, performance.now());
+        const p = r.landmarks && r.landmarks[0] && r.landmarks[0][8];   // punta del índice
+        if (p) {
+          $("info").textContent = rol === "cenital" ? "x " + p.x.toFixed(2) + "  y " + p.y.toFixed(2) : "z " + p.y.toFixed(2);
+          const now = performance.now();
+          if (now - lastSend > 70) {
+            lastSend = now;
+            cli.publish(base + "/" + rol, JSON.stringify(rol === "cenital" ? { x: p.x, y: p.y } : { z: p.y }));
+          }
+        } else $("info").textContent = "Sin mano detectada";
+      }
+      requestAnimationFrame(loop);
     };
-    var enviado = false;
-    if (sala) {
-      st.textContent = "Enviando " + num + "…";
-      fetch("https://ntfy.sh/iic2026-panel-" + sala, { method: "POST", body: JSON.stringify(msg) })
-        .then(function (r) { st.textContent = r.ok ? "Enviado: " + num + " ✓" : "No se pudo enviar (error " + r.status + ")"; })
-        .catch(function (e) { st.textContent = "Sin internet en la tablet (" + e.message + ")"; });
-      enviado = true;
-    }
-    if (protobject && window.Protobject && Protobject.Core) {
-      try { Protobject.Core.send(msg).to("index.html"); enviado = true; if (!sala) st.textContent = "Enviado por Protobject: " + num; }
-      catch (e) { if (!sala) st.textContent = "Protobject no pudo enviar: " + e.message; }
-    }
-    if (!enviado) st.textContent = "No hay conexión: escanea el QR grande que muestra el computador.";
-  }
-
-  botones.forEach(function (boton) {
-    var num = boton.dataset.num;
-    boton.addEventListener("pointerdown", function (e) { e.preventDefault(); enviarNumero(num); });
-  });
-
-  document.getElementById("fs").addEventListener("click", function () {
-    var d = document.documentElement, pedir = d.requestFullscreen || d.webkitRequestFullscreen;
-    if (pedir) pedir.call(d);
-    document.getElementById("fs").hidden = true;
-  });
-})();
-</script>
-</body></html>
+    loop();
+  } catch (e) { $("info").textContent = "Error: " + e.message; $("ini").disabled = false; }
+};
+</script></body></html>
