@@ -2,16 +2,19 @@
 <html lang="es"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Sensor</title>
+<script>(function(){var t="claro";try{t=localStorage.getItem("tema-ciclones")==="oscuro"?"oscuro":"claro"}catch(e){}document.documentElement.setAttribute("data-tema",t)})()</script>
 <style>
-body{margin:0;background:#0f1d26;color:#fff;font:16px system-ui,sans-serif;padding:12px}
-h1{font-size:20px;margin:0 0 8px}
-button{font:inherit;padding:10px 16px;border-radius:8px;border:0;background:#c2550a;color:#fff;font-weight:700;margin:4px 4px 4px 0}
+:root{--bg:#eef3ef;--card:#fff;--ink:#1d2a22;--mut:#5a6e63;--line:#cbd8d0;--verde:#2f6b43;--btn:#a8c3b0}
+:root[data-tema="oscuro"]{--bg:#121a16;--card:#1c241f;--ink:#eef3ef;--mut:#9fb2a8;--line:#33453a;--verde:#8fb996}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px system-ui,sans-serif;padding:12px}
+h1{font-size:20px;margin:0 0 8px;color:var(--verde)}
+button{font:inherit;padding:10px 16px;border-radius:8px;border:1px solid var(--btn);background:var(--btn);color:#fff;font-weight:700;margin:4px 4px 4px 0}
 button:disabled{opacity:.4}
-video{width:100%;max-height:50vh;background:#000;border-radius:8px;margin-top:8px}
-#info,#est{margin:6px 0;color:#bcd}
+video{width:100%;max-height:50vh;background:#000;border:1px solid var(--line);border-radius:8px;margin-top:8px}
+#info,#est{margin:6px 0;color:var(--mut)}
 </style></head><body>
 <h1 id="tit">Sensor</h1>
-<div><button id="ini">Iniciar cámara</button><button id="snd">Activar sonido</button><button id="test" disabled>Probar sonido</button></div>
+<div><button id="ini">Iniciar cámara</button></div>
 <div id="est">Conectando…</div><div id="info"></div>
 <video id="v" playsinline muted></video>
 
@@ -28,36 +31,8 @@ $("tit").textContent = "Teléfono " + rol + " · sala " + sala.toUpperCase();
 // ---- conexión ----
 const url = P.get("broker") || "wss://broker.emqx.io:8084/mqtt";
 const cli = mqtt.connect(url, { reconnectPeriod: 2000, clientId: rol + "-" + Math.random().toString(16).slice(2) });
-cli.on("connect", () => { $("est").textContent = "Conectado al servidor."; cli.subscribe(base + "/sonar"); });
+cli.on("connect", () => { $("est").textContent = "Conectado al servidor."; });
 cli.on("close", () => { $("est").textContent = "Sin conexión con el servidor, reintentando…"; });
-cli.on("message", (t, m) => { try { const d = JSON.parse(m.toString()); if (audioOn) sonar(d.w); } catch (e) {} });
-
-// ---- sonido: viento sintético. Las frecuencias crecen con la velocidad U (m/s); el volumen es fijo ----
-let ctx = null, audioOn = false, ruido = null;
-$("snd").onclick = async () => {
-  ctx = ctx || new (window.AudioContext || window.webkitAudioContext)();
-  await ctx.resume();
-  const b = ctx.createBuffer(1, ctx.sampleRate * 2, ctx.sampleRate), d = b.getChannelData(0);
-  for (let i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1;
-  ruido = b; audioOn = true; $("snd").disabled = true; $("snd").textContent = "Sonido activo"; $("test").disabled = false;
-};
-$("test").onclick = () => sonar(120);
-function sonar(w) {
-  if (!ctx || !ruido) return;
-  const U = w * 0.514, t0 = ctx.currentTime, dur = 4;
-  const master = ctx.createGain(); master.gain.setValueAtTime(0, t0);
-  master.gain.linearRampToValueAtTime(0.5, t0 + 0.15); master.gain.setValueAtTime(0.5, t0 + dur - 0.5);
-  master.gain.linearRampToValueAtTime(0, t0 + dur); master.connect(ctx.destination);
-  const n = ctx.createBufferSource(); n.buffer = ruido; n.loop = true;
-  const bp = ctx.createBiquadFilter(); bp.type = "bandpass"; bp.frequency.value = Math.min(30 * U, 6000); bp.Q.value = 0.7;
-  n.connect(bp); bp.connect(master); n.start(t0); n.stop(t0 + dur);
-  const k = Math.max(0, Math.min(1, (w - 20) / 80));   // silbido: cero a ~20 kt, pleno desde ~100 kt
-  if (k > 0) for (const m of [20, 8]) {
-    const o = ctx.createOscillator(); o.type = "sine"; o.frequency.value = Math.min(m * U, 5000);
-    const g = ctx.createGain(); g.gain.value = 0.12 * k * (m === 20 ? 1 : 0.6);
-    o.connect(g); g.connect(master); o.start(t0); o.stop(t0 + dur);
-  }
-}
 
 // ---- cámara y mano ----
 $("ini").onclick = async () => {
