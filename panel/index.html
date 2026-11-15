@@ -169,25 +169,49 @@ svg#ola{width:100%;height:150px;display:block;overflow:visible}
 .bloque .oval{border-color:currentColor;color:inherit}
 .fila-b{display:flex;align-items:center;flex-wrap:wrap;gap:10px 14px}
 .chip{display:inline-flex;align-items:center;gap:8px;font-weight:600;font-size:14px}
-/* algodón = categoría (igual que en la maqueta: más algodón, categoría más alta) */
+/* ---------- algodón (como en la maqueta: algodón ≡ categoría del huracán) ---------- */
 svg.defs{position:absolute;width:0;height:0;overflow:hidden}
-.alg{display:flex;align-items:center;gap:10px;margin-top:12px}
-.copo{position:relative;width:96px;height:73px;flex:none}
+.alg{display:flex;align-items:center;gap:8px;margin-top:14px}
+.copo{position:relative;width:104px;height:80px;flex:none;animation:flota 5.5s ease-in-out infinite}
 .copo svg,.escala svg,.vac-copo svg{width:100%;height:100%;display:block;overflow:visible}
-.copo b{position:absolute;left:0;right:0;top:52%;transform:translateY(-50%);text-align:center;font:800 26px/1 var(--f-sans);color:#14235a}
+.copo b{position:absolute;left:0;right:0;top:51%;transform:translateY(-50%);text-align:center;font:800 26px/1 var(--f-sans);color:#1a2b66;text-shadow:0 1px 0 rgba(255,255,255,.7);animation:aparece .5s .4s both}
+.m{transform-box:fill-box;transform-origin:center;animation:mota .65s cubic-bezier(.34,1.56,.64,1) both;animation-delay:calc(var(--i,0)*80ms)}
+@keyframes mota{from{transform:scale(0);opacity:0}to{transform:scale(1);opacity:1}}
+@keyframes aparece{from{opacity:0}}
+@keyframes flota{0%,100%{transform:translateY(0)}50%{transform:translateY(-3px)}}
 .alg-t{font-weight:700;font-size:15px}
-.escala{display:flex;align-items:flex-end;gap:1px;margin-top:4px}
-.escala span{display:flex;flex-direction:column;align-items:center;width:34px;opacity:.4}
-.escala span.on{opacity:1}
-.escala svg{width:34px;height:26px}
-.escala small{font:500 9.5px/1 var(--f-mono);margin-top:1px}
-.alg .mono{display:block;margin-top:5px;font-size:10px;color:inherit;opacity:.8}
-.vac-copo{width:150px;height:116px;margin:0 auto 12px;--vc:var(--ink)}
+.escala{position:relative;display:flex;align-items:flex-end;margin-top:6px}
+.escala::before{content:"";position:absolute;left:12px;right:12px;bottom:15px;height:1px;background:currentColor;opacity:.3}
+.escala span{position:relative;display:flex;flex-direction:column;align-items:center;width:33px;opacity:.42;transition:opacity .2s,transform .25s;cursor:default}
+.escala span.on{opacity:1;transform:translateY(-2px) scale(1.14)}
+.escala span:hover{opacity:.9}
+.escala svg{width:33px;height:25px}
+.escala small{font:500 9.5px/1 var(--f-mono);margin-top:4px}
+.alg .mono{display:block;margin-top:7px;font-size:10px;color:inherit;opacity:.8}
+.vac-copo{width:170px;height:130px;margin:0 auto 12px;animation:flota 6s ease-in-out infinite}
 svg.capa{position:absolute;left:0;top:0;pointer-events:none;will-change:transform}
+svg.capa.revela{animation:revela 1.4s cubic-bezier(.2,.7,.2,1) both}
+@keyframes revela{from{clip-path:inset(0 100% 0 0)}to{clip-path:inset(0 0 0 0)}}
 svg#ola{position:relative}
-#mapa .nube{display:none;opacity:.85}
+#mapa .nube{display:none;opacity:.92}
+#tierraAlg image{opacity:0;transition:opacity 1.2s ease}
+#mapa.alg-lista #tierraAlg image{opacity:var(--alg-op,.95)}
 .muestras i.alg-m{background:none;z-index:1}
 .muestras i.alg-m svg{width:100%;height:100%;display:block;overflow:visible}
+/* nubes de algodón que flotan detrás de la página, con paralaje al bajar */
+.wrap{position:relative;z-index:1}
+.nubes{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden;opacity:var(--nubes-op,.3)}
+.nubes .nv{position:absolute;left:0;width:100%;transform:translate3d(0,calc(var(--sy,0)*var(--p)*-1px),0)}
+.nubes .nh{position:absolute;left:0;top:0;animation:deriva var(--t) linear infinite;animation-delay:var(--d)}
+.nubes .nb{display:block;background:center/contain no-repeat;animation:flota 8s ease-in-out infinite;animation-delay:var(--d)}
+@keyframes deriva{from{transform:translateX(-35vw)}to{transform:translateX(110vw)}}
+/* soplo: copitos que saltan del ciclón al tocarlo */
+.copito{position:fixed;z-index:60;width:86px;height:66px;margin:-33px 0 0 -43px;pointer-events:none;background:center/contain no-repeat;animation:soplo 1.7s cubic-bezier(.2,.8,.3,1) both}
+@keyframes soplo{0%{transform:translate(0,0) scale(.15) rotate(0);opacity:0}18%{opacity:1}100%{transform:translate(var(--dx),var(--dy)) scale(var(--s)) rotate(var(--r));opacity:0}}
+/* costura de algodón entre el mapa y la calibración */
+.costura{position:relative;z-index:2;height:66px;margin:4px 0 -24px;background:repeat-x center/auto 100%;opacity:0;transition:opacity 1s}
+.costura.lista{opacity:1}
+@media (prefers-reduced-motion:reduce){.copo,.vac-copo,.nubes .nh,.nubes .nb,.m,.copo b,svg.capa.revela{animation:none}}
 .chip i{display:inline-grid;place-items:center;width:26px;height:26px;border-radius:50%;background:var(--k);color:var(--on);font:800 14px/1 var(--f-sans);font-style:normal;box-shadow:0 0 0 2px var(--on-block)}
 .reg{font-size:13px;opacity:.85}
 .viento{display:grid;grid-template-columns:100px 1fr;gap:16px;align-items:center;padding:12px 16px 12px 12px;border-radius:var(--r-in);border:var(--bw) solid var(--card-brd);background:var(--card)}
@@ -427,38 +451,24 @@ input[type=range]{accent-color:var(--ink);vertical-align:middle}
 .mu::before{content:"";position:absolute;left:6px;top:7px;width:20px;height:5px;border-radius:2px;background:var(--b)}
 .mu::after{content:"";position:absolute;right:7px;bottom:7px;width:11px;height:11px;border-radius:50%;background:var(--c)}
 
+/* algodón por estilo: marcas que se distinguen sobre el algodón y ventana algo translúcida para ver las nubes */
+:root[data-estilo="actual"]:not([data-tema="claro"]){--mark:#7b93ff;--nubes-op:.3}
+:root[data-estilo="actual"][data-tema="claro"]{--win:rgba(242,241,234,.9);--nubes-op:.65}
+:root[data-estilo="riso"]{--win:rgba(246,245,240,.9);--nubes-op:.6}
+:root[data-estilo="paleta"]{--win:rgba(255,255,255,.88);--nubes-op:.75}
+:root[data-estilo="vidrio"]{--mark:#22393a;--ring:#fff;--nubes-op:.55}
+:root[data-estilo="satelite"]{--mark:#7fd6ff;--nubes-op:.2}
 @media (prefers-reduced-motion:reduce){.onda,.ojo svg{animation:none}.onda{opacity:.6}html{scroll-behavior:auto}}
 @media (max-width:1180px){.main{grid-template-columns:minmax(0,1fr) 330px}.cab{grid-template-columns:minmax(0,1fr)}.ilus{display:none}}
 @media (max-width:980px){.main{grid-template-columns:1fr}.calgrid{grid-template-columns:1fr}.calbot{grid-template-columns:1fr}.qrcol{flex-direction:row;flex-wrap:wrap;justify-content:center}}
 @media (max-width:760px){.wrap{padding:12px}
  .ventana{grid-template-columns:1fr;padding:14px;border-radius:min(var(--r-win),22px);gap:14px}
  .riel{position:static;height:auto;flex-direction:row;padding:6px 10px;border-radius:16px}.riel .logo{margin:0 6px 0 0;width:30px;height:30px}
- .calib{padding:16px;border-radius:min(var(--r-win),22px)}.vacio{min-height:220px}.hero b{font-size:48px}}
+ .calib{padding:16px;border-radius:min(var(--r-win),22px)}.alg{flex-wrap:wrap;gap:4px 8px}.copo{width:86px;height:66px}.escala span{width:29px}.escala svg{width:29px;height:22px}.vacio{min-height:220px}.hero b{font-size:48px}}
 </style>
 </head><body>
-<svg class="defs" aria-hidden="true" focusable="false">
- <!-- Algodón: bordes con fibras (dos desplazamientos) y volumen con luz difusa. -->
- <filter id="algodon" x="-25%" y="-25%" width="150%" height="150%" color-interpolation-filters="sRGB">
-  <feTurbulence type="fractalNoise" baseFrequency=".09" numOctaves="3" seed="3" result="r"/>
-  <feDisplacementMap in="SourceGraphic" in2="r" scale="10" xChannelSelector="R" yChannelSelector="G" result="d"/>
-  <feTurbulence type="fractalNoise" baseFrequency=".9" numOctaves="2" seed="11" result="f"/>
-  <feDisplacementMap in="d" in2="f" scale="4" xChannelSelector="G" yChannelSelector="B" result="dd"/>
-  <feGaussianBlur in="dd" stdDeviation="2.4" result="a"/>
-  <feComposite in="a" in2="f" operator="arithmetic" k2="1" k3=".2" result="h"/>
-  <feDiffuseLighting in="h" surfaceScale="3.5" diffuseConstant="1.28" lighting-color="#fff" result="l"><feDistantLight azimuth="225" elevation="52"/></feDiffuseLighting>
-  <feComposite in="l" in2="dd" operator="in"/>
- </filter>
- <filter id="algodon-m" x="-30%" y="-30%" width="160%" height="160%" color-interpolation-filters="sRGB">
-  <feTurbulence type="fractalNoise" baseFrequency=".42" numOctaves="3" seed="3" result="r"/>
-  <feDisplacementMap in="SourceGraphic" in2="r" scale="2.2" xChannelSelector="R" yChannelSelector="G" result="d"/>
-  <feTurbulence type="fractalNoise" baseFrequency="4" numOctaves="2" seed="11" result="f"/>
-  <feDisplacementMap in="d" in2="f" scale=".9" xChannelSelector="G" yChannelSelector="B" result="dd"/>
-  <feGaussianBlur in="dd" stdDeviation=".55" result="a"/>
-  <feComposite in="a" in2="f" operator="arithmetic" k2="1" k3=".2" result="h"/>
-  <feDiffuseLighting in="h" surfaceScale="3.5" diffuseConstant="1.28" lighting-color="#fff" result="l"><feDistantLight azimuth="225" elevation="52"/></feDiffuseLighting>
-  <feComposite in="l" in2="dd" operator="in"/>
- </filter>
-</svg>
+<svg class="defs" id="defsAlg" aria-hidden="true" focusable="false"></svg>
+<div class="nubes" id="nubes" aria-hidden="true"></div>
 <div class="wrap">
 
 <!-- ===================== VISTA PRINCIPAL ===================== -->
@@ -479,17 +489,17 @@ input[type=range]{accent-color:var(--ink);vertical-align:middle}
         <h1>Los ciclones más letales <span class="caja">por sector.</span><svg class="regla" viewBox="0 0 60 14" aria-hidden="true"><line x1="0" y1="7" x2="60" y2="7"/><line x1="52" y1="0" x2="52" y2="14"/></svg></h1>
         <p class="lead">Para cada sector, el ciclón con más muertes. Toca un sector en el cartón.</p>
       </div>
-      <div class="ilus" aria-hidden="true"><div class="esp" id="ilus"></div><i class="cruz"></i><div class="muestras"><i style="--m:#0a2a6b"><span>IIC2026</span></i><i style="--m:#45898a"></i><i style="--m:#b5c6fd"></i><i class="alg-m"><svg viewBox="0 0 20 136" preserveAspectRatio="none"><rect x="-5" y="4" width="30" height="128" fill="#fff" filter="url(#algodon)"/></svg></i><i style="--m:#94a8ef"></i><i style="--m:#7f95d6"></i><i style="--m:#24548a"></i></div></div>
+      <div class="ilus" aria-hidden="true"><div class="esp" id="ilus"></div><i class="cruz"></i><div class="muestras"><i style="--m:#0a2a6b"><span>IIC2026</span></i><i style="--m:#45898a"></i><i style="--m:#b5c6fd"></i><i class="alg-m" id="mAlg"></i><i style="--m:#94a8ef"></i><i style="--m:#7f95d6"></i><i style="--m:#24548a"></i></div></div>
     </header>
 
     <div class="main">
       <div class="izq">
         <figure class="panelc" style="margin:0">
-          <div class="fila-cab"><span class="mono" id="rotMapa">Sectores 01–08</span><span class="mono">Área del círculo ∝ muertes</span></div>
+          <div class="fila-cab"><span class="mono" id="rotMapa">Sectores 01–08</span><span class="mono">Círculo ∝ muertes · algodón = categoría</span></div>
           <div class="mapaBox" id="mapaBox">
             <svg id="mapa" viewBox="0 5 200 92" role="img" aria-label="Mapa mundial con el ciclón más letal de cada sector">
               <defs><pattern id="trama" width="1.15" height="1.15" patternUnits="userSpaceOnUse" patternTransform="rotate(30)"><circle class="dot" cx=".575" cy=".575" r=".36"/></pattern></defs>
-              <g id="tierra"></g><g id="grat"></g><g id="leyenda"></g><g id="marc"></g>
+              <g id="tierra"></g><g id="tierraAlg"></g><g id="grat"></g><g id="leyenda"></g><g id="marc"></g>
             </svg>
             <div class="tip" id="tipMapa" hidden></div>
           </div>
@@ -511,6 +521,8 @@ input[type=range]{accent-color:var(--ink);vertical-align:middle}
     </div>
   </div>
 </section>
+
+<div class="costura" id="costura" aria-hidden="true"></div>
 
 <!-- ===================== CALIBRACIÓN (abajo) ===================== -->
 <section class="calib" id="calib">
@@ -682,17 +694,120 @@ function espiral(brazos,vueltas,sur){var s="";
   return '<svg viewBox="0 0 200 200" aria-hidden="true"><g'+(sur?' transform="translate(200 0) scale(-1 1)"':'')+'>'+s+'</g><circle class="c" cx="100" cy="100" r="4"/></svg>'}
 
 // ---------- algodón: como en la maqueta, la cantidad de algodón indica la categoría ----------
-// copo(k): k+2 motas de algodón (TT = 2, categoría 5 = 7), en un cúmulo que crece con la categoría.
+// Las motas son círculos con un degradé radial; el filtro las une en una masa suave (efecto «goo»),
+// les da pelusa en el borde, volumen con luz difusa y especular, sombras azuladas y una sombra bajo el copo.
 var MOTAS={2:[[-8,0,13],[9,1,12]],3:[[-14,3,12],[0,-4,14],[14,3,12]],4:[[-16,4,12],[-3,-6,13],[11,-4,12],[18,6,10]],
   5:[[-20,5,11],[-8,-6,13],[7,-8,13],[19,2,11],[0,6,12]],6:[[-24,6,10],[-12,-5,12],[2,-10,14],[15,-4,12],[25,6,10],[0,8,12]],
   7:[[-28,8,9],[-17,-3,12],[-4,-11,13],[10,-10,13],[22,-1,11],[30,9,9],[0,8,13]]};
-function copo(k){var e=(.92+.06*k).toFixed(3);
+var GRAD_MOTA='<radialGradient id="mota" cx=".4" cy=".36" r=".66"><stop offset="0" stop-color="#fff"/><stop offset=".6" stop-color="#fff" stop-opacity=".92"/><stop offset="1" stop-color="#fff" stop-opacity=".32"/></radialGradient>';
+function luzAlgodon(sup,brillo){   // relieve -> algodón blanco con sombras azuladas y un brillo suave
+  return '<feDiffuseLighting in="h" surfaceScale="'+sup+'" diffuseConstant="1.16" lighting-color="#fff" result="luz"><feDistantLight azimuth="235" elevation="58"/></feDiffuseLighting>'+
+    '<feComponentTransfer in="luz" result="tono"><feFuncR type="table" tableValues=".64 1"/><feFuncG type="table" tableValues=".71 1"/><feFuncB type="table" tableValues=".86 1"/></feComponentTransfer>'+
+    '<feSpecularLighting in="h" surfaceScale="'+sup+'" specularConstant="'+brillo+'" specularExponent="20" lighting-color="#fff" result="esp"><feDistantLight azimuth="235" elevation="58"/></feSpecularLighting>'+
+    '<feComposite in="esp" in2="tono" operator="arithmetic" k2="1" k3="1" result="lit"/>'}
+function bordeAlgodon(u,fino,aura){   // masa -> borde con pelusa + aura de fibras
+  return '<feTurbulence type="fractalNoise" baseFrequency="'+(fino/u).toFixed(3)+'" numOctaves="2" seed="8" result="f"/>'+
+    '<feDisplacementMap in="masa" in2="f" scale="'+(2.4*u).toFixed(3)+'" xChannelSelector="R" yChannelSelector="G" result="p"/>'+
+    '<feGaussianBlur in="p" stdDeviation="'+(.7*u).toFixed(3)+'" result="borde"/>'+
+    '<feDisplacementMap in="masa" in2="f" scale="'+(aura*u).toFixed(3)+'" xChannelSelector="G" yChannelSelector="B" result="pa"/>'+
+    '<feGaussianBlur in="pa" stdDeviation="'+(1.4*u).toFixed(3)+'" result="pb"/>'+
+    '<feColorMatrix in="pb" type="matrix" values="0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 .42 0" result="aura"/>'}
+function sombraAlgodon(u){
+  return '<feComposite in="lit" in2="borde" operator="in" result="alg"/>'+
+    '<feGaussianBlur in="borde" stdDeviation="'+(4*u).toFixed(3)+'" result="sb"/><feOffset in="sb" dy="'+(4*u).toFixed(3)+'" result="so"/>'+
+    '<feColorMatrix in="so" type="matrix" values="0 0 0 0 .03 0 0 0 0 .08 0 0 0 0 .28 0 0 0 .38 0" result="sombra"/>'+
+    '<feMerge><feMergeNode in="sombra"/><feMergeNode in="aura"/><feMergeNode in="alg"/></feMerge>'}
+// u = tamaño de la unidad (1 = motas de radio ≈ 12)
+function filtroAlgodon(id,u){
+  return '<filter id="'+id+'" x="-35%" y="-35%" width="170%" height="185%" color-interpolation-filters="sRGB">'+
+    '<feGaussianBlur in="SourceAlpha" stdDeviation="'+(4*u).toFixed(3)+'" result="b"/>'+
+    '<feColorMatrix in="b" type="matrix" values="0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 18 -7" result="masa"/>'+
+    bordeAlgodon(u,.5,7)+
+    '<feTurbulence type="fractalNoise" baseFrequency="'+(.12/u).toFixed(3)+'" numOctaves="2" seed="3" result="g"/>'+
+    '<feGaussianBlur in="SourceAlpha" stdDeviation="'+(2.6*u).toFixed(3)+'" result="h0"/>'+
+    '<feComposite in="h0" in2="g" operator="arithmetic" k2="1" k3=".08" result="h"/>'+
+    luzAlgodon(6,.5)+sombraAlgodon(u)+'</filter>'}
+// Algodón de los continentes, por categoría: más categoría = algodón más denso y con más volumen (como en la maqueta).
+// La densidad es suave (sin umbral duro): el algodón se ve cardado, con zonas más ralas y más tupidas.
+function filtroTierra(id,k,bb){var g=2.4,b=(-2.4*(.56-.05*k)+.1*k).toFixed(3);
+  return '<filter id="'+id+'" filterUnits="userSpaceOnUse" x="'+bb[0]+'" y="'+bb[1]+'" width="'+bb[2]+'" height="'+bb[3]+'" color-interpolation-filters="sRGB">'+
+    '<feTurbulence type="fractalNoise" baseFrequency=".34" numOctaves="4" seed="'+(3+k)+'" result="n"/>'+
+    '<feColorMatrix in="n" type="matrix" values="0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 '+g+' '+b+'" result="dens"/>'+
+    '<feComposite in="dens" in2="SourceAlpha" operator="in" result="m"/>'+
+    '<feGaussianBlur in="m" stdDeviation=".1" result="masa"/>'+
+    '<feTurbulence type="fractalNoise" baseFrequency="5" numOctaves="2" seed="8" result="f"/>'+
+    '<feDisplacementMap in="masa" in2="f" scale=".28" xChannelSelector="R" yChannelSelector="G" result="borde"/>'+
+    '<feDisplacementMap in="masa" in2="f" scale=".9" xChannelSelector="G" yChannelSelector="B" result="pa"/>'+
+    '<feGaussianBlur in="pa" stdDeviation=".16" result="pb"/>'+
+    '<feColorMatrix in="pb" type="matrix" values="0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 .5 0" result="aura"/>'+
+    '<feGaussianBlur in="masa" stdDeviation=".22" result="h0"/>'+
+    '<feComposite in="h0" in2="n" operator="arithmetic" k2="1" k3=".12" result="h"/>'+
+    luzAlgodon((2.2+.5*k).toFixed(1),.35)+
+    '<feComposite in="lit" in2="borde" operator="in" result="alg"/>'+
+    '<feGaussianBlur in="borde" stdDeviation=".3" result="sb"/><feOffset in="sb" dy=".22" result="so"/>'+
+    '<feColorMatrix in="so" type="matrix" values="0 0 0 0 .03 0 0 0 0 .08 0 0 0 0 .28 0 0 0 .3 0" result="sombra"/>'+
+    '<feMerge><feMergeNode in="sombra"/><feMergeNode in="aura"/><feMergeNode in="alg"/></feMerge></filter>'}
+function copo(k,animar){var e=(.92+.06*k).toFixed(3);
   return '<svg viewBox="0 18 100 76" aria-hidden="true"><g filter="url(#algodon)"><g transform="translate(50 58) scale('+e+')">'+
-    MOTAS[k+2].map(function(m){return '<circle cx="'+m[0]+'" cy="'+m[1]+'" r="'+m[2]+'" fill="#fff"/>'}).join("")+'</g></g></svg>'}
+    MOTAS[k+2].map(function(m,i){return '<circle'+(animar?' class="m" style="--i:'+i+'"':'')+' cx="'+m[0]+'" cy="'+m[1]+'" r="'+m[2]+'" fill="url(#mota)"/>'}).join("")+'</g></g></svg>'}
+var RANGO=["34–63 kt","64–82 kt","83–95 kt","96–112 kt","113–136 kt","137 kt o más"];
 function bloqueAlgodon(k,c){
-  return '<div class="alg"><div class="copo">'+copo(k)+'<b>'+c.n+'</b></div><div><div class="alg-t">'+c.t+'</div>'+
-    '<div class="escala" aria-hidden="true">'+[0,1,2,3,4,5].map(function(i){return '<span class="'+(i===k?'on':'')+'">'+copo(i)+'<small>'+(i?i:'TT')+'</small></span>'}).join("")+'</div>'+
+  return '<div class="alg"><div class="copo">'+copo(k,true)+'<b>'+c.n+'</b></div><div><div class="alg-t">'+c.t+'</div>'+
+    '<div class="escala" aria-hidden="true">'+[0,1,2,3,4,5].map(function(i){
+      return '<span class="'+(i===k?'on':'')+'" title="'+(i?'Categoría '+i:'Tormenta tropical')+': '+RANGO[i]+'">'+copo(i)+'<small>'+(i?i:'TT')+'</small></span>'}).join("")+'</div>'+
     '<span class="mono">Más algodón, más categoría</span></div></div>'}
+function columnaAlgodon(){var c="";for(var i=0;i<12;i++)c+='<circle cx="'+(10+(i%3-1)*1.6)+'" cy="'+(8+i*11)+'" r="'+(8.5+(i*5)%3)+'" fill="url(#mota)"/>';
+  return '<svg viewBox="0 0 20 136" preserveAspectRatio="none" aria-hidden="true"><g filter="url(#algodon-c)">'+c+'</g></svg>'}
+
+// imágenes de algodón «horneadas» una vez (SVG con filtro -> PNG), para lo que se mueve: nubes, soplo y costura
+function hornear(svg,w,h){return new Promise(function(ok,no){var img=new Image();
+  img.onload=function(){try{var c=document.createElement("canvas");c.width=w;c.height=h;c.getContext("2d").drawImage(img,0,0,w,h);
+    c.toBlob(function(b){b?ok(URL.createObjectURL(b)):no(new Error("png"))},"image/png")}catch(e){no(e)}};
+  img.onerror=function(){no(new Error("svg"))};img.src="data:image/svg+xml;charset=utf-8,"+encodeURIComponent(svg)})}
+function svgSuelto(vb,w,h,defs,cuerpo){return '<svg xmlns="http://www.w3.org/2000/svg" width="'+w+'" height="'+h+'" viewBox="'+vb+'"><defs>'+defs+'</defs>'+cuerpo+'</svg>'}
+function motasSueltas(n){return MOTAS[n].map(function(m){return '<circle cx="'+m[0]+'" cy="'+m[1]+'" r="'+m[2]+'" fill="url(#mota)"/>'}).join("")}
+var COPITOS=[];
+function hornearCopitos(){var d=GRAD_MOTA+filtroAlgodon("a",1);
+  return Promise.all([5,6,7].map(function(n){return hornear(svgSuelto("0 0 100 80",240,192,d,'<g filter="url(#a)"><g transform="translate(50 42)">'+motasSueltas(n)+'</g></g>'),240,192)}))
+    .then(function(u){COPITOS=u})}
+// nubes: [alto %, ancho px, duración s, retraso s, paralaje]
+var NUBES=[[5,300,150,-10,.05],[22,190,115,-80,.12],[44,360,180,-130,.03],[62,220,130,-35,.1],[80,280,165,-100,.07],[13,150,100,-60,.16],[93,240,140,-15,.09]];
+function ponerNubes(){$("nubes").innerHTML=NUBES.map(function(n,i){
+  return '<div class="nv" style="top:'+n[0]+'%;--p:'+n[4]+'"><div class="nh" style="--t:'+n[2]+'s;--d:'+n[3]+'s"><span class="nb" style="width:'+n[1]+'px;height:'+Math.round(n[1]*.8)+'px;background-image:url('+COPITOS[i%3]+');--d:'+(n[3]/9).toFixed(1)+'s"></span></div></div>'}).join("")}
+var rafN=0;window.addEventListener("scroll",function(){if(rafN)return;rafN=requestAnimationFrame(function(){rafN=0;$("nubes").style.setProperty("--sy",Math.round(scrollY))})},{passive:true});
+function soplo(s){if(!COPITOS.length||matchMedia("(prefers-reduced-motion: reduce)").matches)return;
+  var g=$("marc").querySelector('[data-id="'+s.id+'"]'),c=g&&g.querySelector(".pt,.vac");if(!c)return;
+  var r=c.getBoundingClientRect(),x=r.left+r.width/2,y=r.top+r.height/2;
+  for(var i=0;i<12;i++){var e=document.createElement("i"),a=-Math.PI/2+(Math.random()-.5)*2.6,d=60+Math.random()*110;
+    e.className="copito";
+    e.style.cssText="left:"+x+"px;top:"+y+"px;--dx:"+Math.round(Math.cos(a)*d)+"px;--dy:"+Math.round(Math.sin(a)*d-25)+"px;--s:"+(.55+Math.random()*.65).toFixed(2)+
+      ";--r:"+Math.round((Math.random()-.5)*50)+"deg;animation-delay:"+(i*22)+"ms;background-image:url("+COPITOS[i%3]+")";
+    e.addEventListener("animationend",function(){this.remove()});document.body.appendChild(e)}}
+function hornearCostura(){var c="";
+  for(var i=-2;i<=32;i++){var j=(i+30)%30;c+='<circle cx="'+(i*20)+'" cy="'+(33+(j*3)%9-4)+'" r="'+(11+(j*5)%7)+'" fill="url(#mota)"/>'}
+  return hornear(svgSuelto("0 0 600 70",1800,210,GRAD_MOTA+filtroAlgodon("a",1),'<g filter="url(#a)">'+c+'</g>'),1800,210)
+    .then(function(u){var e=$("costura");e.style.backgroundImage="url("+u+")";e.classList.add("lista")})}
+// Algodón en los continentes: cada sector se cubre según la categoría de su ciclón (la maqueta deja sin algodón
+// a América del Sur y la Antártida). Contornos aproximados de cada sector, en [lon, lat].
+var POLI={
+ 1:[[[-168.5,84],[-10,84],[-10,58],[-45,55],[-55,35],[-58,15],[-60,12.8],[-81,12.8],[-82.5,16],[-85.5,19.5],[-86.3,22.5],[-97,26],[-104,29.4],[-108.2,31.3],[-111,31.3],[-114.8,32.5],[-117.3,32.6],[-125,32],[-180,50],[-180,64],[-168.5,65.6]]],
+ 2:[[[-117.3,32.6],[-114.8,32.5],[-111,31.3],[-108.2,31.3],[-104,29.4],[-97,26],[-86.3,22.5],[-85.5,19.5],[-82.5,16],[-81,12.8],[-77.5,9.5],[-77.3,8.6],[-77.9,7.2],[-80,5],[-92,12],[-110,18],[-120,28]]],
+ 4:[[[-32,84],[-32,34],[-6,35.9],[10,37.2],[12,36],[15,35.5],[23,34.6],[26,34],[27.8,36.6],[26.8,38.5],[26.5,40.2],[29.2,41.2],[35,43.3],[39.5,43.4],[47,43.4],[50,45],[51.5,47.5],[52,51],[58,51],[60,56],[60,68],[68,70],[68,84]]],
+ 5:[[[-6,35.9],[9,37.6],[11.5,37.4],[12.3,35.6],[20,33.2],[32.5,31.6],[34.25,31.4],[34.95,29.4],[43.4,12.6],[51.6,12.3],[54,-1],[60,-14],[60,-38],[10,-38],[-20,-36],[-27,12],[-20,30],[-9,36.2]]],
+ 6:[[[29.2,41.2],[26.5,40.2],[26.8,38.5],[27.8,36.6],[29,36],[34.25,31.4],[34.95,29.4],[43.4,12.6],[51.6,12.3],[60,10],[95,-12],[126,-10.85],[141,-10.5],[141,0],[133,5],[150,40],[165,40],[170,54],[180,54],[180,84],[68,84],[68,70],[60,68],[60,56],[58,51],[52,51],[51.5,47.5],[50,45],[47,43.4],[39.5,43.4],[35,43.3]],
+    [[-180,63.5],[-168.5,65.6],[-168.5,74],[-180,74]]],
+ 7:[[[110,-11],[126,-10.85],[141,-10.5],[141,-1],[133,4],[140,22],[180,22],[180,-55],[110,-55]],[[-180,-50],[-125,-50],[-125,0],[-180,0]]]};
+function proyPoli(p){return "M"+p.map(function(q){return ((q[0]+180)/360*200).toFixed(2)+" "+((90-q[1])/180*100).toFixed(2)}).join("L")+"Z"}
+function cajaPoli(ps){var a=1e9,b=1e9,c=-1e9,d=-1e9;ps.forEach(function(p){p.forEach(function(q){var x=(q[0]+180)/360*200,y=(90-q[1])/180*100;a=Math.min(a,x);b=Math.min(b,y);c=Math.max(c,x);d=Math.max(d,y)})});
+  return [(a-2).toFixed(1),(b-2).toFixed(1),(c-a+4).toFixed(1),(d-b+4).toFixed(1)]}
+function tierraAlgodon(d){var defs="",cuerpo="";
+  SECT.forEach(function(s){if(!s.c||!POLI[s.id])return;var k=categoria(s.w);
+    defs+='<clipPath id="cp'+s.id+'"><path d="'+POLI[s.id].map(proyPoli).join("")+'"/></clipPath>'+filtroTierra("tk"+s.id,k,cajaPoli(POLI[s.id]));
+    cuerpo+='<g filter="url(#tk'+s.id+')" opacity="'+(.7+.06*k).toFixed(2)+'"><path d="'+d+'" clip-path="url(#cp'+s.id+')" fill="#fff"/></g>'});
+  var W=1600,H=Math.round(W*92/200);
+  hornear(svgSuelto("0 5 200 92",W,H,defs,cuerpo),W,H).then(function(u){
+    $("tierraAlg").innerHTML='<image href="'+u+'" x="0" y="5" width="200" height="92" preserveAspectRatio="none"/>';
+    requestAnimationFrame(function(){$("mapa").classList.add("alg-lista")})}).catch(function(){})}
 
 // ---------- ficha de información ----------
 function mostrarFicha(s){
@@ -715,10 +830,10 @@ function mostrarFicha(s){
   '<p class="paso"><span class="mono">Pasó por</span>'+s.ps+'</p>';
   dibujarMapa();dibujarOla(s);
 }
-function disparar(s){mostrarFicha(s);sonar(s.w)}
+function disparar(s){mostrarFicha(s);sonar(s.w);soplo(s)}
 
 // ---------- curva del viento del ciclón elegido (la «ola») ----------
-var olaSel=null;
+var olaSel=null,olaAnim=null;
 // umbrales Saffir-Simpson (kt). Las líneas de Cat. 2 y Cat. 4 quedan sin rótulo: están a ~10 px de sus vecinas.
 var UMBRAL=[[34,"TT",1],[64,"Cat. 1",1],[83,"Cat. 2",0],[96,"Cat. 3",1],[113,"Cat. 4",0],[137,"Cat. 5",1]];
 function dibujarOla(s){
@@ -739,7 +854,7 @@ function dibujarOla(s){
     svg.innerHTML=g+'<text class="msg" x="'+((x0+x1)/2)+'" y="'+(y(80))+'" text-anchor="middle">'+
       (!s?"TOCA UN SECTOR PARA VER CÓMO CAMBIÓ SU VIENTO":"SIN REGISTROS EN 2000–2026")+'</text>';
     $("olaTit").textContent=s?s.n+" · sin ciclón":"Viento cada 6 horas";
-    svg.onpointermove=svg.onpointerleave=null;return}
+    olaAnim=null;svg.onpointermove=svg.onpointerleave=null;return}
   var hmax=s.hh[s.hh.length-1]||1,x=d3.scaleLinear().domain([0,hmax]).range([x0,x1]);
   var pts=s.vv.map(function(v,i){return [x(s.hh[i]),y(v)]});
   var ln=d3.line().curve(d3.curveMonotoneX),ar=d3.area().curve(d3.curveMonotoneX).y0(y(0)).y1(function(d){return d[1]});
@@ -753,9 +868,14 @@ function dibujarOla(s){
      '<text class="plab" x="'+pk[0]+'" y="'+(pk[1]-15)+'" text-anchor="'+anc+'">Máx. '+s.vv[im]+' kt</text>'+
      '<g class="cursor" style="display:none"><line y1="'+m.t+'" y2="'+y(0)+'"/><circle r="4.5"/></g>';
   svg.innerHTML=g;
+  // algodón en los tramos de huracán (≥ 64 kt): columnas de motas entre 64 kt y la curva, que el filtro une
   if(s.vv.some(function(v){return v>=64})){
-    var ab=d3.area().curve(d3.curveMonotoneX).y0(y(64)).y1(function(d,i){return y(Math.max(s.vv[i],64))});
-    alg.innerHTML='<path d="'+ab(pts)+'" fill="#fff" filter="url(#algodon)"/>'}
+    var vint=d3.scaleLinear().domain(s.hh).range(s.vv),cs=[];
+    for(var px=x0;px<=x1;px+=6){var v=vint(x.invert(px));if(v<64)continue;
+      var tope=y(v),piso=y(64),alto=piso-tope,n=Math.max(1,Math.round(alto/18));
+      for(var j=0;j<n;j++)cs.push('<circle cx="'+px.toFixed(1)+'" cy="'+(piso-(j+.5)*alto/n).toFixed(1)+'" r="'+Math.min(13,Math.max(3.2,alto/(2*n)+2.5)).toFixed(1)+'" fill="url(#mota)"/>')}
+    alg.innerHTML='<g filter="url(#algodon)">'+cs.join("")+'</g>';
+    if(olaAnim!==s.id){olaAnim=s.id;alg.classList.remove("revela");void alg.getBoundingClientRect();alg.classList.add("revela")}}
   var cur=svg.querySelector(".cursor"),cl=cur.firstChild,cc=cur.lastChild;
   svg.onpointermove=function(e){var r=svg.getBoundingClientRect(),px=(e.clientX-r.left)*W/r.width;
     if(px<x0-8||px>x1+8){svg.onpointerleave();return}
@@ -778,7 +898,8 @@ function cargarTierra(){
   [-120,-60,0,60,120].forEach(function(lo){gl+='<text class="glab" x="'+((lo+180)/360*200+.8).toFixed(2)+'" y="8" style="text-anchor:start">'+(lo===0?"0°":Math.abs(lo)+"°"+(lo>0?"E":"O"))+'</text>'});
   $("grat").innerHTML=gl;
   fetch("https://cdn.jsdelivr.net/npm/world-atlas@2.0.2/land-110m.json").then(function(r){return r.json()}).then(function(t){
-    $("tierra").innerHTML='<path class="tierra" d="'+path(topojson.feature(t,t.objects.land))+'"/>'}).catch(function(){})}
+    var d=path(topojson.feature(t,t.objects.land));$("tierra").innerHTML='<path class="tierra" d="'+d+'"/>';
+    setTimeout(function(){tierraAlgodon(d)},250)}).catch(function(){})}
 function leyenda(){var bx=16,by=79,h='<text class="glab" x="'+(bx-8.5)+'" y="'+(by-2*rMuertes(100000)-3).toFixed(2)+'" style="text-anchor:start">MUERTES</text>';
   [100000,50000,10000].forEach(function(v){var r=rMuertes(v),top=by-2*r;
     h+='<circle class="lc" cx="'+bx+'" cy="'+(by-r).toFixed(2)+'" r="'+r.toFixed(2)+'"/>'+
@@ -786,8 +907,8 @@ function leyenda(){var bx=16,by=79,h='<text class="glab" x="'+(bx-8.5)+'" y="'+(
        '<text class="glab" x="'+(bx+11.6)+'" y="'+(top+.7).toFixed(2)+'" style="text-anchor:start">'+fmt(v)+'</text>'});
   $("leyenda").innerHTML=h}
 // foco del sector elegido: dos ondas y un marco de esquinas (como los marcos de los pósters)
-function nube(cx,cy,r){var h='<circle cx="'+cx+'" cy="'+cy+'" r="'+(r*1.15+1.6)+'" fill="#fff"/>';
-  for(var i=0;i<5;i++){var a=i*1.2566+.5,d=r*.85+1.2;h+='<circle cx="'+(cx+d*Math.cos(a)).toFixed(2)+'" cy="'+(cy+d*Math.sin(a)).toFixed(2)+'" r="'+(r*.6+1.1).toFixed(2)+'" fill="#fff"/>'}
+function nube(cx,cy,r){var h='<circle cx="'+cx+'" cy="'+cy+'" r="'+(r*1.15+1.6)+'" fill="url(#mota)"/>';
+  for(var i=0;i<5;i++){var a=i*1.2566+.5,d=r*.85+1.2;h+='<circle cx="'+(cx+d*Math.cos(a)).toFixed(2)+'" cy="'+(cy+d*Math.sin(a)).toFixed(2)+'" r="'+(r*.6+1.1).toFixed(2)+'" fill="url(#mota)"/>'}
   return '<g class="nube" filter="url(#algodon-m)">'+h+'</g>'}
 function foco(cx,cy,r){var R=r+1.8,a=r+3.6,L=1.7,b="";
   [[-1,-1],[1,-1],[1,1],[-1,1]].forEach(function(q){var x=cx+q[0]*a,y=cy+q[1]*a;
@@ -902,7 +1023,10 @@ window.addEventListener("scroll",cerrarMenu,{passive:true});
 
 new MutationObserver(function(){$("estado2").textContent=$("estado").textContent}).observe($("estado"),{childList:true,characterData:true,subtree:true});
 $("ilus").innerHTML=espiral(5,3.6,false);
-$("vacCopo").innerHTML=copo(5);
+$("defsAlg").innerHTML=GRAD_MOTA+filtroAlgodon("algodon",1)+filtroAlgodon("algodon-c",.7)+filtroAlgodon("algodon-m",.22);
+$("mAlg").innerHTML=columnaAlgodon();
+$("vacCopo").innerHTML=copo(5,true);
+hornearCopitos().then(function(){ponerNubes();return hornearCostura()}).catch(function(){});
 aplicarEstilo(document.documentElement.getAttribute("data-estilo"));
 leyenda();dibujar();conectar();cargarTierra();dibujarOla();
 </script></body></html>
