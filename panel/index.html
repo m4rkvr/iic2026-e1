@@ -2,164 +2,352 @@
 <html lang="es"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Sensor táctil de ciclones</title>
-<style>
-:root{color-scheme:dark;--bg:#121a16;--card:#1c241f;--ink:#eef3ef;--mut:#9fb2a8;--mut2:#c9d8cf;--line:#33453a;--acc:#4fb07f;--ok:#2f8f5b;--verde:#8fb996;
- --btn:#26362d;--sea:#0f1d26;--land:#4a6a55;--mark:#fff;--hl:#ffd54f;--mdot:#b03a37;--maptxt:#dfe9e3;
- --c0:#055673;--c1:#0177aa;--c2:#0d96f0;--c3:#99b0ff;--c4:#d6cbff;--c5:#ffefff;
- --o0:#fff;--o1:#fff;--o2:#1d2a22;--o3:#1d2a22;--o4:#1d2a22;--o5:#1d2a22;
- --kmb:#a55;--kmf:#3a2626;--kmc:#ff8f8f;--kab:#a8782a;--kaf:#3a3020;--kac:#ffb347}
-:root[data-tema="claro"]{color-scheme:light;--bg:#eef3ef;--card:#fff;--ink:#1d2a22;--mut:#5a6e63;--mut2:#44574c;--line:#cbd8d0;--acc:#4fb07f;--ok:#2f8f5b;--verde:#2f6b43;
- --btn:#e3ebe6;--sea:#d7e6f0;--land:#a8c3b0;--mark:#1d2a22;--hl:#d98a00;--mdot:#c0392b;--maptxt:#2c3d33;
- --c0:#055673;--c1:#0177aa;--c2:#0d86d6;--c3:#4f6fe0;--c4:#8660d0;--c5:#b2358f;
- --o0:#fff;--o1:#fff;--o2:#fff;--o3:#fff;--o4:#fff;--o5:#fff;
- --kmb:#c46565;--kmf:#fdeaea;--kmc:#a32525;--kab:#c99a3a;--kaf:#fdf2dd;--kac:#8a5a00}
-.onda{transform-box:fill-box;transform-origin:center;animation:onda 1.5s ease-out infinite;pointer-events:none}@keyframes onda{0%{transform:scale(.93);opacity:1}100%{transform:scale(1.12);opacity:0}}@media(prefers-reduced-motion:reduce){.onda{animation:none;opacity:.7}}
-.barra{display:flex;justify-content:flex-end;margin-bottom:6px}
-*{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.45 system-ui,sans-serif}
-.wrap{max-width:1400px;margin:0 auto;padding:16px}
-h1{font:700 clamp(26px,4vw,44px)/1.1 Georgia,serif;margin:0 0 4px;text-align:center;color:var(--verde)}
-h3{margin:0 0 6px;font-size:15px}
-.lead{text-align:center;color:var(--mut);margin:0 0 14px}
-.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px;margin-bottom:12px}
-.row{display:flex;gap:12px;flex-wrap:wrap}.row>.card{flex:1 1 320px}
-button{font:inherit;padding:6px 12px;border-radius:8px;border:1px solid var(--line);background:var(--btn);color:var(--ink);cursor:pointer}
-button.pri{background:var(--acc);border-color:var(--acc);font-weight:700}
-button:disabled{opacity:.4;cursor:default}
-.pill{display:inline-block;padding:3px 10px;border-radius:999px;border:1px solid var(--line);font-size:12px;color:var(--mut);margin:2px}
-.pill.ok{background:var(--ok);border-color:var(--ok);color:#fff}
-.nota{font-size:12px;color:var(--mut)}
-
-/* ---------- vista principal: mapa + ficha ---------- */
-.vista{min-height:100vh;display:flex;flex-direction:column}
-.main{display:flex;gap:12px;flex:1;align-items:flex-start;flex-wrap:wrap}
-.mapaw{flex:1 1 640px;min-width:0}
-svg#mapa{width:100%;display:block;background:var(--sea);border-radius:10px}
-svg#mapa text{text-anchor:middle;pointer-events:none;paint-order:stroke;stroke:var(--sea);stroke-width:.9;stroke-linejoin:round}
-svg#mapa .t1{fill:var(--ink);font-weight:800;font-size:3.1px}
-svg#mapa .t2{fill:var(--mut2);font-size:2.3px;stroke-width:.7}
-svg#mapa g[data-id]{cursor:pointer}
-#estado{margin-top:6px;text-align:center;min-height:1.4em}
-#ficha{flex:0 0 360px;max-width:100%;position:relative;min-height:420px;text-align:center;overflow-wrap:anywhere}
-#ficha .vacio{color:var(--mut);text-align:center;padding:120px 10px}
-#ficha .cab{display:flex;flex-direction:column;align-items:center;gap:10px}
-#ficha h2{margin:0 0 6px;font-size:24px}
-#ficha .cat{display:inline-flex;align-items:center;justify-content:center;gap:8px;font-weight:700}
-#ficha .cat b{background:var(--k);color:var(--on);border-radius:999px;padding:1px 9px}
-#ficha .sub{font-size:12px;color:var(--mut);margin-top:8px}
-#ficha .kpis{display:flex;gap:10px;width:100%}#ficha .kpis .kpi{flex:1 1 0;min-width:0}
-.kpi{border-radius:10px;border:1px solid;padding:8px;text-align:center}
-.kpi b{display:block;font-size:21px}.kpi small{display:block;font-size:11px;font-weight:700;margin-top:2px}
-.kpi.m{border-color:var(--kmb);background:var(--kmf);color:var(--kmc)}.kpi.a{border-color:var(--kab);background:var(--kaf);color:var(--kac)}
-#ficha .viento{display:flex;flex-direction:column;align-items:center;margin:14px 0 4px}
-#ficha .vl{font-size:12px;font-weight:700;margin-top:6px}
-#ficha .abajo{display:flex;gap:10px;margin-top:12px}
-.mini{flex:1;border:1px solid var(--line);border-radius:10px;padding:8px;text-align:center}
-.mini b{display:block;font-size:20px}.mini small{font-size:11px;font-weight:700}
-.ring{position:relative;width:130px;height:130px;border-radius:50%;display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1;background:var(--card);box-shadow:inset 0 0 0 9px color-mix(in srgb,var(--k) 16%,transparent)}
-.ring::before{content:"";position:absolute;inset:0;border-radius:50%;background:repeating-conic-gradient(from 0deg,var(--k) 0deg,color-mix(in srgb,var(--k) 8%,transparent) 105deg,color-mix(in srgb,var(--k) 8%,transparent) 120deg);-webkit-mask:radial-gradient(farthest-side,transparent calc(100% - 9px),#000 calc(100% - 8px));mask:radial-gradient(farthest-side,transparent calc(100% - 9px),#000 calc(100% - 8px));animation:rspin var(--sp,4s) linear infinite}
-.ring b,.ring small{position:relative}.ring b{font-size:34px}.ring small{font-size:12px;color:var(--mut);margin-top:3px}
-@keyframes rspin{to{transform:rotate(360deg)}}
-@media(prefers-reduced-motion:reduce){.ring::before{animation:none}}
-.mini b{font-size:17px}
-#sinreg{margin:10px 0;color:var(--mut)}
-
-/* ---------- zona de calibración (abajo del todo) ---------- */
-.calib{--card:#1f2b24;--btn:#26362d;--line:#33453a;--sea:#12324a;--done:#0a2132;--mut:#9fb2a8;--mark:#fff;--maptxt:#dfe9e3;--ink:#eef3ef;
- margin-top:40px;padding:16px;background:#17211b;border-radius:14px;color:var(--ink)}
-:root[data-tema="claro"] .calib{--card:#f5f9f6;--btn:#e3ebe6;--line:#bccfc3;--sea:#cfe1ee;--done:#8fb3d0;--mut:#5a6e63;--mark:#1d2a22;--maptxt:#1d2a22;--ink:#1d2a22;background:#dfeae2}
-.calib .card{background:var(--card);border-color:var(--line)}
-.calib input[type=range]{accent-color:#4fb07f}
-.sect button{border-radius:10px}.sect button.hecho{border:2px solid var(--ok)}
-.calib .pill.ok{background:var(--ok);border-color:var(--ok);color:#fff}
-.calib>h2{margin:0 0 8px;font-size:18px}
-.calib button{padding:4px 10px;font-size:13px}.calib .card{padding:10px 12px}.calib .sect{gap:5px;margin:6px 0}.calib .fila{margin-top:6px}
-button,button.pri{background:#a8c3b0;border-color:#a8c3b0;color:#fff;font-weight:600}
-button:hover:not(:disabled){background:#97b5a0}
-#tema{background:#e4e4e5;border-color:#e4e4e5;color:#111;text-shadow:none}#tema:hover:not(:disabled){background:#d6d6d8}
-.calib .sect button{background:#e4e4e5;border:2px solid #e4e4e5;color:#111;text-shadow:none}
-.calib .sect button:hover:not(:disabled){background:#d6d6d8}
-.calib .sect button.hecho{background:#bcdcf4;border:2px solid #bcdcf4;color:#14304a;text-shadow:none}
-.calib .sect button.sel{outline:2px solid #ffd23f;outline-offset:1px}
-.calgrid{display:grid;grid-template-columns:1fr 1fr 1fr;grid-template-areas:"c1 c2 c3";gap:12px;align-items:stretch;margin-bottom:12px}.calbot{display:grid;grid-template-columns:210px 1fr;gap:12px;align-items:start}.qrcol{min-width:0;text-align:center}.qrcol .qrs{align-items:center}.qrcol .nota{margin:8px 0 0;font-size:11px}.qrcol .qr{width:130px;height:130px}.calbot .mapcard{min-width:0}.calbot .mapcard h3{margin:0 0 4px}.fila1{flex-wrap:wrap;gap:6px}.fila1 .pill{font-size:11px;padding:3px 8px}.calgrid .card{margin-bottom:0}
-@media(max-width:1000px){.calgrid{grid-template-columns:1fr;grid-template-areas:"c1" "c2" "c3"}.calbot{grid-template-columns:1fr}.qrs{flex-direction:row}}
-.fila{display:flex;align-items:center;gap:8px;margin-top:8px}
-.qrs{display:flex;flex-direction:column;align-items:flex-start;gap:10px}.qrs div{text-align:center;font-size:12px;color:var(--mut)}
-.qr{width:150px;height:150px;background:#fff;color:#000;padding:4px;border-radius:6px}.qr svg{width:100%;height:100%;display:block}
-.qr svg path{fill:#000!important}.qr svg rect{fill:#fff!important}
-#sala{font:800 24px ui-monospace,monospace;letter-spacing:.1em}
-.sect{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0}
-.sect button.sel{outline:2px solid var(--hl)}.sect button.hecho{border-color:var(--ok)}
-svg.mapaCal{width:100%;height:calc(100vh - 440px);min-height:200px;max-height:560px;display:block;background:var(--sea);border-radius:8px}
-svg.mapaCal text{fill:var(--maptxt);font-size:4px;text-anchor:middle;pointer-events:none}
-</style>
 <script>(function(){var t=null;try{t=localStorage.getItem("tema-ciclones")}catch(e){}
 document.documentElement.setAttribute("data-tema",t==="claro"?"claro":"oscuro")})()</script>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,300..900&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+/* Diseño E2: mezcla de cuatro referencias (carpeta inspiracion/).
+   Modo oscuro = imagen satelital + tarjetas de vidrio. Modo claro = póster risográfico (tinta cobalto sobre papel).
+   Paleta común: azul marino, periwinkle y verde azulado. Categorías: una rampa de un solo tono (validada). */
+:root{color-scheme:dark;
+ --f-sans:"Archivo",system-ui,-apple-system,"Segoe UI",sans-serif;
+ --f-mono:"IBM Plex Mono",ui-monospace,Menlo,Consolas,monospace;
+ --bg:#061233;--text:#eef1ff;--muted:#9aaad8;--faint:#7586c0;--titulo:#eef1ff;
+ --ink:#b5c6fd;--on-ink:#071533;--teal:#6fc0bd;--on-teal:#071533;
+ --line:rgba(181,198,253,.32);--hair:rgba(181,198,253,.14);
+ --win:rgba(9,24,62,.55);--win-brd:rgba(181,198,253,.18);
+ --card:rgba(181,198,253,.07);--card-brd:rgba(181,198,253,.18);--card-hi:rgba(181,198,253,.14);
+ --surf:#13244f;--blur:blur(20px) saturate(140%);
+ --block:rgba(181,198,253,.15);--on-block:#eef1ff;
+ --sea:#0a1d4a;--land-fill:#245e62;--coast:rgba(111,192,189,.5);--grat:rgba(181,198,253,.14);
+ --mark:#c9d4ff;--ring:#0a1d4a;--foco:#ffffff;--tip:rgba(12,28,70,.94);--grano:.07;
+ --c0:#3a55b4;--c1:#5470d0;--c2:#7590e6;--c3:#97adf3;--c4:#bccbfb;--c5:#e3e9ff;
+ --o0:#fff;--o1:#fff;--o2:#071533;--o3:#071533;--o4:#071533;--o5:#071533;
+ --sombra:0 40px 90px -40px rgba(0,0,0,.8)}
+:root[data-tema="claro"]{color-scheme:light;
+ --bg:#e4e3da;--text:#0b1f5c;--muted:#4b5b92;--faint:#6f7cae;--titulo:#1d3fcf;
+ --ink:#1d3fcf;--on-ink:#f2f1ea;--teal:#28706f;--on-teal:#f2f1ea;
+ --line:rgba(29,63,207,.55);--hair:rgba(29,63,207,.15);
+ --win:#f2f1ea;--win-brd:rgba(29,63,207,.28);
+ --card:transparent;--card-brd:rgba(29,63,207,.42);--card-hi:rgba(29,63,207,.06);
+ --surf:#f2f1ea;--blur:none;
+ --block:#1d3fcf;--on-block:#f2f1ea;
+ --sea:#f2f1ea;--land-fill:url(#trama);--coast:rgba(29,63,207,.6);--grat:rgba(29,63,207,.14);
+ --mark:#1d3fcf;--ring:#f2f1ea;--foco:#1d3fcf;--tip:#f7f6f0;--grano:.2;
+ --c0:#94a6ee;--c1:#7389e3;--c2:#5570d6;--c3:#3a56c3;--c4:#2440a4;--c5:#122674;
+ --o0:#0b1f5c;--o1:#0b1f5c;--o2:#fff;--o3:#fff;--o4:#fff;--o5:#fff;
+ --sombra:0 1px 0 rgba(11,31,92,.05),0 30px 60px -36px rgba(11,31,92,.5)}
+
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;min-height:100vh;background:var(--bg);color:var(--text);font:15px/1.5 var(--f-sans);-webkit-font-smoothing:antialiased}
+:root:not([data-tema="claro"]) body{background:
+ radial-gradient(60% 50% at 10% 6%,rgba(148,168,239,.30),transparent 70%),
+ radial-gradient(45% 40% at 94% 14%,rgba(36,84,138,.6),transparent 70%),
+ radial-gradient(55% 45% at 78% 96%,rgba(69,137,138,.32),transparent 70%),
+ linear-gradient(165deg,#0a2a6b 0%,#071a45 45%,#050f2b 100%) fixed var(--bg)}
+/* grano de impresión (riso) — encima de todo, salvo los QR */
+body::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:50;opacity:var(--grano);mix-blend-mode:multiply;
+ background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 .6 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
+
+.wrap{max-width:1440px;margin:0 auto;padding:16px}
+.mono{font:500 11px/1.35 var(--f-mono);letter-spacing:.09em;text-transform:uppercase;color:var(--muted)}
+.etq{display:inline-flex;align-items:center;gap:7px;padding:6px 13px;border-radius:999px;border:1px solid var(--card-brd);background:var(--card);font:600 12px/1 var(--f-sans);color:var(--text)}
+.etq::before{content:"";width:6px;height:6px;border-radius:50%;background:var(--ink)}
+.oval{display:inline-block;padding:3px 13px 4px;border:1.5px solid var(--ink);border-radius:50%;font:700 14px/1.1 var(--f-sans);font-stretch:80%;letter-spacing:.04em;color:var(--ink)}
+.cruz{position:absolute;width:13px;height:13px;pointer-events:none}
+.cruz::before,.cruz::after{content:"";position:absolute;background:var(--ink)}
+.cruz::before{left:6px;top:0;width:1.5px;height:13px}.cruz::after{top:6px;left:0;height:1.5px;width:13px}
+
+/* ---------- ventana principal (vidrio / hoja) ---------- */
+.ventana{position:relative;display:grid;grid-template-columns:60px minmax(0,1fr);gap:22px;min-height:calc(100vh - 32px);
+ padding:16px 22px 16px 16px;border-radius:30px;background:var(--win);border:1px solid var(--win-brd);
+ -webkit-backdrop-filter:var(--blur);backdrop-filter:var(--blur);box-shadow:var(--sombra)}
+.riel{position:sticky;top:34px;align-self:start;height:calc(100vh - 68px);display:flex;flex-direction:column;align-items:center;gap:8px;padding:14px 0;border-radius:22px;background:var(--card);border:1px solid var(--card-brd)}
+.riel .logo{width:36px;height:36px;color:var(--ink);margin-bottom:16px}
+.riel .esp-v{flex:1}
+.ic{width:40px;height:40px;display:grid;place-items:center;border-radius:12px;border:1px solid transparent;background:none;color:var(--muted);padding:0;cursor:pointer;text-decoration:none}
+.ic:hover{color:var(--text);background:var(--card-hi)}
+.ic.activo{color:var(--text);background:var(--card-hi);border-color:var(--card-brd)}
+.ic svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+:root[data-tema="claro"] #tema .sol,:root:not([data-tema="claro"]) #tema .luna{display:none}
+
+.escena{min-width:0;display:flex;flex-direction:column}
+.cab{display:grid;grid-template-columns:minmax(0,1fr) 170px;gap:24px;align-items:center;margin:2px 0 16px}
+.meta{display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px;margin-bottom:12px}
+h1{margin:0;font:800 clamp(34px,3.7vw,58px)/.95 var(--f-sans);font-stretch:66%;text-transform:uppercase;letter-spacing:.003em;color:var(--titulo)}
+h1 .caja{display:inline-block;border:.055em solid currentColor;border-radius:999px;padding:.03em .3em .05em;margin-top:.1em}
+h1 .regla{display:inline-block;width:1.6em;height:.36em;vertical-align:middle;margin-left:.18em}
+h1 .regla line{stroke:currentColor;stroke-width:1.5}
+.lead{margin:10px 0 0;max-width:70ch;color:var(--muted);font-size:15.5px}
+.ilus{position:relative;height:136px}
+.ilus::before{content:"";position:absolute;inset:14px 34px 6px 2px;border:1.5px solid var(--line)}
+.ilus .esp{position:absolute;right:0;top:0;width:130px;height:130px;color:var(--ink)}
+.ilus .cruz{right:22px;bottom:-1px}
+
+/* espirales (ilustración y ojo del ciclón) */
+.esp svg{width:100%;height:100%;display:block;overflow:visible}
+.esp polyline{fill:none;stroke:currentColor;stroke-linecap:round;stroke-linejoin:round}
+.esp .b1{stroke-width:5;opacity:.9}.esp .b2{stroke-width:3;opacity:.6}.esp .b3{stroke-width:1.4;opacity:.45}
+.esp .c{fill:currentColor}
+:root[data-tema="claro"] .esp .b1{stroke-dasharray:0 6.5}
+:root[data-tema="claro"] .esp .b2{stroke-dasharray:0 5}
+:root[data-tema="claro"] .esp .b3{stroke-dasharray:0 3.4}
+:root:not([data-tema="claro"]) .ilus .esp svg{filter:blur(2.2px) drop-shadow(0 0 14px rgba(181,198,253,.55))}
+
+/* ---------- mapa + ficha ---------- */
+.main{display:grid;grid-template-columns:minmax(0,1fr) 370px;gap:18px;align-items:stretch;flex:1}
+.izq{display:flex;flex-direction:column;gap:14px;min-width:0}
+.panelc{position:relative;border-radius:22px;background:var(--card);border:1px solid var(--card-brd);padding:14px}
+.panelc>.cruz{top:-7px;right:-7px}
+.fila-cab{display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap;margin:0 4px 10px}
+.mapaBox,.olaw{position:relative}
+svg#mapa{width:100%;display:block;aspect-ratio:200/92;background:var(--sea);border-radius:14px;border:1px solid var(--hair)}
+#mapa .tierra{fill:var(--land-fill);stroke:var(--coast);stroke-width:.18}
+#mapa .dot{fill:#1d3fcf}
+#mapa .grat{fill:none;stroke:var(--grat);stroke-width:.14}
+#mapa .glab{font:400 2.1px var(--f-mono);fill:var(--faint);letter-spacing:.06px;paint-order:stroke;stroke:var(--sea);stroke-width:.5}
+#mapa .lc{fill:none;stroke:var(--muted);stroke-width:.22}
+#mapa .ll{stroke:var(--muted);stroke-width:.14}
+#mapa g[data-id]{cursor:pointer;outline:none}
+#mapa .pt{fill:var(--mark);stroke:var(--ring);stroke-width:.5}
+#mapa .vac{fill:none;stroke:var(--muted);stroke-width:.3;stroke-dasharray:.9 .7}
+#mapa .hit{fill:transparent;pointer-events:all}
+#mapa text{text-anchor:middle;pointer-events:none;paint-order:stroke;stroke:var(--sea);stroke-linejoin:round}
+#mapa .t1{font:800 3.3px var(--f-sans);font-stretch:68%;fill:var(--text);stroke-width:.9;letter-spacing:.05px}
+#mapa .t2{font:500 2.2px var(--f-mono);fill:var(--muted);stroke-width:.6;letter-spacing:.12px}
+#mapa .sin .t1{fill:var(--muted)}
+#mapa g[data-id]:focus-visible .hit{stroke:var(--ink);stroke-width:.4}
+#mapa .foco .anillo{fill:none;stroke:var(--foco);stroke-width:.32}
+#mapa .foco .marco{fill:none;stroke:var(--foco);stroke-width:.4;stroke-linecap:square}
+.onda{transform-box:fill-box;transform-origin:center;animation:onda 1.8s ease-out infinite}
+@keyframes onda{0%{transform:scale(1);opacity:.9}100%{transform:scale(1.9);opacity:0}}
+.estado{display:flex;align-items:center;gap:8px;margin:8px 4px 0;min-height:1.4em;font:500 12px/1.35 var(--f-mono);color:var(--muted)}
+.estado::before{content:"";flex:none;width:7px;height:7px;border-radius:50%;background:var(--teal);box-shadow:0 0 0 3px color-mix(in srgb,var(--teal) 25%,transparent)}
+
+.tip{position:absolute;z-index:5;pointer-events:none;transform:translate(-50%,calc(-100% - 14px));white-space:nowrap;
+ padding:8px 11px;border-radius:10px;background:var(--tip);border:1px solid var(--card-brd);color:var(--text);font:13px/1.35 var(--f-sans);
+ box-shadow:0 10px 30px -12px rgba(0,0,0,.45);-webkit-backdrop-filter:var(--blur);backdrop-filter:var(--blur)}
+.tip b{display:block;font-weight:700}.tip .mono{display:block;font-size:10px}
+
+/* curva del viento (la «ola») */
+svg#ola{width:100%;height:150px;display:block;overflow:visible}
+#ola .grid{stroke:var(--hair);stroke-width:1}
+#ola .base{stroke:var(--line);stroke-width:1}
+#ola text{font:500 10px var(--f-mono);fill:var(--faint);letter-spacing:.04em}
+#ola .cl{fill:var(--muted)}
+#ola .msg{font:500 12px var(--f-mono);fill:var(--muted);letter-spacing:.08em}
+#ola .area{fill:var(--ink);opacity:.12}
+#ola .linea{fill:none;stroke:var(--ink);stroke-width:2;stroke-linejoin:round;stroke-linecap:round}
+:root:not([data-tema="claro"]) #ola .linea{filter:drop-shadow(0 0 5px rgba(181,198,253,.7))}
+#ola .pico{stroke:var(--ink);stroke-width:1;opacity:.55}
+#ola .halo{fill:var(--ink);opacity:.2}
+#ola .punto,#ola .cursor circle{fill:var(--ink);stroke:var(--surf);stroke-width:2}
+#ola .plab{font:600 12px var(--f-sans);fill:var(--text);letter-spacing:0}
+#ola .cursor line{stroke:var(--muted);stroke-width:1}
+
+/* ficha */
+#ficha{padding:12px}
+#fBody{display:flex;flex-direction:column;gap:12px;height:100%}
+.vacio{flex:1;display:grid;place-items:center;text-align:center;color:var(--muted);padding:40px 18px;border:1.5px dashed var(--line);border-radius:16px;min-height:420px}
+.vacio svg{width:92px;height:92px;color:var(--ink);margin:0 auto 14px;display:block}
+.vacio svg *{fill:none;stroke:currentColor;stroke-width:1.5}
+.vacio b{display:block;font:800 30px/1 var(--f-sans);font-stretch:66%;text-transform:uppercase;color:var(--titulo);margin-bottom:8px}
+.bloque{position:relative;border-radius:16px;background:var(--block);color:var(--on-block);padding:16px 16px 14px;overflow:hidden}
+.bloque .mono{color:inherit;opacity:.85}
+.bloque h2{margin:10px 0 12px;font:800 clamp(42px,4.3vw,60px)/.88 var(--f-sans);font-stretch:64%;text-transform:uppercase;overflow-wrap:anywhere}
+.bloque .oval{border-color:currentColor;color:inherit}
+.fila-b{display:flex;align-items:center;flex-wrap:wrap;gap:10px 14px}
+.chip{display:inline-flex;align-items:center;gap:8px;font-weight:600;font-size:14px}
+.chip i{display:inline-grid;place-items:center;width:26px;height:26px;border-radius:50%;background:var(--k);color:var(--on);font:800 14px/1 var(--f-sans);font-style:normal;box-shadow:0 0 0 2px var(--on-block)}
+.reg{font-size:13px;opacity:.85;margin-top:10px}
+.viento{display:grid;grid-template-columns:100px 1fr;gap:16px;align-items:center;padding:12px 16px 12px 12px;border-radius:16px;border:1px solid var(--card-brd);background:var(--card)}
+.ojo{width:100px;height:100px;color:var(--k)}
+.ojo svg{animation:rspin var(--sp,4s) linear infinite}
+.ojo.norte svg{animation-direction:reverse}
+@keyframes rspin{to{transform:rotate(360deg)}}
+.hero b{font:300 58px/1 var(--f-sans);letter-spacing:-.025em;color:var(--text)}
+.hero span{font-size:16px;color:var(--muted);margin-left:5px}
+.hero small{display:block;margin-top:8px}
+.kpis,.minis{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.kpi{border:1.5px solid var(--kc);border-radius:12px;overflow:hidden;background:var(--card)}
+.kpi.m{--kc:var(--ink);--kon:var(--on-ink)}.kpi.a{--kc:var(--teal);--kon:var(--on-teal)}
+.kc{display:block;background:var(--kc,var(--ink));color:var(--kon,var(--on-ink));font:600 10.5px/1 var(--f-mono);letter-spacing:.26em;text-transform:uppercase;text-align:center;padding:7px 4px 6px}
+.kpi b{display:block;font:600 23px/1.15 var(--f-sans);padding:12px 8px;text-align:center;color:var(--text)}
+.mini{display:flex;flex-direction:column;gap:3px;padding:10px 13px;border-radius:14px;border:1px solid var(--card-brd);background:var(--card)}
+.mini small{font:500 10.5px var(--f-mono);letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+.mini b{font:600 20px/1.2 var(--f-sans)}
+.paso{margin:0 2px;font-size:13.5px;color:var(--text)}.paso .mono{display:block;margin-bottom:3px}
+.aviso{border:1.5px solid var(--ink);border-radius:12px;overflow:hidden}
+.aviso p{margin:0;padding:12px 14px;font-size:14px}
+
+/* ---------- botones y estados ---------- */
+button{font:600 13px/1 var(--f-sans);letter-spacing:.01em;padding:9px 15px;border-radius:999px;border:1.5px solid var(--line);background:var(--card);color:var(--text);cursor:pointer;transition:background .15s,border-color .15s}
+button:hover:not(:disabled){background:var(--card-hi);border-color:var(--ink)}
+button.pri{background:var(--ink);border-color:var(--ink);color:var(--on-ink)}
+button.pri:hover:not(:disabled){background:var(--ink);filter:brightness(1.1)}
+button:disabled{opacity:.4;cursor:default}
+button.ic{padding:0;border:1px solid transparent;background:none;color:var(--muted)}
+button.ic:hover:not(:disabled){background:var(--card-hi);border-color:transparent;color:var(--text)}
+a:focus-visible,button:focus-visible{outline:2px solid var(--ink);outline-offset:3px}
+.pill{display:inline-flex;align-items:center;gap:7px;padding:5px 11px;border-radius:999px;border:1px solid var(--card-brd);background:var(--card);font:500 11px/1.2 var(--f-mono);letter-spacing:.04em;color:var(--muted)}
+.pill::before{content:"";width:7px;height:7px;border-radius:50%;border:1.5px solid currentColor;box-sizing:border-box}
+.pill.ok{color:var(--on-teal);background:var(--teal);border-color:var(--teal)}
+.pill.ok::before{background:currentColor}
+.pill.val::before{display:none}
+
+/* ---------- calibración (hoja técnica) ---------- */
+.calib{position:relative;margin-top:28px;padding:22px;border-radius:30px;background:var(--win);border:1px solid var(--win-brd);-webkit-backdrop-filter:var(--blur);backdrop-filter:var(--blur);box-shadow:var(--sombra)}
+.calcab{display:flex;justify-content:space-between;align-items:flex-end;gap:16px;flex-wrap:wrap;margin-bottom:18px}
+.calcab h2{margin:6px 0 0;font:800 clamp(34px,4vw,54px)/.9 var(--f-sans);font-stretch:66%;text-transform:uppercase;color:var(--titulo)}
+.calgrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin-bottom:14px}
+.paso-c{display:flex;flex-direction:column;gap:10px}
+.paso-c .n{font:800 46px/.8 var(--f-sans);font-stretch:66%;color:transparent;-webkit-text-stroke:1.5px var(--ink)}
+.paso-c h3{margin:0;font:700 17px/1.2 var(--f-sans)}
+.nota{font-size:13px;color:var(--muted);margin:0}
+.fila{display:flex;align-items:center;flex-wrap:wrap;gap:8px}
+#sala{font:600 20px/1 var(--f-mono);letter-spacing:.18em;color:var(--ink);border:1.5px solid var(--ink);border-radius:50%;padding:5px 14px}
+.sect{display:flex;flex-wrap:wrap;gap:6px}
+.sect button{border-radius:10px;padding:7px 10px;font-size:12.5px;font-weight:600}
+.sect button .num{font:600 10.5px var(--f-mono);opacity:.7;margin-right:6px}
+.sect button.hecho{background:color-mix(in srgb,var(--ink) 16%,transparent);border-color:var(--ink)}
+.sect button.sel{outline:2px solid var(--ink);outline-offset:2px}
+.calbot{display:grid;grid-template-columns:230px minmax(0,1fr);gap:14px;align-items:start}
+.qrcol{display:flex;flex-direction:column;gap:14px;align-items:center;text-align:center}
+.visor{--vc:var(--ink);position:relative;padding:10px;background:
+ linear-gradient(var(--vc),var(--vc)) left top/18px 2px no-repeat,linear-gradient(var(--vc),var(--vc)) left top/2px 18px no-repeat,
+ linear-gradient(var(--vc),var(--vc)) right top/18px 2px no-repeat,linear-gradient(var(--vc),var(--vc)) right top/2px 18px no-repeat,
+ linear-gradient(var(--vc),var(--vc)) left bottom/18px 2px no-repeat,linear-gradient(var(--vc),var(--vc)) left bottom/2px 18px no-repeat,
+ linear-gradient(var(--vc),var(--vc)) right bottom/18px 2px no-repeat,linear-gradient(var(--vc),var(--vc)) right bottom/2px 18px no-repeat}
+.qrcol .mono{margin-top:6px}
+.qr{position:relative;z-index:60;width:150px;height:150px;background:#fff;color:#000;padding:6px;border-radius:6px}
+.qr svg{width:100%;height:100%;display:block}
+.qr svg path{fill:#000!important}.qr svg rect{fill:#fff!important}
+svg.mapaCal{width:100%;aspect-ratio:16/10;max-height:540px;display:block;background:var(--sea);border-radius:12px;border:1px solid var(--hair)}
+svg.mapaCal .carton{fill:none;stroke:var(--line);stroke-width:.4}
+svg.mapaCal .cg{stroke:var(--hair);stroke-width:.2}
+svg.mapaCal .o{fill:none;stroke:var(--ink);stroke-width:.5;stroke-dasharray:1.6 1.2}
+svg.mapaCal .hecho .o{fill:color-mix(in srgb,var(--ink) 22%,transparent);stroke-dasharray:none}
+svg.mapaCal .elegido .o{stroke-width:1;stroke-dasharray:none}
+svg.mapaCal .on .o{fill:var(--ink);stroke:none}
+svg.mapaCal .h{fill:none;stroke:var(--ink);stroke-width:.4}
+svg.mapaCal text{font:500 3.2px var(--f-mono);fill:var(--text);text-anchor:middle;pointer-events:none}
+svg.mapaCal .num{font-size:2.6px;font-weight:600;fill:var(--ink)}
+svg.mapaCal .on .num{fill:var(--on-ink)}
+input[type=range]{accent-color:var(--ink);vertical-align:middle}
+
+@media (prefers-reduced-motion:reduce){.onda,.ojo svg{animation:none}.onda{opacity:.6}html{scroll-behavior:auto}}
+@media (max-width:1180px){.main{grid-template-columns:minmax(0,1fr) 330px}.cab{grid-template-columns:minmax(0,1fr)}.ilus{display:none}}
+@media (max-width:980px){.main{grid-template-columns:1fr}.calgrid{grid-template-columns:1fr}.calbot{grid-template-columns:1fr}.qrcol{flex-direction:row;flex-wrap:wrap;justify-content:center}}
+@media (max-width:760px){.wrap{padding:12px}
+ .ventana{grid-template-columns:1fr;padding:14px;border-radius:22px;gap:14px}
+ .riel{position:static;height:auto;flex-direction:row;padding:6px 10px;border-radius:16px}.riel .logo{margin:0 6px 0 0;width:30px;height:30px}
+ .calib{padding:16px;border-radius:22px}.vacio{min-height:220px}.hero b{font-size:48px}}
+</style>
 </head><body><div class="wrap">
 
 <!-- ===================== VISTA PRINCIPAL ===================== -->
-<div class="vista" id="vista">
-  <div class="barra"><button id="tema" type="button"></button></div>
-  <h1>Los ciclones más letales por sector, 2000-2026</h1>
-  <p class="lead">Para cada sector, el ciclón con más muertes. Toca un sector en el cartón.</p>
-  <div class="main">
-    <div class="card mapaw">
-      <svg id="mapa" viewBox="0 0 200 100"><g id="tierra"></g><g id="marc"></g></svg>
-      <div id="estado" class="nota"></div>
+<section class="ventana" id="vista">
+  <nav class="riel" aria-label="Secciones">
+    <svg class="logo" viewBox="0 0 40 40" aria-hidden="true"><g fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M6 13c6-6 20-6 28 0"/><path d="M6 20c6-6 20-6 28 0"/><path d="M6 27c6-6 20-6 28 0"/></g></svg>
+    <a class="ic activo" href="#vista" title="Mapa" aria-label="Mapa"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c3 3.2 3 14.8 0 18M12 3c-3 3.2-3 14.8 0 18"/></svg></a>
+    <a class="ic" href="#calib" title="Calibración" aria-label="Calibración"><svg viewBox="0 0 24 24"><path d="M5 4v16M12 4v16M19 4v16"/><circle cx="5" cy="9" r="2.2"/><circle cx="12" cy="15" r="2.2"/><circle cx="19" cy="7" r="2.2"/></svg></a>
+    <span class="esp-v"></span>
+    <button class="ic" id="tema" type="button"><svg class="sol" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg><svg class="luna" viewBox="0 0 24 24"><path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5z"/></svg></button>
+  </nav>
+
+  <div class="escena">
+    <header class="cab">
+      <div>
+        <div class="meta"><span class="etq">Panel táctil · E2</span><span class="oval">2000–2026</span><span class="mono">IBTrACS v04r01 · EM-DAT</span></div>
+        <h1>Los ciclones más letales <span class="caja">por sector.</span><svg class="regla" viewBox="0 0 60 14" aria-hidden="true"><line x1="0" y1="7" x2="60" y2="7"/><line x1="52" y1="0" x2="52" y2="14"/></svg></h1>
+        <p class="lead">Para cada sector, el ciclón con más muertes. Toca un sector en el cartón.</p>
+      </div>
+      <div class="ilus" aria-hidden="true"><div class="esp" id="ilus"></div><i class="cruz"></i></div>
+    </header>
+
+    <div class="main">
+      <div class="izq">
+        <figure class="panelc" style="margin:0">
+          <div class="fila-cab"><span class="mono" id="rotMapa">Sectores 01–08</span><span class="mono">Área del círculo ∝ muertes</span></div>
+          <div class="mapaBox" id="mapaBox">
+            <svg id="mapa" viewBox="0 5 200 92" role="img" aria-label="Mapa mundial con el ciclón más letal de cada sector">
+              <defs><pattern id="trama" width="1.15" height="1.15" patternUnits="userSpaceOnUse" patternTransform="rotate(30)"><circle class="dot" cx=".575" cy=".575" r=".36"/></pattern></defs>
+              <g id="tierra"></g><g id="grat"></g><g id="leyenda"></g><g id="marc"></g>
+            </svg>
+            <div class="tip" id="tipMapa" hidden></div>
+          </div>
+          <figcaption id="estado" class="estado"></figcaption>
+          <i class="cruz" aria-hidden="true"></i>
+        </figure>
+
+        <section class="panelc" aria-label="Viento del ciclón elegido">
+          <div class="fila-cab"><span class="mono" id="olaTit">Viento cada 6 horas</span><span class="mono">kt · escala Saffir-Simpson</span></div>
+          <div class="olaw"><svg id="ola" role="img" aria-label="Viento del ciclón elegido, cada 6 horas"></svg><div class="tip" id="tipOla" hidden></div></div>
+        </section>
+      </div>
+
+      <aside class="panelc" id="ficha" aria-live="polite">
+        <div id="fBody"><div class="vacio"><div>
+          <svg viewBox="0 0 92 92" aria-hidden="true"><circle cx="46" cy="46" r="20" stroke-dasharray="3 3"/><path d="M46 14v20M46 58v20M14 46h20M58 46h20"/><path d="M8 20V8h12M72 8h12v12M84 72v12H72M20 84H8V72"/></svg>
+          <b>Toca un sector</b>en el cartón, o haz clic en un círculo del mapa.</div></div></div>
+      </aside>
     </div>
-    <div class="card" id="ficha"><div id="fBody"><div class="vacio">Toca un sector en el cartón<br>(o haz clic en un círculo del mapa)</div></div></div>
   </div>
-</div>
+</section>
 
 <!-- ===================== CALIBRACIÓN (abajo) ===================== -->
-<div class="calib" id="calib">
-  <h2>Calibración <button id="subir" style="margin-left:10px">↑ Volver al mapa</button></h2>
+<section class="calib" id="calib">
+  <header class="calcab">
+    <div><span class="mono">Hoja técnica · antes de presentar</span><h2>Calibración</h2></div>
+    <button id="subir" type="button">↑ Volver al mapa</button>
+  </header>
 
   <div class="calgrid">
-    <div class="card" style="grid-area:c1">
-      <h3>1 · Conectar los teléfonos</h3>
-      <div class="fila fila1">Sala <span id="sala"></span> <button id="nueva">Nuevo código</button>
-        <span class="pill" id="pBr">Servidor: conectando…</span>
+    <div class="panelc paso-c">
+      <span class="n">01</span><h3>Conectar los teléfonos</h3>
+      <div class="fila">Sala <span id="sala"></span> <button id="nueva" type="button">Nuevo código</button></div>
+      <div class="fila"><span class="pill" id="pBr">Servidor: conectando…</span>
         <span class="pill" id="pCe">Cenital: sin datos</span>
         <span class="pill" id="pFr">Frontal: sin datos</span></div>
-      <div class="fila"><button id="snd" class="pri">Activar sonido</button> <button id="test" disabled>Probar sonido</button></div>
+      <div class="fila"><button id="snd" class="pri" type="button">Activar sonido</button> <button id="test" type="button" disabled>Probar sonido</button></div>
     </div>
 
-    <div class="card" style="grid-area:c2">
-      <h3>2 · Entrenar los puntos</h3>
-      <div class="nota">Elige un sector, pon el dedo sobre su punto en el cartón y pulsa «Guardar punto».</div>
+    <div class="panelc paso-c">
+      <span class="n">02</span><h3>Entrenar los puntos</h3>
+      <p class="nota">Elige un sector, pon el dedo sobre su punto en el cartón y pulsa «Guardar punto».</p>
       <div class="sect" id="lista"></div>
-      <button class="pri" id="guardar">Guardar punto</button>
-      <button id="borrar">Borrar sector elegido</button>
-      <button id="reset">Reiniciar todo</button>
+      <div class="fila"><button class="pri" id="guardar" type="button">Guardar punto</button>
+      <button id="borrar" type="button">Borrar sector elegido</button>
+      <button id="reset" type="button">Reiniciar todo</button></div>
     </div>
 
-    <div class="card" style="grid-area:c3">
-      <h3>3 · Calibrar alturas</h3>
-      <div class="nota">Con el dedo sobre cualquier punto:</div>
-      <div class="fila"><button id="bUp">Dedo arriba (sin tocar)</button> <span id="vUp" class="pill">—</span></div>
-      <div class="fila"><button id="bDown">Dedo en la mesa</button> <span id="vDown" class="pill">—</span></div>
-      <div class="fila" style="margin-top:14px"><button class="pri" id="uso" disabled>Iniciar modo tocar</button>
-      <button id="entrenar" hidden>Volver a entrenar</button></div>
+    <div class="panelc paso-c">
+      <span class="n">03</span><h3>Calibrar alturas</h3>
+      <p class="nota">Con el dedo sobre cualquier punto:</p>
+      <div class="fila"><button id="bUp" type="button">Dedo arriba (sin tocar)</button> <span id="vUp" class="pill val">—</span></div>
+      <div class="fila"><button id="bDown" type="button">Dedo en la mesa</button> <span id="vDown" class="pill val">—</span></div>
+      <div class="fila" style="margin-top:6px"><button class="pri" id="uso" type="button" disabled>Iniciar modo tocar</button>
+      <button id="entrenar" type="button" hidden>Volver a entrenar</button></div>
     </div>
   </div>
 
   <div class="calbot">
-    <div class="qrcol">
-      <div class="qrs">
-        <div><div class="qr" id="qrCe"></div>Teléfono cenital<br>(mira hacia abajo)</div>
-        <div><div class="qr" id="qrFr"></div>Teléfono frontal<br>(mira de costado)</div>
-      </div>
+    <div class="panelc qrcol">
+      <div><div class="visor"><div class="qr" id="qrCe"></div></div><div class="mono">Teléfono cenital<br>mira hacia abajo</div></div>
+      <div><div class="visor"><div class="qr" id="qrFr"></div></div><div class="mono">Teléfono frontal<br>mira de costado</div></div>
       <p class="nota">En cada teléfono: «Iniciar cámara». El sonido sale por este computador: pulsa «Activar sonido» una vez (también se activa al pulsar «Iniciar modo tocar»).</p>
     </div>
 
-  <div class="card mapcard" style="margin-bottom:0">
-    <h3>Puntos entrenados</h3>
-    <div id="estado2" class="nota" style="text-align:center;min-height:1.4em"></div>
-    <svg class="mapaCal" id="mapaCal" viewBox="0 0 160 100"></svg>
-    <p class="nota">Radio de detección <input id="rad" type="range" min="0.04" max="0.3" step="0.01" value="0.12"> <span id="radv">0.12</span> (súbelo si cuesta detectar; bájalo si se confunden puntos vecinos).</p>
+    <div class="panelc">
+      <div class="fila-cab"><span class="mono">Puntos entrenados · cartón</span><span class="mono" id="estado2"></span></div>
+      <svg class="mapaCal" id="mapaCal" viewBox="0 0 160 100"></svg>
+      <p class="nota" style="margin-top:10px">Radio de detección <input id="rad" type="range" min="0.04" max="0.3" step="0.01" value="0.12"> <span id="radv">0.12</span> (súbelo si cuesta detectar; bájalo si se confunden puntos vecinos).</p>
+      <i class="cruz" aria-hidden="true"></i>
+    </div>
   </div>
-  </div>
+</section>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/mqtt@5.10.1/dist/mqtt.min.js"></script>
@@ -225,7 +413,6 @@ function conectar(){
     else if(k==="frontal")fro={z:d.z,t:Date.now()};});
 }
 $("nueva").onclick=function(){S.sala=nuevaSala();conectar()};
-
 // ---------- sonido: viento sintético (modelo de index(2): las frecuencias crecen con la velocidad U; volumen corregido por sonoridad) ----------
 var ctx=null,audioOn=false,GN,HB,HG,B1,B2,T1,T2,tsn,play=null;
 var LN=[3.36,3.36,3.37,3.4,3.42,3.47,3.54,3.64,3.75,3.88,4.08,4.24,4.5,4.78,5.06,5.35,5.66,5.99,6.37,6.77,6.94,7.05,7.15,7.24,7.37,7.46,7.62,7.74,7.87,7.96,8.05,8.15,8.26,8.35,8.42];
@@ -257,56 +444,149 @@ function detenerAudio(){if(play){cancelAnimationFrame(play.r);play=null}clearTim
 var CC=[0,1,2,3,4,5].map(function(i){return "var(--c"+i+")"}),ON=[0,1,2,3,4,5].map(function(i){return "var(--o"+i+")"});
 function spin(w){return (7*Math.pow(34/Math.max(w,20),1.4)).toFixed(2)}
 
+function pad(n){return (n<10?"0":"")+n}
+
+// ---------- espiral: ilustración del encabezado y «ojo» de la ficha ----------
+// Brazos logarítmicos. En el hemisferio sur se reflejan (y el ojo gira al revés).
+function espiral(brazos,vueltas,sur){var s="";
+  for(var k=0;k<brazos;k++)[[1,0],[2,3],[3,6]].forEach(function(b){var p=[];
+    for(var t=0;t<=vueltas*Math.PI;t+=.09){var r=7*Math.exp(.2*t)+b[1],a=t+k*2*Math.PI/brazos;
+      p.push((100+r*Math.cos(a)).toFixed(1)+","+(100+r*Math.sin(a)).toFixed(1))}
+    s+='<polyline class="b'+b[0]+'" points="'+p.join(" ")+'"/>'});
+  return '<svg viewBox="0 0 200 200" aria-hidden="true"><g'+(sur?' transform="translate(200 0) scale(-1 1)"':'')+'>'+s+'</g><circle class="c" cx="100" cy="100" r="4"/></svg>'}
+
 // ---------- ficha de información ----------
 function mostrarFicha(s){
   mostrado=s.id;detenerAudio();
-  if(!s.c){$("fBody").innerHTML='<h2>'+s.n+'</h2><div id="sinreg">'+s.why+'</div>';dibujarMapa();return}
-  var kt=s.w,k=categoria(kt),c=nombreCat(kt);
+  var cab='<div class="mono">'+pad(s.id)+' · '+s.n+'</div>';
+  if(!s.c){
+    $("fBody").innerHTML='<div class="bloque">'+cab+'<h2>'+s.n+'</h2><span class="oval">sin registros</span></div>'+
+      '<div class="aviso"><span class="kc">Por qué</span><p>'+s.why+'</p></div>';
+    dibujarMapa();dibujarOla(s);return}
+  var kt=s.w,k=categoria(kt),c=nombreCat(kt),sur=/Sur/.test(s.reg||"");
   $("fBody").innerHTML=
-  '<div class="cab"><div style="width:100%"><h2>'+s.c+' ('+s.y+')</h2>'+
-  '<div class="cat" style="--k:'+CC[k]+';--on:'+ON[k]+'"><b>'+c.n+'</b>'+c.t+'</div>'+
-  '<div class="sub">'+s.reg+' · '+s.n+'</div><div class="sub">Pasó por: '+s.ps+'</div></div>'+
-  '<div class="kpis"><div class="kpi m"><b>'+fmt(s.m)+'</b><small>MUERTES</small></div>'+
-  '<div class="kpi a"><b>'+fmt(s.a)+'</b><small>AFECTADOS</small></div></div></div>'+
-  '<div class="viento"><div class="ring" style="--k:'+CC[k]+';--sp:'+spin(kt)+'s"><b>'+Math.round(kt*1.852)+'</b><small>km/h</small></div>'+
-  '<div class="vl">VIENTO MÁX. · '+kt+' kt</div></div>'+
-  '<div class="abajo"><div class="mini"><b>'+fmt(s.d)+' días</b><small>DURACIÓN</small></div>'+
-  '<div class="mini"><b>≈ '+s.t+' h</b><small>SOBRE TIERRA</small></div></div>';
-  dibujarMapa();
+  '<div class="bloque">'+cab+'<h2>'+s.c+'</h2>'+
+    '<div class="fila-b"><span class="oval">'+s.y+'</span><span class="chip" style="--k:'+CC[k]+';--on:'+ON[k]+'"><i>'+c.n+'</i>'+c.t+'</span></div>'+
+    '<div class="reg">'+s.reg+'</div></div>'+
+  '<div class="viento"><div class="ojo esp'+(sur?'':' norte')+'" style="--k:'+CC[k]+';--sp:'+spin(kt)+'s">'+espiral(4,3.2,sur)+'</div>'+
+    '<div class="hero"><b>'+Math.round(kt*1.852)+'</b><span>km/h</span><small class="mono">Viento máx. · '+kt+' kt</small></div></div>'+
+  '<div class="kpis"><div class="kpi m"><span class="kc">Muertes</span><b>'+fmt(s.m)+'</b></div>'+
+    '<div class="kpi a"><span class="kc">Afectados</span><b>'+fmt(s.a)+'</b></div></div>'+
+  '<div class="minis"><div class="mini"><small>Duración</small><b>'+fmt(s.d)+' días</b></div>'+
+    '<div class="mini"><small>Sobre tierra</small><b>≈ '+s.t+' h</b></div></div>'+
+  '<p class="paso"><span class="mono">Pasó por</span>'+s.ps+'</p>';
+  dibujarMapa();dibujarOla(s);
 }
 function disparar(s){mostrarFicha(s);sonar(s.w)}
 
-// ---------- mapa mundial ----------
+// ---------- curva del viento del ciclón elegido (la «ola») ----------
+var olaSel=null;
+// umbrales Saffir-Simpson (kt). Las líneas de Cat. 2 y Cat. 4 quedan sin rótulo: están a ~10 px de sus vecinas.
+var UMBRAL=[[34,"TT",1],[64,"Cat. 1",1],[83,"Cat. 2",0],[96,"Cat. 3",1],[113,"Cat. 4",0],[137,"Cat. 5",1]];
+function dibujarOla(s){
+  if(s!==undefined)olaSel=s;
+  var svg=$("ola");if(!window.d3)return;
+  var W=Math.max(280,Math.round(svg.getBoundingClientRect().width)||600),H=150,m={l:34,r:56,t:24,b:24};
+  svg.setAttribute("viewBox","0 0 "+W+" "+H);
+  var x0=m.l,x1=W-m.r,y=d3.scaleLinear().domain([0,160]).range([H-m.b,m.t]);
+  var g='<line class="base" x1="'+x0+'" x2="'+x1+'" y1="'+y(0)+'" y2="'+y(0)+'"/>';
+  UMBRAL.forEach(function(u){var yy=y(u[0]).toFixed(1);
+    g+='<line class="grid" x1="'+x0+'" x2="'+x1+'" y1="'+yy+'" y2="'+yy+'"/>'+(u[2]?
+       '<text x="'+(x0-6)+'" y="'+yy+'" dy=".32em" text-anchor="end">'+u[0]+'</text>'+
+       '<text class="cl" x="'+(x1+8)+'" y="'+yy+'" dy=".32em">'+u[1]+'</text>':'')});
+  var tip=$("tipOla");tip.hidden=true;
+  s=olaSel;
+  if(!s||!s.c||!s.vv){
+    svg.innerHTML=g+'<text class="msg" x="'+((x0+x1)/2)+'" y="'+(y(80))+'" text-anchor="middle">'+
+      (!s?"TOCA UN SECTOR PARA VER CÓMO CAMBIÓ SU VIENTO":"SIN REGISTROS EN 2000–2026")+'</text>';
+    $("olaTit").textContent=s?s.n+" · sin ciclón":"Viento cada 6 horas";
+    svg.onpointermove=svg.onpointerleave=null;return}
+  var hmax=s.hh[s.hh.length-1]||1,x=d3.scaleLinear().domain([0,hmax]).range([x0,x1]);
+  var pts=s.vv.map(function(v,i){return [x(s.hh[i]),y(v)]});
+  var ln=d3.line().curve(d3.curveMonotoneX),ar=d3.area().curve(d3.curveMonotoneX).y0(y(0)).y1(function(d){return d[1]});
+  var im=s.vv.indexOf(Math.max.apply(null,s.vv)),pk=pts[im];
+  var dias=hmax/24,ppd=(x1-x0)/Math.max(dias,1),paso=[1,2,5,10,20].find(function(k){return k*ppd>=46})||20;
+  for(var d=0;d*24<=hmax;d+=paso)g+='<text x="'+x(d*24).toFixed(1)+'" y="'+(H-6)+'" text-anchor="middle">día '+(d+1)+'</text>';
+  var anc=pk[0]>x1-70?"end":pk[0]<x0+70?"start":"middle";
+  g+='<path class="area" d="'+ar(pts)+'"/><path class="linea" d="'+ln(pts)+'"/>'+
+     '<line class="pico" x1="'+pk[0]+'" x2="'+pk[0]+'" y1="'+pk[1]+'" y2="'+y(0)+'"/>'+
+     '<circle class="halo" cx="'+pk[0]+'" cy="'+pk[1]+'" r="11"/><circle class="punto" cx="'+pk[0]+'" cy="'+pk[1]+'" r="5"/>'+
+     '<text class="plab" x="'+pk[0]+'" y="'+(pk[1]-15)+'" text-anchor="'+anc+'">Máx. '+s.vv[im]+' kt</text>'+
+     '<g class="cursor" style="display:none"><line y1="'+m.t+'" y2="'+y(0)+'"/><circle r="4.5"/></g>';
+  svg.innerHTML=g;
+  var cur=svg.querySelector(".cursor"),cl=cur.firstChild,cc=cur.lastChild;
+  svg.onpointermove=function(e){var r=svg.getBoundingClientRect(),px=(e.clientX-r.left)*W/r.width;
+    if(px<x0-8||px>x1+8){svg.onpointerleave();return}
+    var i=d3.bisectCenter(s.hh,x.invert(px)),p=pts[i],h=s.hh[i];
+    cur.style.display="";cl.setAttribute("x1",p[0]);cl.setAttribute("x2",p[0]);cc.setAttribute("cx",p[0]);cc.setAttribute("cy",p[1]);
+    tip.innerHTML='<span class="mono">Día '+(Math.floor(h/24)+1)+' · hora '+h+'</span><b>'+s.vv[i]+' kt · '+Math.round(s.vv[i]*1.852)+' km/h</b>'+nombreCat(s.vv[i]).t;
+    tip.style.left=(p[0]*r.width/W)+"px";tip.style.top=(p[1]*r.height/H)+"px";tip.hidden=false};
+  svg.onpointerleave=function(){cur.style.display="none";tip.hidden=true};
+  $("olaTit").textContent=s.c+" ("+s.y+") · viento cada 6 horas";
+}
+var tRes;window.addEventListener("resize",function(){clearTimeout(tRes);tRes=setTimeout(function(){dibujarOla()},120)});
+
+// ---------- mapa mundial (estilo satélite: grilla y rótulos) ----------
+function rMuertes(m){return Math.max(1.6,10*Math.sqrt((m||0)/MMAX))}
 function cargarTierra(){
   if(!window.d3||!window.topojson)return;
+  var path=d3.geoPath(d3.geoEquirectangular().scale(200/(2*Math.PI)).translate([100,50]));
+  var gl='<path class="grat" d="'+path(d3.geoGraticule().step([30,30])())+'"/>';
+  [60,30,0,-30,-60].forEach(function(la){gl+='<text class="glab" x="1.3" y="'+((90-la)/180*100-.6).toFixed(2)+'" style="text-anchor:start">'+(la===0?"0°":Math.abs(la)+"°"+(la>0?"N":"S"))+'</text>'});
+  [-120,-60,0,60,120].forEach(function(lo){gl+='<text class="glab" x="'+((lo+180)/360*200+.8).toFixed(2)+'" y="8" style="text-anchor:start">'+(lo===0?"0°":Math.abs(lo)+"°"+(lo>0?"E":"O"))+'</text>'});
+  $("grat").innerHTML=gl;
   fetch("https://cdn.jsdelivr.net/npm/world-atlas@2.0.2/land-110m.json").then(function(r){return r.json()}).then(function(t){
-    var pr=d3.geoEquirectangular().scale(200/(2*Math.PI)).translate([100,50]);
-    $("tierra").innerHTML='<path d="'+d3.geoPath(pr)(topojson.feature(t,t.objects.land))+'" style="fill:var(--land)"/>'}).catch(function(){})}
-function glow(id,cx,cy,r){var R=r+4.5,e=(r/R).toFixed(3),g="gl"+id;
-  var d='<defs><radialGradient id="'+g+'"><stop offset="0" stop-color="#ff2d2d" stop-opacity="0"/><stop offset="'+(r/R*0.96).toFixed(3)+'" stop-color="#ff2d2d" stop-opacity="0"/><stop offset="'+e+'" stop-color="#ff3b30" stop-opacity=".6"/><stop offset="'+(r/R+(1-r/R)*0.35).toFixed(3)+'" stop-color="#ff3b30" stop-opacity=".28"/><stop offset="1" stop-color="#ff3b30" stop-opacity="0"/></radialGradient></defs>';
-  var c=function(dl){return '<circle class="onda" cx="'+cx+'" cy="'+cy+'" r="'+R+'" fill="url(#'+g+')" style="animation-delay:'+dl+'s"/>'};
-  return d+c(0)+c(.75)}
+    $("tierra").innerHTML='<path class="tierra" d="'+path(topojson.feature(t,t.objects.land))+'"/>'}).catch(function(){})}
+function leyenda(){var bx=16,by=79,h='<text class="glab" x="'+(bx-8.5)+'" y="'+(by-2*rMuertes(100000)-3).toFixed(2)+'" style="text-anchor:start">MUERTES</text>';
+  [100000,50000,10000].forEach(function(v){var r=rMuertes(v),top=by-2*r;
+    h+='<circle class="lc" cx="'+bx+'" cy="'+(by-r).toFixed(2)+'" r="'+r.toFixed(2)+'"/>'+
+       '<line class="ll" x1="'+bx+'" x2="'+(bx+11)+'" y1="'+top.toFixed(2)+'" y2="'+top.toFixed(2)+'"/>'+
+       '<text class="glab" x="'+(bx+11.6)+'" y="'+(top+.7).toFixed(2)+'" style="text-anchor:start">'+fmt(v)+'</text>'});
+  $("leyenda").innerHTML=h}
+// foco del sector elegido: dos ondas y un marco de esquinas (como los marcos de los pósters)
+function foco(cx,cy,r){var R=r+1.8,a=r+3.6,L=1.7,b="";
+  [[-1,-1],[1,-1],[1,1],[-1,1]].forEach(function(q){var x=cx+q[0]*a,y=cy+q[1]*a;
+    b+="M"+(x-q[0]*L).toFixed(2)+" "+y.toFixed(2)+"H"+x.toFixed(2)+"V"+(y-q[1]*L).toFixed(2)});
+  return '<g class="foco"><circle class="anillo onda" cx="'+cx+'" cy="'+cy+'" r="'+R+'"/>'+
+    '<circle class="anillo onda" cx="'+cx+'" cy="'+cy+'" r="'+R+'" style="animation-delay:.9s"/><path class="marco" d="'+b+'"/></g>'}
 function dibujarMapa(){
   $("marc").innerHTML=SECT.map(function(s){
     var cx=(s.lon+180)/360*200,cy=(90-s.lat)/180*100,on=(tocando===s.id)||(mostrado===s.id&&!tocando);
-    var r=s.c?Math.max(1.6,10*Math.sqrt((s.m||0)/MMAX)):1.8;
-    var arriba=cy>85,t1=arriba?cy-r-5.4:cy+r+3.6,t2=arriba?cy-r-2.6:cy+r+6.4;
-    var circ=s.c
-      ?'<circle cx="'+cx+'" cy="'+cy+'" r="'+r+'" style="fill:var(--mdot)"/>'
-      :(on?'<circle cx="'+cx+'" cy="'+cy+'" r="'+r+'" style="fill:var(--mdot)"/>':'<circle cx="'+cx+'" cy="'+cy+'" r="'+r+'" fill="none" style="stroke:var(--mark)" stroke-width=".35" stroke-dasharray="1 .8"/>');
-    return '<g data-id="'+s.id+'">'+(on?glow(s.id,cx,cy,r):'')+circ+
-      '<text class="t1" x="'+cx+'" y="'+t1+'">'+(s.c?s.c+" · "+fmt(s.m):"sin registros")+'</text>'+
-      '<text class="t2" x="'+cx+'" y="'+t2+'">'+s.n+'</text></g>'}).join("");
+    var r=s.c?rMuertes(s.m):1.8;
+    var off=on?r+3.6+1.2:r,arriba=cy>85,t1=arriba?cy-off-5.6:cy+off+4,t2=arriba?cy-off-2.6:cy+off+7;
+    var circ=(s.c||on)?'<circle class="pt" cx="'+cx+'" cy="'+cy+'" r="'+r+'"/>':'<circle class="vac" cx="'+cx+'" cy="'+cy+'" r="'+r+'"/>';
+    var nom=s.c?s.c+" ("+s.y+")":"sin registros";
+    return '<g data-id="'+s.id+'" class="'+(s.c?"":"sin")+'" tabindex="0" role="button" aria-label="'+s.n+": "+nom+'">'+
+      (on?foco(cx,cy,r):'')+circ+'<circle class="hit" cx="'+cx+'" cy="'+cy+'" r="'+Math.max(r+1.5,4.5)+'"/>'+
+      '<text class="t1" x="'+cx+'" y="'+t1+'">'+(s.c?s.c+" · "+fmt(s.m):"Sin registros").toUpperCase()+'</text>'+
+      '<text class="t2" x="'+cx+'" y="'+t2+'">'+(pad(s.id)+" · "+s.n).toUpperCase()+'</text></g>'}).join("");
+  var v=SECT.find(function(x){return x.id===(tocando||mostrado)});
+  $("rotMapa").textContent=v?"Sector "+pad(v.id)+" · "+v.n+(v.c?" — "+v.c+" ("+v.y+")":""):"Sectores 01–08";
 }
-$("mapa").onclick=function(e){var g=e.target.closest?e.target.closest("[data-id]"):null;if(!g)return;
-  var s=SECT.find(function(x){return x.id===+g.getAttribute("data-id")});if(s)disparar(s)};
+function sectorDe(e){var g=e.target.closest?e.target.closest("[data-id]"):null;
+  return g?SECT.find(function(x){return x.id===+g.getAttribute("data-id")}):null}
+$("mapa").onclick=function(e){var s=sectorDe(e);if(s)disparar(s)};
+$("mapa").onkeydown=function(e){if(e.key!=="Enter"&&e.key!==" ")return;var s=sectorDe(e);if(!s)return;
+  e.preventDefault();disparar(s);var g=$("marc").querySelector('[data-id="'+s.id+'"]');if(g)g.focus()};
+$("mapa").onpointermove=function(e){var s=sectorDe(e),tip=$("tipMapa");if(!s){tip.hidden=true;return}
+  var r=$("mapaBox").getBoundingClientRect();
+  tip.innerHTML='<span class="mono">'+pad(s.id)+' · '+s.n+'</span><b>'+(s.c?s.c+' ('+s.y+')':'Sin registros')+'</b>'+(s.c?fmt(s.m)+' muertes':'');
+  tip.style.left=(e.clientX-r.left)+"px";tip.style.top=(e.clientY-r.top)+"px";tip.hidden=false};
+$("mapa").onpointerleave=function(){$("tipMapa").hidden=true};
 
 // ---------- calibración ----------
 function dibujar(){
-  $("lista").innerHTML=SECT.map(function(s){return '<button data-i="'+s.id+'" class="'+(sel===s.id?"sel ":"")+(S.pts[s.id]?"hecho":"")+'">'+(S.pts[s.id]?"✓ ":"")+s.n+'</button>'}).join("");
+  $("lista").innerHTML=SECT.map(function(s){return '<button type="button" data-i="'+s.id+'" class="'+(sel===s.id?"sel ":"")+(S.pts[s.id]?"hecho":"")+'"><span class="num">'+pad(s.id)+'</span>'+(S.pts[s.id]?"✓ ":"")+s.n+'</button>'}).join("");
   Array.prototype.forEach.call($("lista").children,function(b){b.onclick=function(){sel=+b.dataset.i;dibujar()}});
-  $("mapaCal").innerHTML=SECT.map(function(s){var on=tocando===s.id;
-    return '<circle cx="'+s.u*160+'" cy="'+s.v*100+'" r="'+(on?9:6)+'" style="fill:'+(on?"#ff3b30":S.pts[s.id]?"var(--done)":"none")+';stroke:'+(on?"none":"var(--mark)")+'" stroke-width=".6" '+(S.pts[s.id]||on?"":'stroke-dasharray="2 1.5"')+'/>'+(s.u<.6?'<text x="'+(s.u*160+9)+'" y="'+(s.v*100+1.5)+'" style="text-anchor:start">'+s.n+'</text>':'<text x="'+s.u*160+'" y="'+(s.v*100+(s.v>.85?-8:11))+'">'+s.n+'</text>')}).join("");
+  var mc='<rect class="carton" x="1.5" y="1.5" width="157" height="97" rx="3"/>';
+  for(var gx=20;gx<160;gx+=20)mc+='<line class="cg" x1="'+gx+'" x2="'+gx+'" y1="1.5" y2="98.5"/>';
+  for(var gy=20;gy<100;gy+=20)mc+='<line class="cg" x1="1.5" x2="158.5" y1="'+gy+'" y2="'+gy+'"/>';
+  mc+=SECT.map(function(s){var on=tocando===s.id,x=s.u*160,y=s.v*100;
+    var cls=on?" on":(S.pts[s.id]?" hecho":"")+(sel===s.id?" elegido":"");
+    var lab=s.u<.6?'<text x="'+(x+9)+'" y="'+(y+1.3)+'" style="text-anchor:start">'+s.n+'</text>':'<text x="'+x+'" y="'+(y+(s.v>.85?-8:11))+'">'+s.n+'</text>';
+    return '<g class="cp'+cls+'">'+(on?'<circle class="h onda" cx="'+x+'" cy="'+y+'" r="8"/>':'')+
+      '<circle class="o" cx="'+x+'" cy="'+y+'" r="'+(on?8:6)+'"/><text class="num" x="'+x+'" y="'+(y+.95)+'">'+pad(s.id)+'</text>'+lab+'</g>'}).join("");
+  $("mapaCal").innerHTML=mc;
   $("vUp").textContent=S.zUp==null?"—":S.zUp.toFixed(2);$("vDown").textContent=S.zDown==null?"—":S.zDown.toFixed(2);
   var ok=Object.keys(S.pts).length>0&&S.zUp!=null&&S.zDown!=null&&Math.abs(S.zUp-S.zDown)>0.03;
   $("uso").disabled=!ok;$("uso").hidden=S.modo==="uso";$("entrenar").hidden=S.modo!=="uso";
@@ -342,10 +622,11 @@ setInterval(function(){
   }
 },80);
 function aplicarTema(t){document.documentElement.setAttribute("data-tema",t);
-  $("tema").textContent=t==="claro"?"Modo oscuro":"Modo claro";
+  var l=t==="claro"?"Cambiar a modo oscuro":"Cambiar a modo claro";$("tema").setAttribute("aria-label",l);$("tema").title=l;
   try{localStorage.setItem("tema-ciclones",t)}catch(e){}}
 $("tema").onclick=function(){aplicarTema(document.documentElement.getAttribute("data-tema")==="claro"?"oscuro":"claro")};
 aplicarTema(document.documentElement.getAttribute("data-tema"));
 new MutationObserver(function(){$("estado2").textContent=$("estado").textContent}).observe($("estado"),{childList:true,characterData:true,subtree:true});
-dibujar();conectar();cargarTierra();
+$("ilus").innerHTML=espiral(5,3.6,false);
+leyenda();dibujar();conectar();cargarTierra();dibujarOla();
 </script></body></html>

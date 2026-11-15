@@ -3,20 +3,58 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Sensor</title>
 <script>(function(){var t="claro";try{t=localStorage.getItem("tema-ciclones")==="oscuro"?"oscuro":"claro"}catch(e){}document.documentElement.setAttribute("data-tema",t)})()</script>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,300..900&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
-:root{--bg:#eef3ef;--card:#fff;--ink:#1d2a22;--mut:#5a6e63;--line:#cbd8d0;--verde:#2f6b43;--btn:#a8c3b0}
-:root[data-tema="oscuro"]{--bg:#121a16;--card:#1c241f;--ink:#eef3ef;--mut:#9fb2a8;--line:#33453a;--verde:#8fb996}
-body{margin:0;background:var(--bg);color:var(--ink);font:16px system-ui,sans-serif;padding:12px}
-h1{font-size:20px;margin:0 0 8px;color:var(--verde)}
-button{font:inherit;padding:10px 16px;border-radius:8px;border:1px solid var(--btn);background:var(--btn);color:#fff;font-weight:700;margin:4px 4px 4px 0}
-button:disabled{opacity:.4}
-video{width:100%;max-height:50vh;background:#000;border:1px solid var(--line);border-radius:8px;margin-top:8px}
-#info,#est{margin:6px 0;color:var(--mut)}
+/* Mismo lenguaje visual que la pantalla (index.html): papel riso en claro, satélite + vidrio en oscuro. */
+:root{color-scheme:light;
+ --f-sans:"Archivo",system-ui,-apple-system,"Segoe UI",sans-serif;
+ --f-mono:"IBM Plex Mono",ui-monospace,Menlo,Consolas,monospace;
+ --bg:#e4e3da;--text:#0b1f5c;--muted:#4b5b92;--titulo:#1d3fcf;--ink:#1d3fcf;--on-ink:#f2f1ea;
+ --win:#f2f1ea;--win-brd:rgba(29,63,207,.28);--card:transparent;--card-brd:rgba(29,63,207,.42);--blur:none;--grano:.2}
+:root[data-tema="oscuro"]{color-scheme:dark;
+ --bg:#061233;--text:#eef1ff;--muted:#9aaad8;--titulo:#eef1ff;--ink:#b5c6fd;--on-ink:#071533;
+ --win:rgba(9,24,62,.55);--win-brd:rgba(181,198,253,.18);--card:rgba(181,198,253,.07);--card-brd:rgba(181,198,253,.18);--blur:blur(20px) saturate(140%);--grano:.07}
+*{box-sizing:border-box}
+body{margin:0;min-height:100vh;background:var(--bg);color:var(--text);font:16px/1.45 var(--f-sans);padding:16px;-webkit-font-smoothing:antialiased}
+:root[data-tema="oscuro"] body{background:radial-gradient(70% 45% at 15% 5%,rgba(148,168,239,.3),transparent 70%),radial-gradient(60% 45% at 85% 100%,rgba(69,137,138,.3),transparent 70%),linear-gradient(165deg,#0a2a6b,#050f2b) fixed var(--bg)}
+body::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:50;opacity:var(--grano);mix-blend-mode:multiply;
+ background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 .6 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
+.hoja{max-width:560px;margin:0 auto;padding:18px;border-radius:26px;background:var(--win);border:1px solid var(--win-brd);-webkit-backdrop-filter:var(--blur);backdrop-filter:var(--blur)}
+.top{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.marca{display:flex;align-items:center;gap:10px}
+.marca svg{width:28px;height:28px;color:var(--ink)}
+.mono{font:500 11px/1.35 var(--f-mono);letter-spacing:.09em;text-transform:uppercase;color:var(--muted)}
+.sala{font:600 14px/1 var(--f-mono);letter-spacing:.18em;color:var(--ink);border:1.5px solid var(--ink);border-radius:50%;padding:5px 13px}
+h1{margin:16px 0 6px;font:800 clamp(44px,13vw,64px)/.88 var(--f-sans);font-stretch:64%;text-transform:uppercase;color:var(--titulo)}
+.instr{margin:0 0 16px;color:var(--muted);font-size:15px}
+button{width:100%;font:700 16px/1 var(--f-sans);padding:15px;border-radius:999px;border:1.5px solid var(--ink);background:var(--ink);color:var(--on-ink);cursor:pointer}
+button:disabled{opacity:.4;cursor:default}
+button:focus-visible{outline:2px solid var(--ink);outline-offset:3px}
+.lect{display:grid;gap:6px;margin:14px 0 12px}
+#est,#info{display:flex;align-items:center;gap:8px;margin:0;padding:8px 12px;border-radius:12px;border:1px solid var(--card-brd);background:var(--card);font:500 12.5px/1.35 var(--f-mono);color:var(--text)}
+#est::before,#info::before{content:"";flex:none;width:7px;height:7px;border-radius:50%;background:var(--ink)}
+#info:empty{display:none}
+.visor{--vc:var(--ink);position:relative;padding:10px;background:
+ linear-gradient(var(--vc),var(--vc)) left top/22px 2px no-repeat,linear-gradient(var(--vc),var(--vc)) left top/2px 22px no-repeat,
+ linear-gradient(var(--vc),var(--vc)) right top/22px 2px no-repeat,linear-gradient(var(--vc),var(--vc)) right top/2px 22px no-repeat,
+ linear-gradient(var(--vc),var(--vc)) left bottom/22px 2px no-repeat,linear-gradient(var(--vc),var(--vc)) left bottom/2px 22px no-repeat,
+ linear-gradient(var(--vc),var(--vc)) right bottom/22px 2px no-repeat,linear-gradient(var(--vc),var(--vc)) right bottom/2px 22px no-repeat}
+.visor::before,.visor::after{content:"";position:absolute;left:50%;top:50%;background:rgba(255,255,255,.75);z-index:1;pointer-events:none;mix-blend-mode:difference}
+.visor::before{width:18px;height:1.5px;transform:translate(-50%,-50%)}.visor::after{width:1.5px;height:18px;transform:translate(-50%,-50%)}
+video{width:100%;max-height:50vh;min-height:180px;display:block;background:#000;border-radius:12px;object-fit:cover}
 </style></head><body>
-<h1 id="tit">Sensor</h1>
-<div><button id="ini">Iniciar cámara</button></div>
-<div id="est">Conectando…</div><div id="info"></div>
-<video id="v" playsinline muted></video>
+<main class="hoja">
+  <div class="top">
+    <div class="marca"><svg viewBox="0 0 40 40" aria-hidden="true"><g fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M6 13c6-6 20-6 28 0"/><path d="M6 20c6-6 20-6 28 0"/><path d="M6 27c6-6 20-6 28 0"/></g></svg><span class="mono">Panel táctil · E2</span></div>
+    <span class="sala" id="salaTxt">—</span>
+  </div>
+  <h1 id="tit">Teléfono</h1>
+  <p class="instr" id="instr"></p>
+  <div><button id="ini">Iniciar cámara</button></div>
+  <div class="lect"><div id="est">Conectando…</div><div id="info"></div></div>
+  <div class="visor"><video id="v" playsinline muted></video></div>
+</main>
 
 <script src="https://cdn.jsdelivr.net/npm/mqtt@5.10.1/dist/mqtt.min.js"></script>
 <script type="module">
@@ -26,7 +64,10 @@ const P = new URLSearchParams(location.search);
 const rol = P.get("rol") === "frontal" ? "frontal" : "cenital";
 const sala = P.get("sala") || "";
 const base = "iic2026/sensor/" + sala;
-$("tit").textContent = "Teléfono " + rol + " · sala " + sala.toUpperCase();
+$("tit").textContent = "Teléfono " + rol;
+$("salaTxt").textContent = sala ? sala.toUpperCase() : "—";
+$("instr").textContent = rol === "cenital" ? "Ponlo mirando hacia abajo, sobre el cartón, y pulsa «Iniciar cámara»." : "Ponlo de costado, a la altura de la mesa, y pulsa «Iniciar cámara».";
+document.title = "Teléfono " + rol + " · sala " + sala.toUpperCase();
 
 // ---- conexión ----
 const url = P.get("broker") || "wss://broker.emqx.io:8084/mqtt";
