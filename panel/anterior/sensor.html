@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="es"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sensor</title>
+<script>(function(){var t="claro";try{t=localStorage.getItem("tema-ciclones")==="oscuro"?"oscuro":"claro"}catch(e){}document.documentElement.setAttribute("data-tema",t)})()</script>
+<style>
+:root{--bg:#eef3ef;--card:#fff;--ink:#1d2a22;--mut:#5a6e63;--line:#cbd8d0;--verde:#2f6b43;--btn:#a8c3b0}
+:root[data-tema="oscuro"]{--bg:#121a16;--card:#1c241f;--ink:#eef3ef;--mut:#9fb2a8;--line:#33453a;--verde:#8fb996}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px system-ui,sans-serif;padding:12px}
+h1{font-size:20px;margin:0 0 8px;color:var(--verde)}
+button{font:inherit;padding:10px 16px;border-radius:8px;border:1px solid var(--btn);background:var(--btn);color:#fff;font-weight:700;margin:4px 4px 4px 0}
+button:disabled{opacity:.4}
+video{width:100%;max-height:50vh;background:#000;border:1px solid var(--line);border-radius:8px;margin-top:8px}
+#info,#est{margin:6px 0;color:var(--mut)}
+</style></head><body>
+<h1 id="tit">Sensor</h1>
+<div><button id="ini">Iniciar cámara</button></div>
+<div id="est">Conectando…</div><div id="info"></div>
+<video id="v" playsinline muted></video>
+
+<script src="https://cdn.jsdelivr.net/npm/mqtt@5.10.1/dist/mqtt.min.js"></script>
+<script type="module">
+import { HandLandmarker, FilesetResolver } from "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.14";
+const $ = i => document.getElementById(i);
+const P = new URLSearchParams(location.search);
+const rol = P.get("rol") === "frontal" ? "frontal" : "cenital";
+const sala = P.get("sala") || "";
+const base = "iic2026/sensor/" + sala;
+$("tit").textContent = "Teléfono " + rol + " · sala " + sala.toUpperCase();
+
+// ---- conexión ----
+const url = P.get("broker") || "wss://broker.emqx.io:8084/mqtt";
+const cli = mqtt.connect(url, { reconnectPeriod: 2000, clientId: rol + "-" + Math.random().toString(16).slice(2) });
+cli.on("connect", () => { $("est").textContent = "Conectado al servidor."; });
+cli.on("close", () => { $("est").textContent = "Sin conexión con el servidor, reintentando…"; });
+
+// ---- cámara y mano ----
+$("ini").onclick = async () => {
+  $("ini").disabled = true;
+  try {
+    const v = $("v");
+    v.srcObject = await navigator.mediaDevices.getUserMedia({ video: { facingMode: { ideal: "environment" }, width: 640, height: 480 }, audio: false });
+    await v.play();
+    $("info").textContent = "Cargando modelo de manos…";
+    const fs = await FilesetResolver.forVisionTasks("https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.14/wasm");
+    const model = "https://storage.googleapis.com/mediapipe-models/hand_landmarker/hand_landmarker/float16/1/hand_landmarker.task";
+    let hl;
+    try { hl = await HandLandmarker.createFromOptions(fs, { baseOptions: { modelAssetPath: model, delegate: "GPU" }, runningMode: "VIDEO", numHands: 1 }); }
+    catch (e) { hl = await HandLandmarker.createFromOptions(fs, { baseOptions: { modelAssetPath: model, delegate: "CPU" }, runningMode: "VIDEO", numHands: 1 }); }
+    let last = -1, lastSend = 0;
+    const loop = () => {
+      if (v.currentTime !== last) {
+        last = v.currentTime;
+        const r = hl.detectForVideo(v, performance.now());
+        const p = r.landmarks && r.landmarks[0] && r.landmarks[0][8];   // punta del índice
+        if (p) {
+          $("info").textContent = rol === "cenital" ? "x " + p.x.toFixed(2) + "  y " + p.y.toFixed(2) : "z " + p.y.toFixed(2);
+          const now = performance.now();
+          if (now - lastSend > 70) {
+            lastSend = now;
+            cli.publish(base + "/" + rol, JSON.stringify(rol === "cenital" ? { x: p.x, y: p.y } : { z: p.y }));
+          }
+        } else $("info").textContent = "Sin mano detectada";
+      }
+      requestAnimationFrame(loop);
+    };
+    loop();
+  } catch (e) { $("info").textContent = "Error: " + e.message; $("ini").disabled = false; }
+};
+</script></body></html>
