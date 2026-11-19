@@ -60,12 +60,10 @@ body::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:50;opa
 
 .wrap{max-width:1440px;margin:0 auto;padding:16px}
 .mono{font:500 11px/1.35 var(--f-mono);letter-spacing:.09em;text-transform:uppercase;color:var(--muted)}
-.etq{display:inline-flex;align-items:center;gap:7px;padding:6px 13px;border-radius:999px;border:1px solid var(--card-brd);background:var(--card);font:600 12px/1 var(--f-sans);color:var(--text)}
-.etq::before{content:"";width:6px;height:6px;border-radius:50%;background:var(--ink)}
-.oval{display:inline-block;padding:3px 13px 4px;border:1.5px solid var(--ink);border-radius:50%;font:700 14px/1.1 var(--f-sans);font-stretch:80%;letter-spacing:.04em;color:var(--ink)}
 .cruz{position:absolute;width:13px;height:13px;pointer-events:none}
 .cruz::before,.cruz::after{content:"";position:absolute;background:var(--ink)}
 .cruz::before{left:6px;top:0;width:1.5px;height:13px}.cruz::after{top:6px;left:0;height:1.5px;width:13px}
+.sr{position:absolute;width:1px;height:1px;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
 
 /* ---------- ventana principal (vidrio / hoja) ---------- */
 .ventana{position:relative;display:grid;grid-template-columns:60px minmax(0,1fr);gap:22px;min-height:calc(100vh - 32px);
@@ -80,44 +78,10 @@ body::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:50;opa
 .ic svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
 :root[data-tema="claro"] #tema .sol,:root:not([data-tema="claro"]) #tema .luna{display:none}
 
-.escena{min-width:0;display:flex;flex-direction:column}
-.cab{display:grid;grid-template-columns:minmax(0,1fr) 170px;gap:24px;align-items:center;margin:2px 0 16px}
-.meta{display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px;margin-bottom:12px}
-h1{margin:0;font:var(--d-w) var(--h1-size,clamp(34px,3.7vw,58px))/var(--h1-lh,.95) var(--f-display);font-stretch:var(--d-s);text-transform:var(--d-case);letter-spacing:var(--d-track);color:var(--titulo)}
-h1 .caja{display:inline-block;border:.055em solid currentColor;border-radius:999px;padding:.03em .3em .05em;margin-top:.1em}
-h1 .regla{display:inline-block;width:1.6em;height:.36em;vertical-align:middle;margin-left:.18em}
-h1 .regla line{stroke:currentColor;stroke-width:1.5}
-.lead{margin:10px 0 0;max-width:70ch;color:var(--muted);font-size:15.5px}
-.ilus{position:relative;height:136px}
-.ilus::before{content:"";position:absolute;inset:14px 34px 6px 2px;border:1.5px solid var(--line)}
-.ilus .esp{position:absolute;right:0;top:0;width:130px;height:130px;color:var(--ink)}
-.ilus .cruz{right:22px;bottom:-1px}
-.muestras{display:none;position:absolute;inset:0;grid-template-columns:repeat(7,1fr);gap:6px}
-.muestras i{position:relative;background:var(--m)}
-.muestras span{position:absolute;left:50%;bottom:10px;writing-mode:vertical-rl;transform:translateX(-50%) rotate(180deg);font:700 16px/1 var(--f-sans);font-stretch:70%;color:#fff;letter-spacing:.02em}
-
-/* espirales (ilustración y ojo del ciclón) */
-.esp svg{width:100%;height:100%;display:block;overflow:visible}
-.esp polyline{fill:none;stroke:currentColor;stroke-linecap:round;stroke-linejoin:round}
-.esp .b1{stroke-width:5;opacity:.9}.esp .b2{stroke-width:3;opacity:.6}.esp .b3{stroke-width:1.4;opacity:.45}
-.esp .c{fill:currentColor}
-:root[data-tema="claro"] .esp .b1{stroke-dasharray:0 6.5}
-:root[data-tema="claro"] .esp .b2{stroke-dasharray:0 5}
-:root[data-tema="claro"] .esp .b3{stroke-dasharray:0 3.4}
-:root:not([data-tema="claro"]) .ilus .esp svg{filter:blur(2.2px) drop-shadow(0 0 14px rgba(181,198,253,.55))}
-
-/* ---------- huracán + ficha ---------- */
-.main{display:grid;grid-template-columns:minmax(0,1fr) 370px;gap:18px;align-items:stretch;flex:1}
-.izq{display:flex;flex-direction:column;gap:14px;min-width:0}
-.panelc{position:relative;border-radius:var(--r-card);background:var(--card);border:var(--bw) solid var(--card-brd);padding:14px}
-.panelc>.cruz{top:-7px;right:-7px}
-.fila-cab{display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap;margin:0 4px 10px}
-.olaw{position:relative}
-/* El huracán reemplaza al mapa: gira en proporción al viento del ciclón elegido. */
-.hurFig{container:hurfig/inline-size}
-.hurBox{display:grid;grid-template-columns:minmax(0,1fr) minmax(220px,400px) minmax(0,1fr);grid-template-areas:"lect hur ley";gap:16px 22px;align-items:center;
- padding:18px 22px;background:var(--sea);border-radius:var(--r-in);border:var(--map-brd,1px solid var(--hair));overflow:hidden}
-.hur{grid-area:hur;position:relative;width:100%;aspect-ratio:1}
+/* ---------- huracán: la vista principal no tiene texto; lo que se lee es la intensidad (el giro) ---------- */
+.escena{min-width:0;display:grid;place-items:center}
+.hur{position:relative;width:min(100%,calc(100vh - 80px));aspect-ratio:1;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.hur:focus-visible{outline:2px solid var(--ink);outline-offset:6px;border-radius:50%}
 .hur>svg,.giro{position:absolute;inset:0;width:100%;height:100%;display:block}
 .giro{will-change:transform;transition:opacity .28s ease}
 .giro.fuera{opacity:0}
@@ -134,89 +98,16 @@ h1 .regla line{stroke:currentColor;stroke-width:1.5}
 .hur.sin .brazo polyline{stroke-dasharray:1.4 3}
 .algH{opacity:0;transition:opacity .7s ease}
 .algH.lista{opacity:1}
-.lect{grid-area:lect;align-self:center}
-.lect b{display:block;margin:6px 0 8px;font:300 60px/1 var(--f-sans);letter-spacing:-.03em;color:var(--text);font-variant-numeric:tabular-nums}
-.lect b small{font-size:18px;letter-spacing:0;color:var(--muted);margin-left:4px}
-.lect .mono{display:block}
-.ley{grid-area:ley;align-self:center;display:flex;flex-direction:column;gap:8px;font-size:13.5px;color:var(--text)}
-.ley p{margin:0}
-.ley .mono{display:block;font-size:10.5px}
-.ley .ref{font-size:12.5px;line-height:1.45;color:var(--muted)}
-.sectores{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin-top:12px}
-.sectores button{display:flex;align-items:center;gap:9px;min-width:0;text-align:left;border-radius:var(--r-sm);padding:8px 10px}
-.sectores .num{font:600 10.5px var(--f-mono);opacity:.7}
-.sectores .sn{min-width:0}
-.sectores b,.sectores small{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.sectores b{font:600 12.5px/1.25 var(--f-sans);text-transform:none;letter-spacing:0}
-.sectores small{font:500 10.5px/1.3 var(--f-mono);color:var(--muted);text-transform:none;letter-spacing:0}
-.sectores button.sin{border-style:dashed}
-.sectores button.on{background:var(--ink);border-color:var(--ink);color:var(--on-ink)}
-.sectores button.on small{color:inherit;opacity:.85}
-@container hurfig (max-width:720px){.hurBox{grid-template-columns:minmax(200px,1fr) minmax(0,1fr);grid-template-areas:"hur lect" "hur ley"}.sectores{grid-template-columns:repeat(2,minmax(0,1fr))}}
-@container hurfig (max-width:470px){.hurBox{grid-template-columns:minmax(0,1fr);grid-template-areas:"hur" "lect" "ley";padding:14px}.hur{max-width:340px;justify-self:center}.lect b{font-size:48px}}
+
+/* paneles de la calibración */
+.panelc{position:relative;border-radius:var(--r-card);background:var(--card);border:var(--bw) solid var(--card-brd);padding:14px}
+.panelc>.cruz{top:-7px;right:-7px}
+.fila-cab{display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap;margin:0 4px 10px}
 .onda{transform-box:fill-box;transform-origin:center;animation:onda 1.8s ease-out infinite}
 @keyframes onda{0%{transform:scale(1);opacity:.9}100%{transform:scale(1.9);opacity:0}}
-.estado{display:flex;align-items:center;gap:8px;margin:8px 4px 0;min-height:1.4em;font:500 12px/1.35 var(--f-mono);color:var(--muted)}
-.estado::before{content:"";flex:none;width:7px;height:7px;border-radius:50%;background:var(--teal);box-shadow:0 0 0 3px color-mix(in srgb,var(--teal) 25%,transparent)}
 
-.tip{position:absolute;z-index:5;pointer-events:none;transform:translate(-50%,calc(-100% - 14px));white-space:nowrap;
- padding:8px 11px;border-radius:var(--r-sm);background:var(--tip);border:1px solid var(--card-brd);color:var(--text);font:13px/1.35 var(--f-sans);
- box-shadow:0 10px 30px -12px rgba(0,0,0,.45);-webkit-backdrop-filter:var(--blur);backdrop-filter:var(--blur)}
-.tip b{display:block;font-weight:700}.tip .mono{display:block;font-size:10px}
-
-/* curva del viento (la «ola») */
-svg#ola{width:100%;height:150px;display:block;overflow:visible}
-#ola .grid{stroke:var(--hair);stroke-width:1}
-#ola .base{stroke:var(--line);stroke-width:1}
-#ola text{font:500 10px var(--f-mono);fill:var(--faint);letter-spacing:.04em}
-#ola .cl{fill:var(--muted)}
-#ola .msg{font:500 12px var(--f-mono);fill:var(--muted);letter-spacing:.08em}
-#ola .area{fill:var(--ink);opacity:.12}
-#ola .linea{fill:none;stroke:var(--ink);stroke-width:2;stroke-linejoin:round;stroke-linecap:round}
-:root:not([data-tema="claro"]) #ola .linea{filter:drop-shadow(0 0 5px rgba(181,198,253,.7))}
-#ola .pico{stroke:var(--ink);stroke-width:1;opacity:.55}
-#ola .halo{fill:var(--ink);opacity:.2}
-#ola .punto,#ola .cursor circle{fill:var(--ink);stroke:var(--surf);stroke-width:2}
-#ola .plab{font:600 12px var(--f-sans);fill:var(--text);letter-spacing:0}
-#ola .cursor line{stroke:var(--muted);stroke-width:1}
-
-/* ficha */
-#ficha{padding:12px}
-#fBody{display:flex;flex-direction:column;gap:12px;height:100%}
-.vacio{flex:1;display:grid;place-items:center;text-align:center;color:var(--muted);padding:40px 18px;border:1.5px dashed var(--line);border-radius:var(--r-in);min-height:420px}
-.vacio b{display:block;font:var(--d-w) 30px/1 var(--f-display);font-stretch:var(--d-s);text-transform:var(--d-case);letter-spacing:var(--d-track);color:var(--titulo);margin-bottom:8px}
-.bloque{position:relative;border-radius:var(--r-in);background:var(--block);color:var(--on-block);padding:16px 16px 14px;overflow:hidden}
-.bloque .mono{color:inherit;opacity:.85}
-.bloque h2{margin:10px 0 12px;font:var(--d-w) var(--h2-size,clamp(42px,4.3vw,60px))/.9 var(--f-display);font-stretch:var(--d-s);text-transform:var(--d-case);letter-spacing:var(--d-track);overflow-wrap:anywhere}
-.bloque .oval{border-color:currentColor;color:inherit}
-.fila-b{display:flex;align-items:center;flex-wrap:wrap;gap:10px 14px}
-.chip{display:inline-flex;align-items:center;gap:8px;font-weight:600;font-size:14px}
 /* ---------- algodón (como en la maqueta: algodón ≡ categoría del huracán) ---------- */
-svg.defs{position:absolute;width:0;height:0;overflow:hidden}
-.alg{display:flex;align-items:center;gap:8px;margin-top:14px}
-.copo{position:relative;width:104px;height:80px;flex:none;animation:flota 5.5s ease-in-out infinite}
-.copo svg,.escala svg,.vac-copo svg{width:100%;height:100%;display:block;overflow:visible}
-.copo b{position:absolute;left:0;right:0;top:51%;transform:translateY(-50%);text-align:center;font:800 26px/1 var(--f-sans);color:#1a2b66;text-shadow:0 1px 0 rgba(255,255,255,.7);animation:aparece .5s .4s both}
-.m{transform-box:fill-box;transform-origin:center;animation:mota .65s cubic-bezier(.34,1.56,.64,1) both;animation-delay:calc(var(--i,0)*80ms)}
-@keyframes mota{from{transform:scale(0);opacity:0}to{transform:scale(1);opacity:1}}
-@keyframes aparece{from{opacity:0}}
 @keyframes flota{0%,100%{transform:translateY(0)}50%{transform:translateY(-3px)}}
-.alg-t{font-weight:700;font-size:15px}
-.escala{position:relative;display:flex;align-items:flex-end;margin-top:6px}
-.escala::before{content:"";position:absolute;left:12px;right:12px;bottom:15px;height:1px;background:currentColor;opacity:.3}
-.escala span{position:relative;display:flex;flex-direction:column;align-items:center;width:33px;opacity:.42;transition:opacity .2s,transform .25s;cursor:default}
-.escala span.on{opacity:1;transform:translateY(-2px) scale(1.14)}
-.escala span:hover{opacity:.9}
-.escala svg{width:33px;height:25px}
-.escala small{font:500 9.5px/1 var(--f-mono);margin-top:4px}
-.alg .mono{display:block;margin-top:7px;font-size:10px;color:inherit;opacity:.8}
-.vac-copo{width:170px;height:130px;margin:0 auto 12px;animation:flota 6s ease-in-out infinite}
-svg.capa{position:absolute;left:0;top:0;pointer-events:none;will-change:transform}
-svg.capa.revela{animation:revela 1.4s cubic-bezier(.2,.7,.2,1) both}
-@keyframes revela{from{clip-path:inset(0 100% 0 0)}to{clip-path:inset(0 0 0 0)}}
-svg#ola{position:relative}
-.muestras i.alg-m{background:none;z-index:1}
-.muestras i.alg-m svg{width:100%;height:100%;display:block;overflow:visible}
 /* nubes de algodón que flotan detrás de la página, con paralaje al bajar */
 .wrap{position:relative;z-index:1}
 .nubes{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden;opacity:var(--nubes-op,.3)}
@@ -230,28 +121,7 @@ svg#ola{position:relative}
 /* costura de algodón entre la vista principal y la calibración */
 .costura{position:relative;z-index:2;height:66px;margin:4px 0 -24px;background:repeat-x center/auto 100%;opacity:0;transition:opacity 1s}
 .costura.lista{opacity:1}
-@media (prefers-reduced-motion:reduce){.copo,.vac-copo,.nubes .nh,.nubes .nb,.m,.copo b,svg.capa.revela{animation:none}}
-.chip i{display:inline-grid;place-items:center;width:26px;height:26px;border-radius:50%;background:var(--k);color:var(--on);font:800 14px/1 var(--f-sans);font-style:normal;box-shadow:0 0 0 2px var(--on-block)}
-.reg{font-size:13px;opacity:.85}
-.viento{display:grid;grid-template-columns:100px 1fr;gap:16px;align-items:center;padding:12px 16px 12px 12px;border-radius:var(--r-in);border:var(--bw) solid var(--card-brd);background:var(--card)}
-.ojo{width:100px;height:100px;color:var(--k)}
-.ojo svg{animation:rspin var(--sp,4s) linear infinite}
-.ojo.norte svg{animation-direction:reverse}
-@keyframes rspin{to{transform:rotate(360deg)}}
-.hero b{font:300 58px/1 var(--f-sans);letter-spacing:-.025em;color:var(--text)}
-.hero span{font-size:16px;color:var(--muted);margin-left:5px}
-.hero small{display:block;margin-top:8px}
-.kpis,.minis{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.kpi{border:1.5px solid var(--kc);border-radius:var(--r-sm);overflow:hidden;background:var(--card)}
-.kpi.m{--kc:var(--ink);--kon:var(--on-ink)}.kpi.a{--kc:var(--teal);--kon:var(--on-teal)}
-.kc{display:block;background:var(--kc,var(--ink));color:var(--kon,var(--on-ink));font:600 10.5px/1 var(--f-mono);letter-spacing:.26em;text-transform:uppercase;text-align:center;padding:7px 4px 6px}
-.kpi b{display:block;font:600 23px/1.15 var(--f-sans);padding:12px 8px;text-align:center;color:var(--text)}
-.mini{display:flex;flex-direction:column;gap:3px;padding:10px 13px;border-radius:var(--r-sm);border:var(--bw) solid var(--card-brd);background:var(--card)}
-.mini small{font:500 10.5px var(--f-mono);letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
-.mini b{font:600 20px/1.2 var(--f-sans)}
-.paso{margin:0 2px;font-size:13.5px;color:var(--text)}.paso .mono{display:block;margin-bottom:3px}
-.aviso{border:1.5px solid var(--ink);border-radius:var(--r-sm);overflow:hidden}
-.aviso p{margin:0;padding:12px 14px;font-size:14px}
+@media (prefers-reduced-motion:reduce){.nubes .nh,.nubes .nb{animation:none}}
 
 /* ---------- botones y estados ---------- */
 button{font:600 13px/1 var(--f-sans);letter-spacing:.01em;padding:9px 15px;border-radius:999px;border:1.5px solid var(--line);background:var(--card);color:var(--text);cursor:pointer;transition:background .15s,border-color .15s}
@@ -335,19 +205,10 @@ input[type=range]{accent-color:var(--ink);vertical-align:middle}
  radial-gradient(34% 24% at 72% 4%,rgba(160,186,181,.5),transparent 70%),
  radial-gradient(50% 30% at 85% 30%,rgba(24,40,40,.7),transparent 75%),
  linear-gradient(180deg,#6a8884 0%,#435b59 26%,#2f4344 55%,#2f4530 84%,#263a20 100%) fixed #34494a}
-:root[data-estilo="vidrio"] .mono,:root[data-estilo="vidrio"] .kc,:root[data-estilo="vidrio"] .mini small{text-transform:none;letter-spacing:.01em;font-weight:500;font-size:12.5px}
-:root[data-estilo="vidrio"] .cruz,:root[data-estilo="vidrio"] h1 .regla,:root[data-estilo="vidrio"] .ilus::before{display:none}
-:root[data-estilo="vidrio"] h1 .caja{display:inline;border:0;padding:0;margin:0}
-:root[data-estilo="vidrio"] .oval,:root[data-estilo="vidrio"] #sala{border-radius:999px;border:1px solid var(--card-brd);background:var(--card);color:var(--text);font-weight:600;font-stretch:100%}
-:root[data-estilo="vidrio"] .etq::before,:root[data-estilo="vidrio"] .estado::before{background:#fff;box-shadow:0 0 8px #fff}
-:root[data-estilo="vidrio"] .ilus .esp{color:#fff}
-:root[data-estilo="vidrio"] .kpi,:root[data-estilo="vidrio"] .aviso{border:1px solid var(--card-brd);background:var(--card)}
-:root[data-estilo="vidrio"] .kc{background:none;color:var(--muted);text-align:left;padding:12px 14px 0}
-:root[data-estilo="vidrio"] .kpi b{text-align:left;padding:4px 14px 14px;font-size:26px}
-:root[data-estilo="vidrio"] .vacio{border:1px solid var(--card-brd);background:var(--card)}
+:root[data-estilo="vidrio"] .mono{text-transform:none;letter-spacing:.01em;font-weight:500;font-size:12.5px}
+:root[data-estilo="vidrio"] .cruz{display:none}
+:root[data-estilo="vidrio"] #sala{border-radius:999px;border:1px solid var(--card-brd);background:var(--card);color:var(--text);font-weight:600;font-stretch:100%}
 :root[data-estilo="vidrio"] .paso-c .n{color:#fff;-webkit-text-stroke:0;opacity:.9}
-:root[data-estilo="vidrio"] #ola .linea{stroke-width:2.5;filter:drop-shadow(0 0 6px rgba(255,255,255,.85))}
-:root[data-estilo="vidrio"] #ola .halo{opacity:.35}
 :root[data-estilo="vidrio"] .pill.ok{background:#fff;border-color:#fff;color:#1b3331}
 
 /* 2 · Riso — pósters «Trapped by Plastic»: una sola tinta cobalto sobre papel, marcos rectos, grano fuerte */
@@ -364,16 +225,8 @@ input[type=range]{accent-color:var(--ink);vertical-align:middle}
  --c0:#95a5f0;--c1:#7a8deb;--c2:#566ee6;--c3:#3150e2;--c4:#1d35b8;--c5:#13227a;
  --o0:#13227a;--o1:#13227a;--o2:#fff;--o3:#fff;--o4:#fff;--o5:#fff;
  --sombra:none}
-:root[data-estilo="riso"] .lead{max-width:none;font-style:italic;font-weight:800;color:var(--ink);text-transform:uppercase;font-size:13.5px;letter-spacing:.01em}
-:root[data-estilo="riso"] .etq{border:2px solid var(--ink);background:none}
-:root[data-estilo="riso"] .kpi{border-width:2px}
-:root[data-estilo="riso"] .kpi.a .kc{background:none;color:var(--ink);border-bottom:2px solid var(--ink)}
 :root[data-estilo="riso"] .pill.ok{background:var(--ink);border-color:var(--ink);color:var(--on-ink)}
-:root[data-estilo="riso"] .estado::before{background:var(--ink);box-shadow:none}
 :root[data-estilo="riso"] button:not(.opE):not(.ic){border-width:2px;text-transform:uppercase;letter-spacing:.05em;font-size:12px}
-:root[data-estilo="riso"] .vacio{border:2px dashed var(--ink)}
-:root[data-estilo="riso"] .paso,:root[data-estilo="riso"] .reg{font-style:italic;font-weight:700}
-:root[data-estilo="riso"] .viento,:root[data-estilo="riso"] .mini{border-width:2px}
 
 /* 3 · Satélite — imagen del JTWC: azul profundo, tierra verde, grilla blanca, todo en monoespaciada */
 :root[data-estilo="satelite"]{color-scheme:dark;
@@ -393,15 +246,9 @@ input[type=range]{accent-color:var(--ink);vertical-align:middle}
  --sombra:none}
 :root[data-estilo="satelite"] body{background:linear-gradient(rgba(127,214,255,.05) 1px,transparent 1px) 0 0/48px 48px,linear-gradient(90deg,rgba(127,214,255,.05) 1px,transparent 1px) 0 0/48px 48px,#020818}
 :root[data-estilo="satelite"] body::after{mix-blend-mode:normal;background-image:repeating-linear-gradient(0deg,rgba(255,255,255,.03) 0 1px,transparent 1px 3px)}
-:root[data-estilo="satelite"] .etq,:root[data-estilo="satelite"] .oval,:root[data-estilo="satelite"] #sala,:root[data-estilo="satelite"] .pill{border-radius:0}
-:root[data-estilo="satelite"] .oval,:root[data-estilo="satelite"] #sala{border-width:1px;font-stretch:100%}
+:root[data-estilo="satelite"] #sala,:root[data-estilo="satelite"] .pill{border-radius:0}
+:root[data-estilo="satelite"] #sala{border-width:1px;font-stretch:100%}
 :root[data-estilo="satelite"] button:not(.opE):not(.ic){border-radius:0;text-transform:uppercase;letter-spacing:.06em;font-size:12px;border-width:1px}
-:root[data-estilo="satelite"] .ilus .esp{color:#fff}
-:root[data-estilo="satelite"] #ola .linea{filter:drop-shadow(0 0 4px rgba(127,214,255,.8))}
-:root[data-estilo="satelite"] .lead{max-width:none;font-size:13.5px}
-:root[data-estilo="satelite"] .hero b,:root[data-estilo="satelite"] .lect b{font-weight:500;font-size:50px}
-:root[data-estilo="satelite"] .kpi b{font-size:20px}
-:root[data-estilo="satelite"] .chip i{border-radius:0}
 
 /* 4 · Paleta — «20quince»: bloques planos de color, sin bordes ni sombras, como las muestras */
 :root[data-estilo="paleta"]{color-scheme:light;
@@ -421,25 +268,9 @@ input[type=range]{accent-color:var(--ink);vertical-align:middle}
 :root[data-estilo="paleta"] .riel .ic{color:#b5c6fd}
 :root[data-estilo="paleta"] .riel .logo,:root[data-estilo="paleta"] .riel .ic:hover,:root[data-estilo="paleta"] .riel .ic.activo{color:#fff;background:rgba(255,255,255,.14);border-color:transparent}
 :root[data-estilo="paleta"] .riel .logo{background:none}
-:root[data-estilo="paleta"] .izq>figure.panelc{background:var(--p1)}
-:root[data-estilo="paleta"] .izq>section.panelc{background:var(--p2)}
-:root[data-estilo="paleta"] .cruz,:root[data-estilo="paleta"] h1 .regla,:root[data-estilo="paleta"] .ilus::before,:root[data-estilo="paleta"] .ilus .esp{display:none}
-:root[data-estilo="paleta"] .muestras{display:grid}
-:root[data-estilo="paleta"] h1 .caja{border:0;border-radius:0;background:var(--p1);padding:.04em .2em .06em}
-:root[data-estilo="paleta"] .etq{border:0;background:var(--p1)}
-:root[data-estilo="paleta"] .etq,:root[data-estilo="paleta"] .oval,:root[data-estilo="paleta"] #sala,:root[data-estilo="paleta"] .pill,:root[data-estilo="paleta"] .chip i{border-radius:0}
-:root[data-estilo="paleta"] .oval,:root[data-estilo="paleta"] #sala{border:0;background:var(--teal);color:#fff;font-stretch:100%}
-:root[data-estilo="paleta"] .bloque .oval{background:var(--p1);color:#0a2a6b}
-:root[data-estilo="paleta"] .viento{--text:#fff;--muted:rgba(255,255,255,.85);background:var(--st);color:#fff}
-:root[data-estilo="paleta"] .ojo{color:#fff}
-:root[data-estilo="paleta"] .esp polyline{stroke-dasharray:none}
-:root[data-estilo="paleta"] .kpi{border:0}
-:root[data-estilo="paleta"] .kpi.m{background:var(--p3)}
-:root[data-estilo="paleta"] .kpi.a{background:var(--p1)}
-:root[data-estilo="paleta"] .mini,:root[data-estilo="paleta"] .vacio,:root[data-estilo="paleta"] .aviso{border:0;background:var(--p2)}
-:root[data-estilo="paleta"] #ola text,:root[data-estilo="paleta"] #ola .cl{fill:#0a2a6b}
-:root[data-estilo="paleta"] #ola .grid{stroke:rgba(10,42,107,.22)}
-:root[data-estilo="paleta"] .estado::before{background:#0a2a6b;box-shadow:none}
+:root[data-estilo="paleta"] .cruz{display:none}
+:root[data-estilo="paleta"] #sala,:root[data-estilo="paleta"] .pill{border-radius:0}
+:root[data-estilo="paleta"] #sala{border:0;background:var(--teal);color:#fff;font-stretch:100%}
 :root[data-estilo="paleta"] button:not(.opE):not(.ic){border-radius:0}
 :root[data-estilo="paleta"] .calib .panelc{background:var(--p1)}
 :root[data-estilo="paleta"] .calib .panelc.qrcol{background:var(--p2)}
@@ -449,9 +280,6 @@ input[type=range]{accent-color:var(--ink);vertical-align:middle}
 
 /* ---------- selector de estilo ---------- */
 :root:not([data-estilo="actual"]) #tema{display:none}
-.btnE{display:inline-flex;align-items:center;gap:7px;padding:6px 12px 6px 10px;font-size:12px}
-.btnE svg{width:15px;height:15px;fill:none;stroke:currentColor;stroke-width:1.7}
-.btnE b{font-weight:700}
 .menuE{position:fixed;z-index:70;width:320px;max-width:calc(100vw - 24px);padding:8px;border-radius:var(--r-card);background:var(--tip);border:var(--bw) solid var(--card-brd);
  box-shadow:0 24px 60px -20px rgba(0,0,0,.55);-webkit-backdrop-filter:var(--blur);backdrop-filter:var(--blur)}
 .menuE[hidden]{display:none}
@@ -473,16 +301,14 @@ input[type=range]{accent-color:var(--ink);vertical-align:middle}
 :root[data-estilo="paleta"]{--win:rgba(255,255,255,.88);--nubes-op:.75}
 :root[data-estilo="vidrio"]{--mark:#22393a;--ring:#fff;--nubes-op:.55}
 :root[data-estilo="satelite"]{--mark:#7fd6ff;--nubes-op:.2}
-@media (prefers-reduced-motion:reduce){.onda,.ojo svg{animation:none}.onda{opacity:.6}html{scroll-behavior:auto}}
-@media (max-width:1180px){.main{grid-template-columns:minmax(0,1fr) 330px}.cab{grid-template-columns:minmax(0,1fr)}.ilus{display:none}}
-@media (max-width:980px){.main{grid-template-columns:1fr}.calgrid{grid-template-columns:1fr}.calbot{grid-template-columns:1fr}.qrcol{flex-direction:row;flex-wrap:wrap;justify-content:center}}
+@media (prefers-reduced-motion:reduce){.onda{animation:none;opacity:.6}html{scroll-behavior:auto}}
+@media (max-width:980px){.calgrid{grid-template-columns:1fr}.calbot{grid-template-columns:1fr}.qrcol{flex-direction:row;flex-wrap:wrap;justify-content:center}}
 @media (max-width:760px){.wrap{padding:12px}
- .ventana{grid-template-columns:1fr;padding:14px;border-radius:min(var(--r-win),22px);gap:14px}
+ .ventana{grid-template-columns:1fr;grid-template-rows:auto 1fr;padding:14px;border-radius:min(var(--r-win),22px);gap:14px}
  .riel{position:static;height:auto;flex-direction:row;padding:6px 10px;border-radius:16px}.riel .logo{margin:0 6px 0 0;width:30px;height:30px}
- .calib{padding:16px;border-radius:min(var(--r-win),22px)}.alg{flex-wrap:wrap;gap:4px 8px}.copo{width:86px;height:66px}.escala span{width:29px}.escala svg{width:29px;height:22px}.vacio{min-height:220px}.hero b{font-size:48px}}
+ .calib{padding:16px;border-radius:min(var(--r-win),22px)}}
 </style>
 </head><body>
-<svg class="defs" id="defsAlg" aria-hidden="true" focusable="false"></svg>
 <div class="nubes" id="nubes" aria-hidden="true"></div>
 <div class="wrap">
 
@@ -498,60 +324,18 @@ input[type=range]{accent-color:var(--ink);vertical-align:middle}
   </nav>
 
   <div class="escena">
-    <header class="cab">
-      <div>
-        <div class="meta"><span class="etq">Panel táctil · E2</span><span class="oval">2000–2026</span><span class="mono">IBTrACS v04r01 · EM-DAT</span><button type="button" class="btnE" id="btnEstilo" aria-haspopup="menu" aria-expanded="false" aria-controls="menuEstilo"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3a9 9 0 1 0 0 18c1.2 0 1.8-.8 1.8-1.7 0-.5-.2-.9-.5-1.2-.3-.3-.5-.7-.5-1.2 0-.9.8-1.7 1.7-1.7H16a5 5 0 0 0 5-5c0-3.9-4-7.1-9-7.1z"/><circle cx="7.5" cy="11.5" r="1.1"/><circle cx="10" cy="7.3" r="1.1"/><circle cx="14.6" cy="7.3" r="1.1"/></svg>Estilo: <b id="estNom">Actual</b><span aria-hidden="true">▾</span></button></div>
-        <h1>Los ciclones más letales <span class="caja">por sector.</span><svg class="regla" viewBox="0 0 60 14" aria-hidden="true"><line x1="0" y1="7" x2="60" y2="7"/><line x1="52" y1="0" x2="52" y2="14"/></svg></h1>
-        <p class="lead">Para cada sector, el ciclón con más muertes. Toca un sector en el cartón.</p>
-      </div>
-      <div class="ilus" aria-hidden="true"><div class="esp" id="ilus"></div><i class="cruz"></i><div class="muestras"><i style="--m:#0a2a6b"><span>IIC2026</span></i><i style="--m:#45898a"></i><i style="--m:#b5c6fd"></i><i class="alg-m" id="mAlg"></i><i style="--m:#94a8ef"></i><i style="--m:#7f95d6"></i><i style="--m:#24548a"></i></div></div>
-    </header>
-
-    <div class="main">
-      <div class="izq">
-        <figure class="panelc hurFig" style="margin:0">
-          <div class="fila-cab"><span class="mono" id="rotHur">Sectores 01–08</span><span class="mono">Giro ∝ viento · algodón = categoría</span></div>
-          <div class="hurBox">
-            <div class="lect">
-              <span class="mono" id="hEtq">Una vuelta cada</span>
-              <b id="hVuelta">—</b>
-              <span class="mono" id="hDet">Elige un sector para que su ciclón gire</span>
-            </div>
-            <div class="hur quieto" id="hur" role="img" aria-label="Huracán detenido: elige un sector para verlo girar">
-              <svg viewBox="-100 -100 200 200" aria-hidden="true">
-                <defs><radialGradient id="hDisco"><stop offset="0" class="d0"/><stop offset=".72" class="d1"/><stop offset="1" class="d2"/></radialGradient></defs>
-                <circle class="disco" r="97"/><circle class="bisel" r="97"/><g id="hTics"></g>
-              </svg>
-              <div class="giro" id="giro"><svg viewBox="-100 -100 200 200" aria-hidden="true"><g id="hEspejo">
-                <g class="brazo" id="hBrazos"></g><image class="algH" id="hAlg" x="-100" y="-100" width="200" height="200"/>
-              </g></svg></div>
-              <svg viewBox="-100 -100 200 200" aria-hidden="true"><path class="marco" d="M-99 -86V-99H-86M86 -99H99V-86M99 86V99H86M-86 99H-99V86"/></svg>
-            </div>
-            <div class="ley">
-              <span class="mono">Cómo leerlo</span>
-              <p>Gira en proporción al viento: el doble de viento, el doble de rápido.</p>
-              <p>Más algodón, más categoría.</p>
-              <p class="ref" id="hSentido"></p>
-              <p class="ref" id="hRef"></p>
-            </div>
-          </div>
-          <div class="sectores" id="sectores" role="group" aria-label="Elegir sector"></div>
-          <figcaption id="estado" class="estado"></figcaption>
-          <i class="cruz" aria-hidden="true"></i>
-        </figure>
-
-        <section class="panelc" aria-label="Viento del ciclón elegido">
-          <div class="fila-cab"><span class="mono" id="olaTit">Viento cada 6 horas</span><span class="mono">kt · algodón = huracán (≥ 64 kt)</span></div>
-          <div class="olaw"><svg class="capa" id="olaAlg" aria-hidden="true"></svg><svg id="ola" role="img" aria-label="Viento del ciclón elegido, cada 6 horas"></svg><div class="tip" id="tipOla" hidden></div></div>
-        </section>
-      </div>
-
-      <aside class="panelc" id="ficha" aria-live="polite">
-        <div id="fBody"><div class="vacio"><div>
-          <div class="vac-copo visor" id="vacCopo" aria-hidden="true"></div>
-          <b>Toca un sector</b>en el cartón, o elige uno bajo el huracán.</div></div></div>
-      </aside>
+    <h1 class="sr">Los ciclones más letales por sector: el huracán gira según la intensidad del viento</h1>
+    <div class="hur quieto" id="hur" role="button" tabindex="0" aria-label="Huracán detenido: toca un sector en el cartón">
+      <svg viewBox="-100 -100 200 200" aria-hidden="true">
+        <defs><radialGradient id="hDisco"><stop offset="0" class="d0"/><stop offset=".72" class="d1"/><stop offset="1" class="d2"/></radialGradient></defs>
+        <circle class="disco" r="97"/><circle class="bisel" r="97"/><g id="hTics"></g>
+      </svg>
+      <div class="giro" id="giro"><svg viewBox="-100 -100 200 200" aria-hidden="true"><g id="hEspejo">
+        <g class="brazo" id="hBrazos"></g><image class="algH" id="hAlg" x="-100" y="-100" width="200" height="200"/>
+      </g></svg></div>
+      <svg viewBox="-100 -100 200 200" aria-hidden="true"><path class="marco" d="M-99 -86V-99H-86M86 -99H99V-86M99 86V99H86M-86 99H-99V86"/></svg>
     </div>
+    <p id="estado" hidden></p>
   </div>
 </section>
 
@@ -623,7 +407,6 @@ input[type=range]{accent-color:var(--ink);vertical-align:middle}
 
 <script src="https://cdn.jsdelivr.net/npm/mqtt@5.10.1/dist/mqtt.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/d3@7.9.0/dist/d3.min.js"></script>
 <script>
 var $=function(i){return document.getElementById(i)};
 // Un sector = un continente con su ciclón más letal 2000-2026.
@@ -648,8 +431,6 @@ var SECT=[
   vv:[25,25,30,35,35,35,35,35,40,45,45,50,60,70,75,65,55,55,50,45,45,45,40,35,35,30,25],hh:[0,6,12,18,24,30,36,42,48,54,60,66,72,78,84,90,96,102,108,114,120,126,132,138,144,150,156]},
  {id:8,n:"Antártida",c:null,u:.50,v:.94,lon:0,lat:-76,w:25,why:"Es demasiado frío: los ciclones tropicales necesitan mar de más de 26 °C. Sin registros."}];
 function categoria(kt){return kt>=137?5:kt>=113?4:kt>=96?3:kt>=83?2:kt>=64?1:0}
-function nombreCat(kt){var c=categoria(kt);return c?{n:c,t:"Categoría "+c}:{n:"–",t:kt>=34?"Tormenta tropical":"Depresión tropical"}}
-function fmt(v){return v==null?"s/d":(typeof v==="number"?v.toLocaleString("es-CL"):v)}
 
 var KEY="sensor-e2-v1", VENTANA=400;
 var S=Object.assign({pts:{},zUp:null,zDown:null,sala:null,modo:"entrenar"},JSON.parse(localStorage.getItem(KEY)||"{}"));
@@ -710,23 +491,11 @@ function beep(v){
   GN.gain.setTargetAtTime(.7*Math.pow(10,-lnd(v)/20),t,.12)}
 function sonar(w){beep(w);clearTimeout(tsn);tsn=setTimeout(function(){if(!play)beep(0)},3500)}
 function detenerAudio(){if(play){cancelAnimationFrame(play.r);play=null}clearTimeout(tsn);beep(0)}
-var CC=[0,1,2,3,4,5].map(function(i){return "var(--c"+i+")"}),ON=[0,1,2,3,4,5].map(function(i){return "var(--o"+i+")"});
 // Giro proporcional al viento: una vuelta tarda K_GIRO/kt segundos, así que el doble de viento gira el doble de rápido.
-// La misma ley mueve el huracán grande y el «ojo» de la ficha.
 var K_GIRO=240;
 function segVuelta(kt){return K_GIRO/Math.max(kt,10)}
-function spin(w){return segVuelta(w).toFixed(2)}
 
 function pad(n){return (n<10?"0":"")+n}
-
-// ---------- espiral: ilustración del encabezado y «ojo» de la ficha ----------
-// Brazos logarítmicos. En el hemisferio sur se reflejan (y el ojo gira al revés).
-function espiral(brazos,vueltas,sur){var s="";
-  for(var k=0;k<brazos;k++)[[1,0],[2,3],[3,6]].forEach(function(b){var p=[];
-    for(var t=0;t<=vueltas*Math.PI;t+=.09){var r=7*Math.exp(.2*t)+b[1],a=t+k*2*Math.PI/brazos;
-      p.push((100+r*Math.cos(a)).toFixed(1)+","+(100+r*Math.sin(a)).toFixed(1))}
-    s+='<polyline class="b'+b[0]+'" points="'+p.join(" ")+'"/>'});
-  return '<svg viewBox="0 0 200 200" aria-hidden="true"><g'+(sur?' transform="translate(200 0) scale(-1 1)"':'')+'>'+s+'</g><circle class="c" cx="100" cy="100" r="4"/></svg>'}
 
 // ---------- algodón: como en la maqueta, la cantidad de algodón indica la categoría ----------
 // Las motas son círculos con un degradé radial; el filtro las une en una masa suave (efecto «goo»),
@@ -762,17 +531,6 @@ function filtroAlgodon(id,u){
     '<feGaussianBlur in="SourceAlpha" stdDeviation="'+(2.6*u).toFixed(3)+'" result="h0"/>'+
     '<feComposite in="h0" in2="g" operator="arithmetic" k2="1" k3=".08" result="h"/>'+
     luzAlgodon(6,.5)+sombraAlgodon(u)+'</filter>'}
-function copo(k,animar){var e=(.92+.06*k).toFixed(3);
-  return '<svg viewBox="0 18 100 76" aria-hidden="true"><g filter="url(#algodon)"><g transform="translate(50 58) scale('+e+')">'+
-    MOTAS[k+2].map(function(m,i){return '<circle'+(animar?' class="m" style="--i:'+i+'"':'')+' cx="'+m[0]+'" cy="'+m[1]+'" r="'+m[2]+'" fill="url(#mota)"/>'}).join("")+'</g></g></svg>'}
-var RANGO=["34–63 kt","64–82 kt","83–95 kt","96–112 kt","113–136 kt","137 kt o más"];
-function bloqueAlgodon(k,c){
-  return '<div class="alg"><div class="copo">'+copo(k,true)+'<b>'+c.n+'</b></div><div><div class="alg-t">'+c.t+'</div>'+
-    '<div class="escala" aria-hidden="true">'+[0,1,2,3,4,5].map(function(i){
-      return '<span class="'+(i===k?'on':'')+'" title="'+(i?'Categoría '+i:'Tormenta tropical')+': '+RANGO[i]+'">'+copo(i)+'<small>'+(i?i:'TT')+'</small></span>'}).join("")+'</div>'+
-    '<span class="mono">Más algodón, más categoría</span></div></div>'}
-function columnaAlgodon(){var c="";for(var i=0;i<12;i++)c+='<circle cx="'+(10+(i%3-1)*1.6)+'" cy="'+(8+i*11)+'" r="'+(8.5+(i*5)%3)+'" fill="url(#mota)"/>';
-  return '<svg viewBox="0 0 20 136" preserveAspectRatio="none" aria-hidden="true"><g filter="url(#algodon-c)">'+c+'</g></svg>'}
 
 // imágenes de algodón «horneadas» una vez (SVG con filtro -> PNG), para lo que se mueve: nubes, soplo y costura
 function hornear(svg,w,h){return new Promise(function(ok,no){var img=new Image();
@@ -841,28 +599,15 @@ function girar(t){var dt=HUR.t?Math.min(.1,(t-HUR.t)/1000):0;HUR.t=t;
   if(Math.abs(HUR.om)>.01){HUR.ang=(HUR.ang+HUR.om*dt)%360;$("giro").style.transform="rotate("+HUR.ang.toFixed(2)+"deg)"}
   requestAnimationFrame(girar)}
 function f1(n){return n.toLocaleString("es-CL",{minimumFractionDigits:1,maximumFractionDigits:1})}
-function kmh(kt){return Math.round(kt*1.852)}
-function fijarGiro(kt,etq,det){
-  HUR.obj=(kt==null||HUR.calma.matches)?0:(HUR.sur?1:-1)*360/segVuelta(kt);
-  $("hEtq").textContent=etq;
-  $("hVuelta").innerHTML=kt==null?"—":f1(segVuelta(kt))+"<small>s</small>";
-  $("hDet").textContent=det}
-function giroMax(s){fijarGiro(s.w,"Una vuelta cada","Viento máx. "+s.w+" kt · "+kmh(s.w)+" km/h")}
-// Al recorrer la curva del viento, el huracán gira con el viento de ese momento; al salir, vuelve al máximo.
-function giroMomento(kt,h){var s=HUR.sel;if(!s||!s.c)return;
-  if(kt==null){giroMax(s);return}
-  fijarGiro(kt,"Día "+(Math.floor(h/24)+1)+" · hora "+h+" · una vuelta cada","Viento en ese momento: "+kt+" kt · "+kmh(kt)+" km/h")}
+function fijarGiro(kt){HUR.obj=(kt==null||HUR.calma.matches)?0:(HUR.sur?1:-1)*360/segVuelta(kt)}
 function ponerHuracan(s){
   var h=$("hur"),con=!!(s&&s.c),sur=con&&/Sur/.test(s.reg||""),k=con?categoria(s.w):-1;
   HUR.sel=s;HUR.sur=sur;
   h.classList.toggle("quieto",!s);h.classList.toggle("sin",!!s&&!con);
-  if(!s)fijarGiro(null,"Una vuelta cada","Elige un sector para que su ciclón gire");
-  else if(!con)fijarGiro(null,"No gira","Sin ciclones en este sector, 2000–2026");
-  else giroMax(s);
-  $("hSentido").textContent=!con?"Sentido: antihorario en el hemisferio norte, horario en el sur.":
-    sur?"Gira en sentido horario: hemisferio sur.":"Gira en sentido antihorario: hemisferio norte.";
-  h.setAttribute("aria-label",!s?"Huracán detenido: elige un sector para verlo girar":!con?s.n+": sin ciclones, no gira":
-    s.c+" ("+s.y+"): "+s.w+" kt, una vuelta cada "+f1(segVuelta(s.w))+" segundos, sentido "+(sur?"horario":"antihorario"));
+  fijarGiro(con?s.w:null);
+  // En pantalla no hay texto: la descripción queda solo para lectores de pantalla.
+  h.setAttribute("aria-label",!s?"Huracán detenido: toca un sector en el cartón":!con?s.n+": sin ciclones, no gira":
+    s.n+", "+s.c+" ("+s.y+"): "+s.w+" kt, una vuelta cada "+f1(segVuelta(s.w))+" segundos, sentido "+(sur?"horario":"antihorario"));
   cuerpoHuracan(k,sur)}
 // Cambia el algodón (categoría) y el reflejo (hemisferio) con un fundido breve, para que el salto no se vea.
 function cuerpoHuracan(k,sur){
@@ -876,99 +621,17 @@ function cuerpoHuracan(k,sur){
     if(k<0){img.removeAttribute("href");return}
     algodonHur(k).then(function(u){if(my!==HUR.tok)return;img.setAttribute("href",u);img.classList.add("lista")}).catch(function(){})},280)}
 
-// Selector de sectores bajo el huracán (antes se elegía con los círculos del mapa).
-function crearSectores(){
-  $("sectores").innerHTML=SECT.map(function(s){
-    return '<button type="button" data-id="'+s.id+'"'+(s.c?'':' class="sin"')+' aria-pressed="false"><span class="num">'+pad(s.id)+'</span>'+
-      '<span class="sn"><b>'+s.n+'</b><small>'+(s.c?s.c+' · '+fmt(s.m)+' muertes':'sin registros')+'</small></span></button>'}).join("");
-  $("sectores").onclick=function(e){var b=e.target.closest("button[data-id]");
-    if(b)disparar(SECT.find(function(x){return x.id===+b.dataset.id}))}}
-function dibujarSectores(){var act=tocando||mostrado;
-  Array.prototype.forEach.call($("sectores").children,function(b){var on=+b.dataset.id===act;
-    b.classList.toggle("on",on);b.setAttribute("aria-pressed",String(on))});
-  var v=SECT.find(function(x){return x.id===act});
-  $("rotHur").textContent=v?"Sector "+pad(v.id)+" · "+v.n+(v.c?" — "+v.c+" ("+v.y+")":""):"Sectores 01–08"}
+// Sin texto ni botones en pantalla: el sector se elige en el cartón. Para probar sin el sensor, un clic (o Enter)
+// en el huracán pasa al sector siguiente, y las teclas 1 a 8 eligen uno directo.
+function siguiente(){var i=SECT.findIndex(function(x){return x.id===mostrado});disparar(SECT[(i+1)%SECT.length])}
+$("hur").onclick=siguiente;
+$("hur").onkeydown=function(e){if(e.key==="Enter"||e.key===" "){e.preventDefault();siguiente()}};
+document.addEventListener("keydown",function(e){
+  if(e.metaKey||e.ctrlKey||e.altKey||/INPUT|SELECT|TEXTAREA/.test((document.activeElement||{}).tagName||""))return;
+  var s=SECT.find(function(x){return String(x.id)===e.key});if(s)disparar(s)});
 
-
-// ---------- ficha de información ----------
-function mostrarFicha(s){
-  mostrado=s.id;detenerAudio();
-  var cab='<div class="mono">'+pad(s.id)+' · '+s.n+'</div>';
-  if(!s.c){
-    $("fBody").innerHTML='<div class="bloque">'+cab+'<h2>'+s.n+'</h2><span class="oval">sin registros</span></div>'+
-      '<div class="aviso"><span class="kc">Por qué</span><p>'+s.why+'</p></div>';
-    dibujarSectores();ponerHuracan(s);dibujarOla(s);return}
-  var kt=s.w,k=categoria(kt),c=nombreCat(kt),sur=/Sur/.test(s.reg||"");
-  $("fBody").innerHTML=
-  '<div class="bloque">'+cab+'<h2>'+s.c+'</h2>'+
-    '<div class="fila-b"><span class="oval">'+s.y+'</span><span class="reg">'+s.reg+'</span></div>'+bloqueAlgodon(k,c)+'</div>'+
-  '<div class="viento"><div class="ojo esp'+(sur?'':' norte')+'" style="--k:'+CC[k]+';--sp:'+spin(kt)+'s">'+espiral(4,3.2,sur)+'</div>'+
-    '<div class="hero"><b>'+Math.round(kt*1.852)+'</b><span>km/h</span><small class="mono">Viento máx. · '+kt+' kt</small></div></div>'+
-  '<div class="kpis"><div class="kpi m"><span class="kc">Muertes</span><b>'+fmt(s.m)+'</b></div>'+
-    '<div class="kpi a"><span class="kc">Afectados</span><b>'+fmt(s.a)+'</b></div></div>'+
-  '<div class="minis"><div class="mini"><small>Duración</small><b>'+fmt(s.d)+' días</b></div>'+
-    '<div class="mini"><small>Sobre tierra</small><b>≈ '+s.t+' h</b></div></div>'+
-  '<p class="paso"><span class="mono">Pasó por</span>'+s.ps+'</p>';
-  dibujarSectores();ponerHuracan(s);dibujarOla(s);
-}
-function disparar(s){mostrarFicha(s);sonar(s.w);soplo(s)}
-
-// ---------- curva del viento del ciclón elegido (la «ola») ----------
-var olaSel=null,olaAnim=null;
-// umbrales Saffir-Simpson (kt). Las líneas de Cat. 2 y Cat. 4 quedan sin rótulo: están a ~10 px de sus vecinas.
-var UMBRAL=[[34,"TT",1],[64,"Cat. 1",1],[83,"Cat. 2",0],[96,"Cat. 3",1],[113,"Cat. 4",0],[137,"Cat. 5",1]];
-function dibujarOla(s){
-  if(s!==undefined)olaSel=s;
-  var svg=$("ola");if(!window.d3)return;
-  var W=Math.max(280,Math.round(svg.getBoundingClientRect().width)||600),H=150,m={l:34,r:56,t:24,b:24};
-  svg.setAttribute("viewBox","0 0 "+W+" "+H);
-  var x0=m.l,x1=W-m.r,y=d3.scaleLinear().domain([0,160]).range([H-m.b,m.t]);
-  var g='<line class="base" x1="'+x0+'" x2="'+x1+'" y1="'+y(0)+'" y2="'+y(0)+'"/>';
-  UMBRAL.forEach(function(u){var yy=y(u[0]).toFixed(1);
-    g+='<line class="grid" x1="'+x0+'" x2="'+x1+'" y1="'+yy+'" y2="'+yy+'"/>'+(u[2]?
-       '<text x="'+(x0-6)+'" y="'+yy+'" dy=".32em" text-anchor="end">'+u[0]+'</text>'+
-       '<text class="cl" x="'+(x1+8)+'" y="'+yy+'" dy=".32em">'+u[1]+'</text>':'')});
-  var tip=$("tipOla");tip.hidden=true;
-  var alg=$("olaAlg");alg.setAttribute("viewBox","0 0 "+W+" "+H);alg.style.width=W+"px";alg.style.height=H+"px";alg.innerHTML="";
-  s=olaSel;
-  if(!s||!s.c||!s.vv){
-    svg.innerHTML=g+'<text class="msg" x="'+((x0+x1)/2)+'" y="'+(y(80))+'" text-anchor="middle">'+
-      (!s?"TOCA UN SECTOR PARA VER CÓMO CAMBIÓ SU VIENTO":"SIN REGISTROS EN 2000–2026")+'</text>';
-    $("olaTit").textContent=s?s.n+" · sin ciclón":"Viento cada 6 horas";
-    olaAnim=null;svg.onpointermove=svg.onpointerleave=null;return}
-  var hmax=s.hh[s.hh.length-1]||1,x=d3.scaleLinear().domain([0,hmax]).range([x0,x1]);
-  var pts=s.vv.map(function(v,i){return [x(s.hh[i]),y(v)]});
-  var ln=d3.line().curve(d3.curveMonotoneX),ar=d3.area().curve(d3.curveMonotoneX).y0(y(0)).y1(function(d){return d[1]});
-  var im=s.vv.indexOf(Math.max.apply(null,s.vv)),pk=pts[im];
-  var dias=hmax/24,ppd=(x1-x0)/Math.max(dias,1),paso=[1,2,5,10,20].find(function(k){return k*ppd>=46})||20;
-  for(var d=0;d*24<=hmax;d+=paso)g+='<text x="'+x(d*24).toFixed(1)+'" y="'+(H-6)+'" text-anchor="middle">día '+(d+1)+'</text>';
-  var anc=pk[0]>x1-70?"end":pk[0]<x0+70?"start":"middle";
-  g+='<path class="area" d="'+ar(pts)+'"/><path class="linea" d="'+ln(pts)+'"/>'+
-     '<line class="pico" x1="'+pk[0]+'" x2="'+pk[0]+'" y1="'+pk[1]+'" y2="'+y(0)+'"/>'+
-     '<circle class="halo" cx="'+pk[0]+'" cy="'+pk[1]+'" r="11"/><circle class="punto" cx="'+pk[0]+'" cy="'+pk[1]+'" r="5"/>'+
-     '<text class="plab" x="'+pk[0]+'" y="'+(pk[1]-15)+'" text-anchor="'+anc+'">Máx. '+s.vv[im]+' kt</text>'+
-     '<g class="cursor" style="display:none"><line y1="'+m.t+'" y2="'+y(0)+'"/><circle r="4.5"/></g>';
-  svg.innerHTML=g;
-  // algodón en los tramos de huracán (≥ 64 kt): columnas de motas entre 64 kt y la curva, que el filtro une
-  if(s.vv.some(function(v){return v>=64})){
-    var vint=d3.scaleLinear().domain(s.hh).range(s.vv),cs=[];
-    for(var px=x0;px<=x1;px+=6){var v=vint(x.invert(px));if(v<64)continue;
-      var tope=y(v),piso=y(64),alto=piso-tope,n=Math.max(1,Math.round(alto/18));
-      for(var j=0;j<n;j++)cs.push('<circle cx="'+px.toFixed(1)+'" cy="'+(piso-(j+.5)*alto/n).toFixed(1)+'" r="'+Math.min(13,Math.max(3.2,alto/(2*n)+2.5)).toFixed(1)+'" fill="url(#mota)"/>')}
-    alg.innerHTML='<g filter="url(#algodon)">'+cs.join("")+'</g>';
-    if(olaAnim!==s.id){olaAnim=s.id;alg.classList.remove("revela");void alg.getBoundingClientRect();alg.classList.add("revela")}}
-  var cur=svg.querySelector(".cursor"),cl=cur.firstChild,cc=cur.lastChild;
-  svg.onpointermove=function(e){var r=svg.getBoundingClientRect(),px=(e.clientX-r.left)*W/r.width;
-    if(px<x0-8||px>x1+8){svg.onpointerleave();return}
-    var i=d3.bisectCenter(s.hh,x.invert(px)),p=pts[i],h=s.hh[i];
-    cur.style.display="";cl.setAttribute("x1",p[0]);cl.setAttribute("x2",p[0]);cc.setAttribute("cx",p[0]);cc.setAttribute("cy",p[1]);
-    tip.innerHTML='<span class="mono">Día '+(Math.floor(h/24)+1)+' · hora '+h+'</span><b>'+s.vv[i]+' kt · '+Math.round(s.vv[i]*1.852)+' km/h</b>'+nombreCat(s.vv[i]).t;
-    tip.style.left=(p[0]*r.width/W)+"px";tip.style.top=(p[1]*r.height/H)+"px";tip.hidden=false;giroMomento(s.vv[i],h)};
-  svg.onpointerleave=function(){cur.style.display="none";tip.hidden=true;giroMomento(null)};
-  $("olaTit").textContent=s.c+" ("+s.y+") · viento cada 6 horas";
-}
-var tRes;window.addEventListener("resize",function(){clearTimeout(tRes);tRes=setTimeout(function(){dibujarOla()},120)});
-
+function mostrar(s){mostrado=s.id;detenerAudio();ponerHuracan(s)}
+function disparar(s){mostrar(s);sonar(s.w);soplo(s)}
 
 // ---------- calibración ----------
 function dibujar(){
@@ -986,7 +649,6 @@ function dibujar(){
   $("vUp").textContent=S.zUp==null?"—":S.zUp.toFixed(2);$("vDown").textContent=S.zDown==null?"—":S.zDown.toFixed(2);
   var ok=Object.keys(S.pts).length>0&&S.zUp!=null&&S.zDown!=null&&Math.abs(S.zUp-S.zDown)>0.03;
   $("uso").disabled=!ok;$("uso").hidden=S.modo==="uso";$("entrenar").hidden=S.modo!=="uso";
-  dibujarSectores();
 }
 $("guardar").onclick=function(){
   if(!fresco(cen)){$("estado").textContent="El cenital no ve tu mano.";return}
@@ -1031,10 +693,8 @@ function aplicarEstilo(e){
   var t=null;try{t=localStorage.getItem("tema-ciclones")}catch(x){}
   document.documentElement.setAttribute("data-estilo",e);
   aplicarTema(e==="actual"?(t==="claro"?"claro":"oscuro"):BASE[e],false);
-  $("estNom").textContent=ESTILOS[e];
   Array.prototype.forEach.call(document.querySelectorAll(".opE[data-e]"),function(b){b.setAttribute("aria-checked",String(b.dataset.e===e))});
   try{var u=new URL(location.href);if(e==="actual")u.searchParams.delete("estilo");else u.searchParams.set("estilo",e);history.replaceState(null,"",u)}catch(x){}
-  dibujarOla();
 }
 var menu=$("menuEstilo"),desde=null;
 function abrirMenu(b){menu.hidden=false;
@@ -1044,7 +704,7 @@ function abrirMenu(b){menu.hidden=false;
   desde=b;b.setAttribute("aria-expanded","true");(menu.querySelector('[aria-checked="true"]')||menu.querySelector(".opE")).focus()}
 function cerrarMenu(){if(menu.hidden)return;menu.hidden=true;
   if(desde){desde.setAttribute("aria-expanded","false");desde.focus({preventScroll:true})}desde=null}
-[$("btnEstilo"),$("icEstilo")].forEach(function(b){b.onclick=function(e){e.stopPropagation();if(menu.hidden)abrirMenu(b);else cerrarMenu()}});
+$("icEstilo").onclick=function(e){e.stopPropagation();if(menu.hidden)abrirMenu(this);else cerrarMenu()};
 menu.onclick=function(e){var b=e.target.closest(".opE");if(b&&b.dataset.e){aplicarEstilo(b.dataset.e);cerrarMenu()}};
 document.addEventListener("click",function(e){if(!menu.hidden&&!menu.contains(e.target))cerrarMenu()});
 document.addEventListener("keydown",function(e){if(e.key==="Escape")cerrarMenu()});
@@ -1052,14 +712,9 @@ window.addEventListener("resize",cerrarMenu);
 window.addEventListener("scroll",cerrarMenu,{passive:true});
 
 new MutationObserver(function(){$("estado2").textContent=$("estado").textContent}).observe($("estado"),{childList:true,characterData:true,subtree:true});
-$("ilus").innerHTML=espiral(5,3.6,false);
-$("defsAlg").innerHTML=GRAD_MOTA+filtroAlgodon("algodon",1)+filtroAlgodon("algodon-c",.7);
-$("mAlg").innerHTML=columnaAlgodon();
-$("vacCopo").innerHTML=copo(5,true);
 $("hTics").innerHTML=ticsHur();$("hBrazos").innerHTML=brazosHur();
-$("hRef").innerHTML="Referencia: cat. 1 (64 kt), una vuelta cada "+f1(segVuelta(64))+" s; cat. 5 (137 kt), cada "+f1(segVuelta(137))+" s.";
-crearSectores();ponerHuracan(null);requestAnimationFrame(girar);
+ponerHuracan(null);requestAnimationFrame(girar);
 hornearCopitos().then(function(){ponerNubes();return hornearCostura()}).catch(function(){}).then(prehornearHur);
 aplicarEstilo(document.documentElement.getAttribute("data-estilo"));
-dibujar();conectar();dibujarOla();
+dibujar();conectar();
 </script></body></html>
