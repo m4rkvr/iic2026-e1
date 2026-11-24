@@ -437,6 +437,7 @@ var S=Object.assign({pts:{},zUp:null,zDown:null,sala:null,modo:"entrenar"},JSON.
 function guardarLS(){localStorage.setItem(KEY,JSON.stringify(S))}
 function nuevaSala(){var a="abcdefghjkmnpqrstuvwxyz23456789",s="";for(var i=0;i<5;i++)s+=a[Math.floor(Math.random()*a.length)];return s}
 if(!S.sala)S.sala=nuevaSala();
+var BROKERS=["wss://broker.emqx.io:8084/mqtt","wss://broker.hivemq.com:8884/mqtt","wss://test.mosquitto.org:8081/mqtt"];
 var cen=null,fro=null,sel=1,cli=null,tocando=null,mostrado=null;
 var base=function(){return "iic2026/sensor/"+S.sala};
 var fresco=function(o){return o&&Date.now()-o.t<VENTANA};
@@ -452,15 +453,22 @@ function qr(el,rol){
   catch(e){$(el).innerHTML='<small style="color:#000;font-size:11px;word-break:break-all">'+u+'</small>'}}
 function conectar(){
   $("sala").textContent=S.sala.toUpperCase();qr("qrCe","cenital");qr("qrFr","frontal");guardarLS();
-  if(cli)cli.end(true);
-  var url=new URLSearchParams(location.search).get("broker")||"wss://broker.emqx.io:8084/mqtt";
-  cli=mqtt.connect(url,{reconnectPeriod:2000,clientId:"pc-"+Math.random().toString(16).slice(2)});
-  cli.on("connect",function(){$("pBr").className="pill ok";$("pBr").textContent="Servidor: listo";cli.subscribe(base()+"/+")});
-  cli.on("close",function(){$("pBr").className="pill";$("pBr").textContent="Servidor: sin conexión…"});
-  cli.on("message",function(t,m){var d;try{d=JSON.parse(m.toString())}catch(e){return}
+  if(cli)cli.forEach(function(c){c.end(true)});
+  // Se usan tres servidores MQTT públicos a la vez (los teléfonos publican en los tres): si uno se cae
+  // o la red bloquea su puerto, la conexión sigue por los otros. ?broker=wss://… fuerza uno solo.
+  var forzado=new URLSearchParams(location.search).get("broker");
+  var urls=forzado?[forzado]:BROKERS,id="pc-"+Math.random().toString(16).slice(2);
+  cli=urls.map(function(u,i){return mqtt.connect(u,{reconnectPeriod:3000,connectTimeout:8000,clientId:id+"-"+i})});
+  function estadoBr(){var n=cli.filter(function(c){return c.connected}).length;
+    $("pBr").className="pill"+(n?" ok":"");$("pBr").textContent=n?"Servidor: listo ("+n+"/"+cli.length+")":"Servidor: sin conexión, reintentando…"}
+  cli.forEach(function(c){
+  c.on("connect",function(){c.subscribe(base()+"/+");estadoBr()});
+  c.on("close",estadoBr);c.on("offline",estadoBr);c.on("error",function(){});
+  c.on("message",function(t,m){var d;try{d=JSON.parse(m.toString())}catch(e){return}
     var k=t.split("/").pop();
     if(k==="cenital")cen={x:d.x,y:d.y,t:Date.now()};
     else if(k==="frontal")fro={z:d.z,t:Date.now()};});
+  });
 }
 $("nueva").onclick=function(){S.sala=nuevaSala();conectar()};
 // ---------- sonido: viento sintético (modelo de index(2): las frecuencias crecen con la velocidad U; volumen corregido por sonoridad) ----------

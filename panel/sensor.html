@@ -70,10 +70,14 @@ $("instr").textContent = rol === "cenital" ? "Ponlo mirando hacia abajo, sobre e
 document.title = "Teléfono " + rol + " · sala " + sala.toUpperCase();
 
 // ---- conexión ----
-const url = P.get("broker") || "wss://broker.emqx.io:8084/mqtt";
-const cli = mqtt.connect(url, { reconnectPeriod: 2000, clientId: rol + "-" + Math.random().toString(16).slice(2) });
-cli.on("connect", () => { $("est").textContent = "Conectado al servidor."; });
-cli.on("close", () => { $("est").textContent = "Sin conexión con el servidor, reintentando…"; });
+// Tres servidores MQTT públicos a la vez (los mismos de la pantalla): basta con que uno funcione.
+const BROKERS = P.get("broker") ? [P.get("broker")] : ["wss://broker.emqx.io:8084/mqtt", "wss://broker.hivemq.com:8884/mqtt", "wss://test.mosquitto.org:8081/mqtt"];
+const cid = rol + "-" + Math.random().toString(16).slice(2);
+const clis = BROKERS.map((u, i) => mqtt.connect(u, { reconnectPeriod: 3000, connectTimeout: 8000, clientId: cid + "-" + i }));
+const estado = () => { const n = clis.filter(c => c.connected).length;
+  $("est").textContent = n ? "Conectado al servidor (" + n + "/" + clis.length + ")." : "Sin conexión con el servidor, reintentando…"; };
+clis.forEach(c => { c.on("connect", estado); c.on("close", estado); c.on("offline", estado); c.on("error", () => {}); });
+const cli = { publish: (t, m) => clis.forEach(c => { if (c.connected) c.publish(t, m); }) };
 
 // ---- cámara y mano ----
 $("ini").onclick = async () => {
