@@ -1,0 +1,55 @@
+Bitácora del panel (panel/) · 18 al 25 de noviembre de 2026
+Cubre los cambios de la carpeta panel/ de la última semana. La fuente es la historia de commits del repositorio m4rkvr/iic2026-e1 (rama main). Las horas son de Chile.
+Punto de partida (15-nov, f3b7a33)
+Vista principal: mapa estilo satélite con grilla, algodón en los continentes según la categoría, ficha del ciclón y curva del viento.
+Conexión: dos teléfonos (cenital y frontal) que detectan la mano con MediaPipe y se conectan por MQTT al servidor broker.emqx.io.
+Calibración: se guarda un punto por sector y dos alturas del dedo (arriba y en la mesa).
+Resumen
+Fecha	Commit	Autor	Cambio
+19-nov 18:07	6550b77	m4rkvr	El mapa se reemplaza por un huracán que gira según el viento
+19-nov 18:15	664ea4b	m4rkvr	La vista principal queda solo con el huracán, sin texto
+24-nov 14:01	22bd99b	Yeps3nM	Tres servidores MQTT a la vez por inestabilidad de la conexión
+1. 6550b77 · El mapa se reemplaza por un huracán que gira (19-nov)
+Qué cambió
+El huracán: en vez del mapa, la pantalla muestra un huracán que gira en proporción al viento máximo del ciclón elegido.
+Da una vuelta cada 240/kt segundos: el doble de viento, el doble de rápido.
+Al cambiar de ciclón acelera o frena de forma suave.
+Sentido de giro: antihorario en el hemisferio norte y horario en el sur; el dibujo se refleja. Los sectores sin ciclón (América del Sur y Antártida) quedan punteados y quietos.
+El algodón del huracán indica la categoría, igual que en la maqueta: más categoría, brazos más largos y pared del ojo más tupida. La tormenta tropical no tiene ojo. Cada categoría se dibuja una vez como imagen, así lo que gira es una imagen y no se recalcula en cada cuadro.
+La curva del viento: al recorrerla, el huracán gira con el viento de ese momento.
+Selección: ocho botones de sector bajo el huracán reemplazan a los círculos del mapa. El ojo de la ficha usa la misma ley de giro.
+Código retirado: el del mapa (polígonos de continentes, topojson-client y world-atlas).
+Sin cambios: ficha, datos, sonido, conexión MQTT y calibración. El cartón y los sensores funcionan igual.
+2. 664ea4b · Solo el huracán, sin texto (19-nov)
+Qué cambió
+Vista principal: solo gira el huracán. La velocidad es proporcional al viento y el algodón indica la categoría. La pantalla acompaña al cartón en vez de competir con él.
+Se quitan el título, la ficha, la curva del viento, los botones de sector y los textos junto al huracán, con su código y estilos. El archivo pasa de unas 450 líneas cambiadas a 52 agregadas y 397 eliminadas.
+Se mantienen la barra de íconos y la hoja de calibración, que se usa antes de presentar.
+Accesibilidad: el huracán conserva una descripción para lectores de pantalla.
+Para probar sin sensor: un clic o Enter sobre el huracán pasa al sector siguiente, y las teclas 1 a 8 eligen un sector directamente.
+En celular, el huracán queda centrado bajo la barra de íconos.
+Efecto: el dato que se comunica en pantalla es la intensidad (viento y categoría). Las muertes quedan en la maqueta (círculos), y los afectados y la ficha dejan de mostrarse.
+3. 22bd99b · Tres servidores a la vez (24-nov)
+Problema: la pantalla mostraba «Servidor: sin conexión». La página dependía de un solo servidor MQTT público, broker.emqx.io en el puerto 8084.
+Qué cambió
+El computador y los dos teléfonos se conectan a la vez a EMQX (8084), HiveMQ (8884) y Mosquitto (8081). Los teléfonos publican en todos los que estén conectados y la pantalla escucha a todos, así que basta con que uno funcione.
+El indicador muestra cuántos están activos, por ejemplo «Servidor: listo (2/3)».
+El parámetro ?broker=wss://… sigue permitiendo forzar uno solo.
+Resultado: las cámaras conectaron, pero en algunas redes la pantalla y el teléfono cenital siguieron sin conexión, y la calibración y el sonido no funcionaron (ver §4).
+4. Pendiente de subir (24-nov)
+Estos cambios están preparados en panel/index.html y panel/sensor.html, pero todavía no están en GitHub.
+a) Conexión por el puerto 443
+Causa probable: las redes Wi-Fi universitarias bloquean los puertos 8084, 8884 y 8081. El frontal, que probablemente usaba datos móviles, sí conectaba.
+Cambio: se agrega como primer servidor mqtt.eclipseprojects.io, de la Fundación Eclipse, que funciona por el puerto 443, el mismo de cualquier página web. Los otros tres quedan de respaldo.
+b) Aviso de estado de los teléfonos
+Cada teléfono avisa cada segundo que está conectado, aunque no vea una mano.
+La pantalla ahora distingue «sin conexión», «falta Iniciar cámara», «no ve la mano» y «conectado». Antes todo aparecía como «sin datos».
+c) Sonido
+Problema: la activación dependía de una promesa del navegador (ctx.resume().then) que Safari puede rechazar o dejar sin respuesta, sin ningún aviso.
+Cambio: ahora se arma directo en el clic, con un desbloqueo para Safari y un soplido corto de confirmación. Si el navegador lo bloquea, el botón dice «Sonido bloqueado: vuelve a pulsar».
+d) Calibración y detección
+Altura por punto. Por perspectiva, el dedo apoyado en la mesa se ve a distinta altura en el teléfono frontal según lo lejos que esté, así que un solo umbral fallaba en los sectores lejanos. Ahora cada punto guarda la altura del frontal con el dedo apoyado ahí.
+Toque sin el frontal. Si el frontal no ve la mano, mantener el dedo 1 s sobre el punto cuenta como toque. Antes se exigían las dos cámaras a la vez.
+Guardado automático. El dedo quieto 2 s guarda el punto y pasa al sector siguiente, así que ya no hace falta que una persona toque mientras otra hace clic.
+Vista «Lo que ve el cenital». Muestra los puntos guardados, con su radio, y la posición del dedo, para diagnosticar fallas de detección.
+«Iniciar modo tocar» ya no exige calibrar las dos alturas: basta con al menos un punto guardado.
